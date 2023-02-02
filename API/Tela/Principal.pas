@@ -51,7 +51,7 @@ uses Horse, Controller.Pais, Controller.Estado;
 
 procedure TFPrincipal.ativar(sinal: boolean);
 begin
-  BIniciar.Enabled := not sinal;
+//  BIniciar.Enabled := not sinal;
   BSair.Enabled := not sinal;
   BReiniciar.Enabled := sinal;
   BParar.Enabled := sinal;

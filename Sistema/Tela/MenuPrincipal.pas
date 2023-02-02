@@ -48,7 +48,7 @@ end;
 procedure TFMenuPrincipal.FormShow(Sender: TObject);
 begin
   SessaoLogado := 2;
-  NomeUsuarioSessaoLogado := 'Guilhermexxxx';
+  NomeUsuarioSessaoLogado := 'Guilherme';
   UsuarioAdmnistrador := True;
   SessaoLogadoToken := '96FC542F00DC204B1408A6314962E10A';
 end;
