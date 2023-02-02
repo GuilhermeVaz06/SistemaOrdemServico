@@ -1,0 +1,48 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <PropertyGroup>
+        <ProjectGuid>{DAC65E54-45F2-4E3D-949C-12C68A76DF2F}</ProjectGuid>
+    </PropertyGroup>
+    <ItemGroup>
+        <Projects Include="Sistema\Projeto\Sistema.dproj">
+            <Dependencies/>
+        </Projects>
+        <Projects Include="API\Projeto\API.dproj">
+            <Dependencies/>
+        </Projects>
+    </ItemGroup>
+    <ProjectExtensions>
+        <Borland.Personality>Default.Personality.12</Borland.Personality>
+        <Borland.ProjectType/>
+        <BorlandProject>
+            <Default.Personality/>
+        </BorlandProject>
+    </ProjectExtensions>
+    <Target Name="Sistema">
+        <MSBuild Projects="Sistema\Projeto\Sistema.dproj"/>
+    </Target>
+    <Target Name="Sistema:Clean">
+        <MSBuild Projects="Sistema\Projeto\Sistema.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="Sistema:Make">
+        <MSBuild Projects="Sistema\Projeto\Sistema.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="API">
+        <MSBuild Projects="API\Projeto\API.dproj"/>
+    </Target>
+    <Target Name="API:Clean">
+        <MSBuild Projects="API\Projeto\API.dproj" Targets="Clean"/>
+    </Target>
+    <Target Name="API:Make">
+        <MSBuild Projects="API\Projeto\API.dproj" Targets="Make"/>
+    </Target>
+    <Target Name="Build">
+        <CallTarget Targets="Sistema;API"/>
+    </Target>
+    <Target Name="Clean">
+        <CallTarget Targets="Sistema:Clean;API:Clean"/>
+    </Target>
+    <Target Name="Make">
+        <CallTarget Targets="Sistema:Make;API:Make"/>
+    </Target>
+    <Import Project="$(BDS)\Bin\CodeGear.Group.Targets" Condition="Exists('$(BDS)\Bin\CodeGear.Group.Targets')"/>
+</Project>
