@@ -1,4 +1,4 @@
-unit DMPais;
+unit DMEstado;
 
 interface
 
@@ -8,38 +8,38 @@ uses FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, REST.Types,
   System.JSON, System.SysUtils;
 
 type
-  TFDMPais = class(TDataModule)
-    DPais: TDataSource;
-    TPais: TFDMemTable;
-    TPaiscodigo: TIntegerField;
-    TPaiscodigoIbge: TStringField;
-    TPaisnome: TStringField;
-    TPaiscadastradoPor: TStringField;
-    TPaisalteradoPor: TStringField;
-    TPaisdataCadastro: TStringField;
-    TPaisdataAlteracao: TStringField;
-    TPaisstatus: TStringField;
-    TPaiscodigoUsuarioCadastro: TIntegerField;
-    TPaiscodigoUsuarioAlteracao: TIntegerField;
+  TFDMEstado = class(TDataModule)
+    DEstado: TDataSource;
+    TEstado: TFDMemTable;
+    TEstadocodigo: TIntegerField;
+    TEstadocodigoPais: TIntegerField;
+    TEstadocodigoIbge: TStringField;
+    TEstadonome: TStringField;
+    TEstadocadastradoPor: TStringField;
+    TEstadoalteradoPor: TStringField;
+    TEstadodataCadastro: TStringField;
+    TEstadodataAlteracao: TStringField;
+    TEstadostatus: TStringField;
+    TEstadonomePais: TStringField;
   private
 
   public
     procedure consultarDados(codigo: integer);
-    function cadastrarPais: Boolean;
-    function alterarPais: Boolean;
-    function inativarPais: Boolean;
+    function cadastrarEstado: Boolean;
+    function alterarEstado: Boolean;
+    function inativarEstado: Boolean;
   end;
 
 var
-  FDMPais: TFDMPais;
+  FDMEstado: TFDMEstado;
 
 implementation
 
-uses UFuncao, UConexao, Pais;
+uses UFuncao, UConexao, Estado;
 
 {$R *.dfm}
 
-function TFDMPais.cadastrarPais: Boolean;
+function TFDMEstado.cadastrarEstado: Boolean;
 var
   Conexao: TConexao;
   json: TJSONValue;
@@ -48,9 +48,10 @@ begin
   Conexao := TConexao.Create;
 
   Conexao.metodo := rmPOST;
-  Conexao.url := 'pais';
-  Conexao.AtribuirBody('nomePais', TPaisnome.Value);
-  Conexao.AtribuirBody('codigoIBGE', TPaiscodigoIbge.Value);
+  Conexao.url := 'estado';
+  Conexao.AtribuirBody('nomeEstado', TEstadonome.Value);
+  Conexao.AtribuirBody('codigoPais', IntToStrSenaoZero(TEstadocodigoPais.Value));
+  Conexao.AtribuirBody('codigoIBGE', TEstadocodigoIbge.Value);
   Conexao.Enviar;
 
   if not (Conexao.status in[200..202]) then
@@ -64,12 +65,12 @@ begin
 
     if (Assigned(json)) then
     begin
-      TPaiscodigo.Value := json.GetValue<Integer>('codigo', 0);
-      TPaiscadastradoPor.Value := json.GetValue<string>('cadastradoPor', '');
-      TPaisalteradoPor.Value := json.GetValue<string>('alteradoPor', '');
-      TPaisdataCadastro.Value := json.GetValue<string>('dataCadastro', '');
-      TPaisdataAlteracao.Value := json.GetValue<string>('dataAlteracao', '');
-      TPaisstatus.Value := json.GetValue<string>('status', 'A');
+      TEstadocodigo.Value := json.GetValue<Integer>('codigo', 0);
+      TEstadocadastradoPor.Value := json.GetValue<string>('cadastradoPor', '');
+      TEstadoalteradoPor.Value := json.GetValue<string>('alteradoPor', '');
+      TEstadodataCadastro.Value := json.GetValue<string>('dataCadastro', '');
+      TEstadodataAlteracao.Value := json.GetValue<string>('dataAlteracao', '');
+      TEstadostatus.Value := json.GetValue<string>('status', 'A');
 
       Result := True;
     end
@@ -82,7 +83,7 @@ begin
   Conexao.Destroy;
 end;
 
-function TFDMPais.alterarPais: Boolean;
+function TFDMEstado.alterarEstado: Boolean;
 var
   Conexao: TConexao;
   json: TJSONValue;
@@ -91,10 +92,11 @@ begin
   Conexao := TConexao.Create;
 
   Conexao.metodo := rmPUT;
-  Conexao.url := 'pais/' + IntToStrSenaoZero(TPaiscodigo.Value);
-  Conexao.AtribuirBody('nomePais', TPaisnome.Value);
-  Conexao.AtribuirBody('codigoIBGE', TPaiscodigoIbge.Value);
-  Conexao.AtribuirBody('status', TPaisstatus.Value);
+  Conexao.url := 'estado/' + IntToStrSenaoZero(TEstadocodigo.Value);
+  Conexao.AtribuirBody('nomeEstado', TEstadonome.Value);
+  Conexao.AtribuirBody('codigoPais', IntToStrSenaoZero(TEstadocodigoPais.Value));
+  Conexao.AtribuirBody('codigoIBGE', TEstadocodigoIbge.Value);
+  Conexao.AtribuirBody('status', TEstadostatus.Value);
   Conexao.Enviar;
 
   if not (Conexao.status in[200..202]) then
@@ -108,12 +110,12 @@ begin
 
     if (Assigned(json)) then
     begin
-      TPaiscodigo.Value := json.GetValue<Integer>('codigo', 0);
-      TPaiscadastradoPor.Value := json.GetValue<string>('cadastradoPor', '');
-      TPaisalteradoPor.Value := json.GetValue<string>('alteradoPor', '');
-      TPaisdataCadastro.Value := json.GetValue<string>('dataCadastro', '');
-      TPaisdataAlteracao.Value := json.GetValue<string>('dataAlteracao', '');
-      TPaisstatus.Value := json.GetValue<string>('status', 'A');
+      TEstadocodigo.Value := json.GetValue<Integer>('codigo', 0);
+      TEstadocadastradoPor.Value := json.GetValue<string>('cadastradoPor', '');
+      TEstadoalteradoPor.Value := json.GetValue<string>('alteradoPor', '');
+      TEstadodataCadastro.Value := json.GetValue<string>('dataCadastro', '');
+      TEstadodataAlteracao.Value := json.GetValue<string>('dataAlteracao', '');
+      TEstadostatus.Value := json.GetValue<string>('status', 'A');
 
       Result := True;
     end
@@ -126,7 +128,7 @@ begin
   Conexao.Destroy;
 end;
 
-procedure TFDMPais.consultarDados(codigo: integer);
+procedure TFDMEstado.consultarDados(codigo: integer);
 var
   Conexao: TConexao;
   master, item: TJSONArray;
@@ -136,19 +138,19 @@ var
 begin
   Conexao := TConexao.Create;
 
-  if (Assigned(FPais)) then
+  if (Assigned(FEstado)) then
   begin
-    if (FPais.ELocalizarNome.Text <> '') then
+    if (FEstado.ELocalizarNome.Text <> '') then
     begin
-      Conexao.AtribuirParametro('nomePais', FPais.ELocalizarNome.Text);
+      Conexao.AtribuirParametro('nomeEstado', FEstado.ELocalizarNome.Text);
     end;
 
-    if (FPais.ELocalizarCodigoIBGE.Text <> '') then
+    if (FEstado.ELocalizarCodigoIBGE.Text <> '') then
     begin
-      Conexao.AtribuirParametro('codigoIBGE', FPais.ELocalizarCodigoIBGE.Text);
+      Conexao.AtribuirParametro('codigoIBGE', FEstado.ELocalizarCodigoIBGE.Text);
     end;
 
-    if FPais.CBMostrarInativo.Checked then
+    if FEstado.CBMostrarInativo.Checked then
     begin
       Conexao.AtribuirParametro('status', 'I');
     end
@@ -164,7 +166,7 @@ begin
   end;
 
   Conexao.metodo := rmGET;
-  Conexao.url := 'pais';
+  Conexao.url := 'estado';
   master := TJSONArray.Create;
   limite := 100;
   offset := 0;
@@ -192,18 +194,18 @@ begin
 
   if (Assigned(master)) and (master.Count > 0) then
   begin
-    converterArrayJsonQuery(converterJsonArrayRestResponse(master), TPais);
+    converterArrayJsonQuery(converterJsonArrayRestResponse(master), TEstado);
   end
   else
   begin
-    TPais.Close;
-    TPais.Open;
+    TEstado.Close;
+    TEstado.Open;
   end;
 
   Conexao.Destroy;
 end;
 
-function TFDMPais.inativarPais: Boolean;
+function TFDMEstado.inativarEstado: Boolean;
 var
   Conexao: TConexao;
   json: TJSONValue;
@@ -212,7 +214,7 @@ begin
   Conexao := TConexao.Create;
 
   Conexao.metodo := rmDELETE;
-  Conexao.url := 'pais/' + IntToStrSenaoZero(TPaiscodigo.Value);
+  Conexao.url := 'estado/' + IntToStrSenaoZero(TEstadocodigo.Value);
   Conexao.Enviar;
 
   if not (Conexao.status in[200..202]) then

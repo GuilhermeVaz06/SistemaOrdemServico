@@ -107,12 +107,21 @@
             <Form>FPais</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="..\Units\UConexao.pas"/>
+        <DCCReference Include="..\Data Module\DMEstado.pas">
+            <Form>FDMEstado</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TDataModule</DesignClass>
+        </DCCReference>
         <DCCReference Include="..\Data Module\DMPais.pas">
             <Form>FDMPais</Form>
             <FormType>dfm</FormType>
             <DesignClass>TDataModule</DesignClass>
         </DCCReference>
-        <DCCReference Include="..\Units\UConexao.pas"/>
+        <DCCReference Include="..\Tela\Estado.pas">
+            <Form>FEstado</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

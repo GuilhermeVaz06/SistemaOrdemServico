@@ -25,6 +25,7 @@ type
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure pais1Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
+    procedure estado1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -36,9 +37,19 @@ var
 
 implementation
 
-uses UFuncao, Pais;
+uses UFuncao, Pais, Estado;
 
 {$R *.dfm}
+
+procedure TFMenuPrincipal.estado1Click(Sender: TObject);
+begin
+  try
+    Application.CreateForm(TFEstado, FEstado);
+    FEstado.ShowModal;
+  finally
+    FreeAndNil(FEstado);
+  end;
+end;
 
 procedure TFMenuPrincipal.FormClose(Sender: TObject; var Action: TCloseAction);
 begin

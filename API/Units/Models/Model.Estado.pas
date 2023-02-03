@@ -71,9 +71,21 @@ end;
 
 destructor TEstado.Destroy;
 begin
-  FPais.Destroy;
-  FCadastradoPor.Destroy;
-  FAlteradoPor.Destroy;
+  if Assigned(FPais) then
+  begin
+    FPais.Destroy;
+  end;
+
+  if Assigned(FCadastradoPor) then
+  begin
+    FCadastradoPor.Destroy;
+  end;
+
+  if Assigned(FAlteradoPor) then
+  begin
+    FAlteradoPor.Destroy;
+  end;
+
   inherited;
 end;
 
@@ -284,6 +296,11 @@ begin
   if  (FNome <> '') then
   begin
     sql.Add('   AND NOME LIKE ' + QuotedStr('%' + FNome + '%'));
+  end;
+
+  if  (FCodigo > 0) then
+  begin
+    sql.Add('   AND CODIGO_ESTADO = ' + IntToStrSenaoZero(FCodigo));
   end;
 
   if  (FPais.id > 0) then

@@ -1,2 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<BorlandProject/>
+<BorlandProject>
+	<Transactions>
+    <Transaction>2023/02/02 20:06:38.000.665,C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Data Module\DMPais.pas=</Transaction>
+    <Transaction>2023/02/02 20:09:38.000.332,=C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Data Module\DMPais.pas</Transaction>
+    <Transaction>2023/02/02 20:09:38.000.222,=C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Data Module\DMEstado.pas</Transaction>
+    <Transaction>2023/02/02 20:10:05.000.567,=C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Tela\Estado.pas</Transaction>
+  </Transactions>
+</BorlandProject>

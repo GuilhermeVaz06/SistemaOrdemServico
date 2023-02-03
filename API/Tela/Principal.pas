@@ -45,7 +45,7 @@ var
 
 implementation
 
-uses Horse, Controller.Pais, Controller.Estado;
+uses Horse, Horse.Jhonson, Controller.Pais, Controller.Estado;
 
 {$R *.dfm}
 
@@ -87,6 +87,7 @@ begin
     end;
 
     THorse.Listen(FPorta, FIP);
+    THorse.Use(Jhonson());
 
     PStatus.Caption := 'Status: Iniciado';
     PStatus.Font.Color := clGreen;

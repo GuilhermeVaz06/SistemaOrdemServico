@@ -69,8 +69,15 @@ end;
 
 destructor TPais.Destroy;
 begin
-  FCadastradoPor.Destroy;
-  FAlteradoPor.Destroy;
+  if Assigned(FCadastradoPor) then
+  begin
+    FCadastradoPor.Destroy;
+  end;
+
+  if Assigned(FAlteradoPor) then
+  begin
+    FAlteradoPor.Destroy;
+  end;
 
   inherited;
 end;
@@ -273,6 +280,11 @@ begin
   if  (FNome <> '') then
   begin
     sql.Add('   AND NOME LIKE ' + QuotedStr('%' + FNome + '%'));
+  end;
+
+  if  (FCodigo > 0) then
+  begin
+    sql.Add('   AND CODIGO_PAIS = ' + IntToStrSenaoZero(FCodigo));
   end;
 
   sql.Add('   AND `STATUS` = ' + QuotedStr(FStatus));

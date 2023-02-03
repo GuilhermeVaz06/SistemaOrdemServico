@@ -1,8 +1,8 @@
-object FPais: TFPais
+object FEstado: TFEstado
   Left = 0
   Top = 0
   BorderStyle = bsSingle
-  Caption = 'Cadastro de Pa'#237'ses'
+  Caption = 'Cadastro de Estados'
   ClientHeight = 531
   ClientWidth = 1363
   Color = clBtnFace
@@ -117,7 +117,7 @@ object FPais: TFPais
       Top = 1
       Width = 147
       Height = 27
-      DataSource = FDMPais.DPais
+      DataSource = FDMEstado.DEstado
       VisibleButtons = [nbFirst, nbPrior, nbNext, nbLast]
       Align = alLeft
       TabOrder = 0
@@ -147,18 +147,25 @@ object FPais: TFPais
     end
     object Label3: TLabel
       Left = 9
-      Top = 44
-      Width = 60
+      Top = 45
+      Width = 75
       Height = 16
-      Caption = 'Nome Pa'#237's'
+      Caption = 'Nome Estado'
+    end
+    object Label8: TLabel
+      Left = 9
+      Top = 89
+      Width = 23
+      Height = 16
+      Caption = 'Pa'#237's'
     end
     object EPais: TDBEdit
       Left = 9
-      Top = 61
+      Top = 62
       Width = 266
       Height = 24
       DataField = 'nome'
-      DataSource = FDMPais.DPais
+      DataSource = FDMEstado.DEstado
       TabOrder = 2
     end
     object ECodigo: TDBEdit
@@ -169,7 +176,7 @@ object FPais: TFPais
       TabStop = False
       Color = clBtnFace
       DataField = 'codigo'
-      DataSource = FDMPais.DPais
+      DataSource = FDMEstado.DEstado
       ReadOnly = True
       TabOrder = 0
     end
@@ -179,7 +186,7 @@ object FPais: TFPais
       Width = 130
       Height = 24
       DataField = 'codigoIbge'
-      DataSource = FDMPais.DPais
+      DataSource = FDMEstado.DEstado
       TabOrder = 1
     end
     object CBAtivo: TDBCheckBox
@@ -190,8 +197,8 @@ object FPais: TFPais
       Align = alBottom
       Caption = 'Ativo'
       DataField = 'status'
-      DataSource = FDMPais.DPais
-      TabOrder = 3
+      DataSource = FDMEstado.DEstado
+      TabOrder = 6
       ValueChecked = 'A'
       ValueUnchecked = 'I'
     end
@@ -202,7 +209,7 @@ object FPais: TFPais
       Height = 103
       Align = alBottom
       BevelOuter = bvNone
-      TabOrder = 4
+      TabOrder = 5
       object Label4: TLabel
         Left = 9
         Top = 3
@@ -239,7 +246,7 @@ object FPais: TFPais
         TabStop = False
         Color = clBtnFace
         DataField = 'cadastradoPor'
-        DataSource = FDMPais.DPais
+        DataSource = FDMEstado.DEstado
         ReadOnly = True
         TabOrder = 0
       end
@@ -251,7 +258,7 @@ object FPais: TFPais
         TabStop = False
         Color = clBtnFace
         DataField = 'alteradoPor'
-        DataSource = FDMPais.DPais
+        DataSource = FDMEstado.DEstado
         ReadOnly = True
         TabOrder = 1
       end
@@ -263,7 +270,7 @@ object FPais: TFPais
         TabStop = False
         Color = clBtnFace
         DataField = 'dataCadastro'
-        DataSource = FDMPais.DPais
+        DataSource = FDMEstado.DEstado
         ReadOnly = True
         TabOrder = 2
       end
@@ -275,10 +282,33 @@ object FPais: TFPais
         TabStop = False
         Color = clBtnFace
         DataField = 'dataAlteracao'
-        DataSource = FDMPais.DPais
+        DataSource = FDMEstado.DEstado
         ReadOnly = True
         TabOrder = 3
       end
+    end
+    object DBPais: TDBEdit
+      Left = 9
+      Top = 107
+      Width = 64
+      Height = 24
+      DataField = 'codigoPais'
+      DataSource = FDMEstado.DEstado
+      TabOrder = 3
+      OnDblClick = DBPaisDblClick
+      OnExit = DBPaisExit
+    end
+    object DBEdit2: TDBEdit
+      Left = 79
+      Top = 107
+      Width = 196
+      Height = 24
+      TabStop = False
+      Color = clBtnFace
+      DataField = 'nomePais'
+      DataSource = FDMEstado.DEstado
+      ReadOnly = True
+      TabOrder = 4
     end
   end
   object PGrid: TPanel
@@ -357,7 +387,7 @@ object FPais: TFPais
       Width = 1078
       Height = 418
       Align = alClient
-      DataSource = FDMPais.DPais
+      DataSource = FDMEstado.DEstado
       Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
       ReadOnly = True
       TabOrder = 1
@@ -392,6 +422,14 @@ object FPais: TFPais
           Title.Alignment = taCenter
           Title.Caption = 'Nome'
           Width = 224
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'nomePais'
+          Title.Alignment = taCenter
+          Title.Caption = 'Pa'#237's'
+          Width = 127
           Visible = True
         end
         item

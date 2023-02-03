@@ -1,4 +1,4 @@
-unit Pais;
+unit Estado;
 
 interface
 
@@ -7,7 +7,7 @@ uses Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.StdCtrls, Vcl.DBCtrls, Vcl.Mask,
   Vcl.Forms, Winapi.Windows;
 
 type
-  TFPais = class(TForm)
+  TFEstado = class(TForm)
     Panel1: TPanel;
     PDados: TPanel;
     BFechar: TSpeedButton;
@@ -43,6 +43,9 @@ type
     Label9: TLabel;
     ELocalizarNome: TEdit;
     Label10: TLabel;
+    Label8: TLabel;
+    DBPais: TDBEdit;
+    DBEdit2: TDBEdit;
     procedure BFecharClick(Sender: TObject);
     procedure BCadastrarClick(Sender: TObject);
     procedure BAlterarClick(Sender: TObject);
@@ -56,8 +59,10 @@ type
     procedure BInativarClick(Sender: TObject);
     procedure GDadosTitleClick(Column: TColumn);
     procedure CBMostrarInativoClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
+    procedure DBPaisDblClick(Sender: TObject);
     procedure GDadosDblClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure DBPaisExit(Sender: TObject);
   private
     { Private declarations }
     function validarCampos: boolean;
@@ -67,34 +72,34 @@ type
   end;
 
 var
-  FPais: TFPais;
+  FEstado: TFEstado;
 
 implementation
 
-uses UFuncao, DMPais;
+uses UFuncao, DMEstado, DMPais, Pais;
 
 {$R *.dfm}
 
-procedure TFPais.BAlterarClick(Sender: TObject);
+procedure TFEstado.BAlterarClick(Sender: TObject);
 begin
   UFuncao.desativaBotoes(self);
-  FDMPais.TPais.Edit;
+  FDMEstado.TEstado.Edit;
 end;
 
-procedure TFPais.BCadastrarClick(Sender: TObject);
+procedure TFEstado.BCadastrarClick(Sender: TObject);
 begin
   UFuncao.desativaBotoes(self);
-  FDMPais.TPais.Append;
+  FDMEstado.TEstado.Append;
 end;
 
-procedure TFPais.BCancelarClick(Sender: TObject);
+procedure TFEstado.BCancelarClick(Sender: TObject);
 begin
   PDados.SetFocus;
-  FDMPais.TPais.Cancel;
+  FDMEstado.TEstado.Cancel;
   UFuncao.desativaBotoes(self);
 end;
 
-procedure TFPais.BConfirmarClick(Sender: TObject);
+procedure TFEstado.BConfirmarClick(Sender: TObject);
 var
   resposta: Boolean;
 begin
@@ -102,52 +107,52 @@ begin
 
   if (validarCampos) then
   begin
-    if (FDMPais.TPais.State = dsInsert) then
+    if (FDMEstado.TEstado.State = dsInsert) then
     begin
-      resposta := FDMPais.cadastrarPais;
+      resposta := FDMEstado.cadastrarEstado;
     end
-    else if (FDMPais.TPais.State = dsEdit) then
+    else if (FDMEstado.TEstado.State = dsEdit) then
     begin
-      resposta := FDMPais.alterarPais;
+      resposta := FDMEstado.alterarEstado;
     end;
 
     if (resposta) then
     begin
-      FDMPais.TPais.Post;
+      FDMEstado.TEstado.Post;
       UFuncao.desativaBotoes(self);
     end;
   end;
 end;
 
-procedure TFPais.BConsultarClick(Sender: TObject);
+procedure TFEstado.BConsultarClick(Sender: TObject);
 begin
   BConsultar.Enabled := False;
 
   try
-    FDMPais.consultarDados(0);
+    FDMEstado.consultarDados(0);
   finally
     BConsultar.Enabled := True;
   end;
 end;
 
-procedure TFPais.BFecharClick(Sender: TObject);
+procedure TFEstado.BFecharClick(Sender: TObject);
 begin
   close;
 end;
 
-procedure TFPais.BInativarClick(Sender: TObject);
+procedure TFEstado.BInativarClick(Sender: TObject);
 var
   codigo: integer;
 begin
   if (UsuarioAdmnistrador) and
-     (confirmar('Realmente deseja inativar o registro: ' + FDMPais.TPaisnome.Value + '?')) then
+     (confirmar('Realmente deseja inativar o registro: ' + FDMEstado.TEstadonome.Value + '?')) then
   begin
-    codigo := FDMPais.TPaiscodigo.Value;
+    codigo := FDMEstado.TEstadocodigo.Value;
 
-    if (FDMPais.inativarPais) then
+    if (FDMEstado.inativarEstado) then
     begin
-      FDMPais.consultarDados(0);
-      FDMPais.TPais.Locate('codigo', codigo, [loCaseInsensitive]);
+      FDMEstado.consultarDados(0);
+      FDMEstado.TEstado.Locate('codigo', codigo, [loCaseInsensitive]);
     end;
   end
   else if not (UsuarioAdmnistrador) then
@@ -156,12 +161,46 @@ begin
   end;
 end;
 
-procedure TFPais.CBMostrarInativoClick(Sender: TObject);
+procedure TFEstado.CBMostrarInativoClick(Sender: TObject);
 begin
   BConsultarClick(nil);
 end;
 
-procedure TFPais.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TFEstado.DBPaisDblClick(Sender: TObject);
+begin
+  try
+    Application.CreateForm(TFPais, FPais);
+    FPais.consulta := True;
+    FPais.ShowModal;
+  finally
+    FDMEstado.TEstadocodigoPais.Value := FDMPais.TPaiscodigo.Value;
+    DBPaisExit(nil);
+    FreeAndNil(FPais);
+  end;
+end;
+
+procedure TFEstado.DBPaisExit(Sender: TObject);
+begin
+  if (FDMEstado.TEstadocodigoPais.Value > 0) then
+  begin
+    FDMPais.consultarDados(FDMEstado.TEstadocodigoPais.Value);
+
+    if (FDMPais.TPais.RecordCount > 0) then
+    begin
+      FDMEstado.TEstadonomePais.Value := FDMPais.TPaisnome.Value;
+    end
+    else
+    begin
+      DBPaisDblClick(nil);
+    end;
+  end
+  else
+  begin
+    DBPaisDblClick(nil);
+  end;
+end;
+
+procedure TFEstado.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   if BConfirmar.Enabled then
   begin
@@ -169,17 +208,17 @@ begin
   end;
 end;
 
-procedure TFPais.FormCreate(Sender: TObject);
+procedure TFEstado.FormCreate(Sender: TObject);
 begin
   consulta := False;
 end;
 
-procedure TFPais.FormShow(Sender: TObject);
+procedure TFEstado.FormShow(Sender: TObject);
 begin
   BConsultarClick(nil);
 end;
 
-procedure TFPais.GDadosDblClick(Sender: TObject);
+procedure TFEstado.GDadosDblClick(Sender: TObject);
 begin
   if (consulta) then
   begin
@@ -187,41 +226,45 @@ begin
   end;
 end;
 
-procedure TFPais.GDadosDrawColumnCell(Sender: TObject; const Rect: TRect;
+procedure TFEstado.GDadosDrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
 begin
   colorirGrid(Sender, Rect, DataCol, Column, State);
 end;
 
-procedure TFPais.GDadosTitleClick(Column: TColumn);
+procedure TFEstado.GDadosTitleClick(Column: TColumn);
 begin
   OrdenarGrid(Column);
 end;
 
-function TFPais.validarCampos: boolean;
+function TFEstado.validarCampos: boolean;
 var
   mensagem: TStringList;
 begin
   mensagem := TStringList.Create;
 
-  if (FDMPais.TPaisnome.Value = '') then
+  if (FDMEstado.TEstadonome.Value = '') then
   begin
-    mensagem.Add('O Nome do País deve ser informado!');
+    mensagem.Add('O Nome do Estado deve ser informado!');
   end
-  else if (Length(Trim(FDMPais.TPaisnome.Value)) <= 2) then
+  else if (Length(Trim(FDMEstado.TEstadonome.Value)) <= 2) then
   begin
-    mensagem.Add('O nome do País deve conter no minimo 3 caracteres validos!');
+    mensagem.Add('O nome do Estado deve conter no minimo 3 caracteres validos!');
   end;
 
-  if (Trim(FDMPais.TPaiscodigoIbge.Value) = '') then
+  if (Trim(FDMEstado.TEstadocodigoIbge.Value) = '') then
   begin
     mensagem.Add('O codigo do IBGE deve ser informado!');
   end
-  else if (Length(Trim(soNumeros(FDMPais.TPaiscodigoIbge.Value))) <> 4) then
+  else if (Length(Trim(soNumeros(FDMEstado.TEstadocodigoIbge.Value))) <> 2) then
   begin
-    mensagem.Add('O codigo do IBGE deve conter 4 caracteres numericos validos!');
+    mensagem.Add('O codigo do IBGE deve conter 2 caracteres numericos validos!');
   end;
 
+  if not (FDMEstado.TEstadocodigoPais.Value > 0) then
+  begin
+    mensagem.Add('O País deve ser selecionado!');
+  end;
   if (mensagem.Text <> '') then
   begin
     informar(mensagem.Text);

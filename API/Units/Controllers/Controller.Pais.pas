@@ -3,7 +3,7 @@ unit Controller.Pais;
 interface
 
 uses Horse, System.SysUtils, Model.Pais, System.JSON, System.Classes,
-     Horse.Jhonson, Principal, UFuncao;
+     Principal, UFuncao;
 
 var
   pais: TPais;
@@ -100,6 +100,7 @@ begin
 
   try
     token := Req.Headers['token'];
+    pais.id := strToIntZero(Req.Query['codigo']);
     pais.nome := Req.Query['nomePais'];
     pais.codigoIbge := Req.Query['codigoIBGE'];
     pais.status := Req.Query['status'];
@@ -542,7 +543,6 @@ end;
 procedure Registry;
 begin
   criarConexao;
-  THorse.Use(Jhonson());
   THorse.Get('/pais', buscarPaises);
   THorse.Post('/pais', cadastrarPais);
   THorse.Put('/pais/:id', alterarPais);

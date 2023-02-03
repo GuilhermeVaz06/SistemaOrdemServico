@@ -3,7 +3,7 @@ unit Controller.Estado;
 interface
 
 uses Horse, System.SysUtils, Model.Estado, System.JSON, System.Classes,
-     Horse.Jhonson, Principal, UFuncao;
+     Principal, UFuncao;
 
 var
   estado: TEstado;
@@ -102,6 +102,7 @@ begin
 
   try
     token := Req.Headers['token'];
+    estado.id := strToIntZero(Req.Query['codigo']);
     estado.nome := Req.Query['nomeEstado'];
     estado.pais.nome := Req.Query['nomePais'];
     estado.pais.id := strToIntZero(Req.Query['codigoPais']);
@@ -269,6 +270,19 @@ begin
         erros.Add('Já existe um Estado [' + IntToStrSenaoZero(estadoConsultado.id) +
                   ' - ' + estadoConsultado.nome + '], cadastrado com esse codigo IBGE ou com esse nome!');
         estadoConsultado.Destroy;
+      end
+      else
+      begin
+        estadoConsultado := TEstado.Create;
+        estadoConsultado.pais.Destroy;
+        estadoConsultado.pais := estado.pais.consultarChave();
+
+        if not (Assigned(estadoConsultado.pais)) then
+        begin
+          erros.Add('Nenhum País encontrado com o codigo [' + IntToStrSenaoZero(estado.pais.id) + ']!');
+        end;
+
+        estadoConsultado.Destroy;
       end;
     end;
 
@@ -400,7 +414,7 @@ begin
 
       if not (Assigned(estadoConsultado)) then
       begin
-        erros.Add('Nenhum País encontrado com o codigo [' + IntToStrSenaoZero(estado.id) + ']!');
+        erros.Add('Nenhum Estado encontrado com o codigo [' + IntToStrSenaoZero(estado.id) + ']!');
       end
       else
       begin
@@ -414,6 +428,17 @@ begin
           estadoConsultado.Destroy;
         end;
       end;
+
+      estadoConsultado := TEstado.Create;
+      estadoConsultado.pais.Destroy;
+      estadoConsultado.pais := estado.pais.consultarChave();
+
+      if not (Assigned(estadoConsultado.pais)) then
+      begin
+        erros.Add('Nenhum País encontrado com o codigo [' + IntToStrSenaoZero(estado.pais.id) + ']!');
+      end;
+
+      estadoConsultado.Destroy;
     end;
 
     if (erros.Text <> '') then
@@ -561,7 +586,6 @@ end;
 procedure Registry;
 begin
   criarConexao;
-  THorse.Use(Jhonson());
   THorse.Get('/estado', buscarEstados);
   THorse.Post('/estado', cadastrarEstado);
   THorse.Put('/estado/:id', alterarEstado);

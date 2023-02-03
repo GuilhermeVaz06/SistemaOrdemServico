@@ -74,6 +74,7 @@ object FMenuPrincipal: TFMenuPrincipal
       end
       object estado1: TMenuItem
         Caption = 'Estado'
+        OnClick = estado1Click
       end
       object cidade1: TMenuItem
         Caption = 'Cidade'
