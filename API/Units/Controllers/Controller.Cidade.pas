@@ -105,7 +105,7 @@ begin
   try
     token := Req.Headers['token'];
     cidade.id := strToIntZero(Req.Query['codigo']);
-    cidade.nome := Req.Query['nomecidade'];
+    cidade.nome := Req.Query['nomeCidade'];
     cidade.estado.nome := Req.Query['nomeEstado'];
     cidade.estado.id := strToIntZero(Req.Query['codigoEstado']);
     cidade.estado.pais.nome := Req.Query['nomePais'];

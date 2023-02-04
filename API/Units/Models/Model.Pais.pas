@@ -145,17 +145,25 @@ function TPais.montarPais(query: TZQuery): TPais;
 var
   data: TPais;
 begin
-  data := TPais.Create;
-  data.FCodigo := query.FieldByName('CODIGO_PAIS').Value;
-  data.FCodigoIbge := query.FieldByName('CODIGO_IBGE').Value;
-  data.FNome := query.FieldByName('NOME').Value;
-  data.FCadastradoPor.usuario := query.FieldByName('usuarioCadastro').Value;
-  data.FAlteradoPor.usuario := query.FieldByName('usuarioAlteracao').Value;
-  data.FDataCadastro := query.FieldByName('DATA_CADASTRO').Value;
-  data.FUltimaAlteracao := query.FieldByName('DATA_ULTIMA_ALTERACAO').Value;
-  data.FStatus := query.FieldByName('STATUS').Value;
+  try
+    data := TPais.Create;
+    data.FCodigo := query.FieldByName('CODIGO_PAIS').Value;
+    data.FCodigoIbge := query.FieldByName('CODIGO_IBGE').Value;
+    data.FNome := query.FieldByName('NOME').Value;
+    data.FCadastradoPor.usuario := query.FieldByName('usuarioCadastro').Value;
+    data.FAlteradoPor.usuario := query.FieldByName('usuarioAlteracao').Value;
+    data.FDataCadastro := query.FieldByName('DATA_CADASTRO').Value;
+    data.FUltimaAlteracao := query.FieldByName('DATA_ULTIMA_ALTERACAO').Value;
+    data.FStatus := query.FieldByName('STATUS').Value;
 
-  Result := data;
+    Result := data;
+  except
+    on E: Exception do
+    begin
+      raise Exception.Create('Erro ao montar Pais ' + e.Message);
+      Result := nil;
+    end;
+  end;
 end;
 
 function TPais.verificarToken(token: string): Boolean;
@@ -247,78 +255,87 @@ var
   sql: TStringList;
   restante: Integer;
 begin
-  if (FLimite = 0) or(FLimite > 500) then
-  begin
-    FLimite := 500;
-  end;
-
-  restante := contar() - FLimite - FOffset;
-
-  if (restante > 0) then
-  begin
-    FMaisRegistro := True;
-  end
-  else
-  begin
-    FMaisRegistro := False;
-  end;
-
-  sql := TStringList.Create;
-  sql.Add('SELECT pais.CODIGO_PAIS, pais.CODIGO_IBGE, pais.NOME, pais.CODIGO_SESSAO_CADASTRO');
-  sql.Add(', pais.CODIGO_SESSAO_ALTERACAO, pais.DATA_CADASTRO, pais.DATA_ULTIMA_ALTERACAO, pais.`STATUS`');
-  sql.Add(', pessoaCadastro.RAZAO_SOCIAL usuarioCadastro, pessoaAlteracao.RAZAO_SOCIAL usuarioAlteracao');
-  sql.Add('  FROM pais, pessoa pessoaCadastro, sessao sessaoCadastro,');
-  sql.Add('       pessoa pessoaAlteracao, sessao sessaoAlteracao');
-  sql.Add(' WHERE 1 = 1');
-
-  if (FCodigoIbge <> '') then
-  begin
-    sql.Add('   AND pais.CODIGO_IBGE LIKE ' + QuotedStr('%' + FCodigoIbge + '%'));
-  end;
-
-  if  (FNome <> '') then
-  begin
-    sql.Add('   AND pais.NOME LIKE ' + QuotedStr('%' + FNome + '%'));
-  end;
-
-  if  (FCodigo > 0) then
-  begin
-    sql.Add('   AND pais.CODIGO_PAIS = ' + IntToStrSenaoZero(FCodigo));
-  end;
-
-  sql.Add('   AND pais.`STATUS` = ' + QuotedStr(FStatus));
-  sql.Add('   AND pessoaAlteracao.CODIGO_PESSOA = sessaoAlteracao.CODIGO_PESSOA');
-  sql.Add('   AND sessaoAlteracao.CODIGO_SESSAO = pais.CODIGO_SESSAO_ALTERACAO');
-  sql.Add('   AND pessoaCadastro.CODIGO_PESSOA = sessaoCadastro.CODIGO_PESSOA');
-  sql.Add('   AND sessaoCadastro.CODIGO_SESSAO = pais.CODIGO_SESSAO_CADASTRO');
-  sql.Add(' LIMIT ' + IntToStrSenaoZero(FOffset) + ', ' + IntToStrSenaoZero(FLimite));
-
-  query := FConexao.executarComandoDQL(sql.Text);
-
-  if not Assigned(query)
-  or (query = nil)
-  or (query.RecordCount = 0) then
-  begin
-    Result := [];
-  end
-  else
-  begin
-    query.First;
-    FRegistrosAfetados := FConexao.registrosAfetados;
-    SetLength(paises, query.RecordCount);
-    contador := 0;
-
-    while not query.Eof do
+  try
+    if (FLimite = 0) or(FLimite > 500) then
     begin
-      paises[contador] := montarPais(query);
-      query.Next;
-      inc(contador);
+      FLimite := 500;
     end;
 
-    Result := paises;
-  end;
+    restante := contar() - FLimite - FOffset;
 
-  FreeAndNil(sql);
+    if (restante > 0) then
+    begin
+      FMaisRegistro := True;
+    end
+    else
+    begin
+      FMaisRegistro := False;
+    end;
+
+    sql := TStringList.Create;
+    sql.Add('SELECT pais.CODIGO_PAIS, pais.CODIGO_IBGE, pais.NOME, pais.CODIGO_SESSAO_CADASTRO');
+    sql.Add(', pais.CODIGO_SESSAO_ALTERACAO, pais.DATA_CADASTRO, pais.DATA_ULTIMA_ALTERACAO, pais.`STATUS`');
+    sql.Add(', pessoaCadastro.RAZAO_SOCIAL usuarioCadastro, pessoaAlteracao.RAZAO_SOCIAL usuarioAlteracao');
+    sql.Add('  FROM pais, pessoa pessoaCadastro, sessao sessaoCadastro,');
+    sql.Add('       pessoa pessoaAlteracao, sessao sessaoAlteracao');
+    sql.Add(' WHERE 1 = 1');
+
+    if (FCodigoIbge <> '') then
+    begin
+      sql.Add('   AND pais.CODIGO_IBGE LIKE ' + QuotedStr('%' + FCodigoIbge + '%'));
+    end;
+
+    if  (FNome <> '') then
+    begin
+      sql.Add('   AND pais.NOME LIKE ' + QuotedStr('%' + FNome + '%'));
+    end;
+
+    if  (FCodigo > 0) then
+    begin
+      sql.Add('   AND pais.CODIGO_PAIS = ' + IntToStrSenaoZero(FCodigo));
+    end;
+
+    sql.Add('   AND pais.`STATUS` = ' + QuotedStr(FStatus));
+    sql.Add('   AND pessoaAlteracao.CODIGO_PESSOA = sessaoAlteracao.CODIGO_PESSOA');
+    sql.Add('   AND sessaoAlteracao.CODIGO_SESSAO = pais.CODIGO_SESSAO_ALTERACAO');
+    sql.Add('   AND pessoaCadastro.CODIGO_PESSOA = sessaoCadastro.CODIGO_PESSOA');
+    sql.Add('   AND sessaoCadastro.CODIGO_SESSAO = pais.CODIGO_SESSAO_CADASTRO');
+    sql.Add(' LIMIT ' + IntToStrSenaoZero(FOffset) + ', ' + IntToStrSenaoZero(FLimite));
+
+    query := FConexao.executarComandoDQL(sql.Text);
+
+    if not Assigned(query)
+    or (query = nil)
+    or (query.RecordCount = 0) then
+    begin
+      Result := [];
+    end
+    else
+    begin
+      query.First;
+      FRegistrosAfetados := FConexao.registrosAfetados;
+      SetLength(paises, query.RecordCount);
+      contador := 0;
+
+      while not query.Eof do
+      begin
+        paises[contador] := montarPais(query);
+        query.Next;
+        inc(contador);
+      end;
+
+      Result := paises;
+    end;
+
+    FreeAndNil(sql);
+  except
+    on E: Exception do
+    begin
+      raise Exception.Create(e.Message);
+      Result := nil;
+      FreeAndNil(sql);
+    end;
+  end;
 end;
 
 function TPais.consultarChave: TPais;

@@ -45,7 +45,7 @@ var
 
 implementation
 
-uses Horse, Horse.Jhonson, Controller.Pais, Controller.Estado;
+uses Horse, Horse.Jhonson, Controller.Pais, Controller.Estado, Controller.Cidade;
 
 {$R *.dfm}
 
@@ -80,6 +80,7 @@ begin
     FConexao := TConexao.Create;
     Controller.Pais.Registry;
     Controller.Estado.Registry;
+    Controller.Cidade.Registry;
 
     if (Trim(UpperCase(EIP.Text)) = 'LOCALHOST') then
     begin
@@ -120,6 +121,7 @@ begin
     FConexao.Destroy;
     Controller.Pais.destruirConexao;
     Controller.Estado.destruirConexao;
+    Controller.Cidade.destruirConexao;
 
     PStatus.Caption := 'Status: Parado';
     PStatus.Font.Color := clRed;
