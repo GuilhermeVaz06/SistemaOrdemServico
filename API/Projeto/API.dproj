@@ -115,6 +115,7 @@
         <DCCReference Include="..\Units\Controllers\Controller.Pais.pas"/>
         <DCCReference Include="..\Units\UFuncao.pas"/>
         <DCCReference Include="..\Units\Controllers\Controller.Estado.pas"/>
+        <DCCReference Include="..\Units\Controllers\Controller.Cidade.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

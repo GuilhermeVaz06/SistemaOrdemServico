@@ -16,7 +16,8 @@ uses
   Principal in '..\Tela\Principal.pas' {FPrincipal},
   Controller.Pais in '..\Units\Controllers\Controller.Pais.pas',
   UFuncao in '..\Units\UFuncao.pas',
-  Controller.Estado in '..\Units\Controllers\Controller.Estado.pas';
+  Controller.Estado in '..\Units\Controllers\Controller.Estado.pas',
+  Controller.Cidade in '..\Units\Controllers\Controller.Cidade.pas';
 
 {$R *.res}
 
