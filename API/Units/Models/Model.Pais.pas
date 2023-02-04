@@ -247,9 +247,9 @@ var
   sql: TStringList;
   restante: Integer;
 begin
-  if (FLimite = 0) or(FLimite > 100) then
+  if (FLimite = 0) or(FLimite > 500) then
   begin
-    FLimite := 100;
+    FLimite := 500;
   end;
 
   restante := contar() - FLimite - FOffset;
@@ -264,38 +264,33 @@ begin
   end;
 
   sql := TStringList.Create;
-  sql.Add('SELECT CODIGO_PAIS, CODIGO_IBGE, NOME, CODIGO_SESSAO_CADASTRO, CODIGO_SESSAO_ALTERACAO,');
-  sql.Add('DATA_CADASTRO, DATA_ULTIMA_ALTERACAO, `STATUS`');
-  sql.Add('');
-  sql.Add(', (SELECT pessoa.RAZAO_SOCIAL ');
-  sql.Add('     FROM pessoa, sessao');
-  sql.Add('	   WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
-  sql.Add('	     AND sessao.CODIGO_SESSAO = pais.CODIGO_SESSAO_CADASTRO) usuarioCadastro');
-  sql.Add('');
-  sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
-  sql.Add('     FROM pessoa, sessao ');
-  sql.Add('	   WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA ');
-  sql.Add('	     AND sessao.CODIGO_SESSAO = pais.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
-  sql.Add('');
-  sql.Add('  FROM pais');
-  sql.Add(' WHERE (1 = 1)');
+  sql.Add('SELECT pais.CODIGO_PAIS, pais.CODIGO_IBGE, pais.NOME, pais.CODIGO_SESSAO_CADASTRO');
+  sql.Add(', pais.CODIGO_SESSAO_ALTERACAO, pais.DATA_CADASTRO, pais.DATA_ULTIMA_ALTERACAO, pais.`STATUS`');
+  sql.Add(', pessoaCadastro.RAZAO_SOCIAL usuarioCadastro, pessoaAlteracao.RAZAO_SOCIAL usuarioAlteracao');
+  sql.Add('  FROM pais, pessoa pessoaCadastro, sessao sessaoCadastro,');
+  sql.Add('       pessoa pessoaAlteracao, sessao sessaoAlteracao');
+  sql.Add(' WHERE 1 = 1');
 
   if (FCodigoIbge <> '') then
   begin
-    sql.Add('   AND CODIGO_IBGE LIKE ' + QuotedStr('%' + FCodigoIbge + '%'));
+    sql.Add('   AND pais.CODIGO_IBGE LIKE ' + QuotedStr('%' + FCodigoIbge + '%'));
   end;
 
   if  (FNome <> '') then
   begin
-    sql.Add('   AND NOME LIKE ' + QuotedStr('%' + FNome + '%'));
+    sql.Add('   AND pais.NOME LIKE ' + QuotedStr('%' + FNome + '%'));
   end;
 
   if  (FCodigo > 0) then
   begin
-    sql.Add('   AND CODIGO_PAIS = ' + IntToStrSenaoZero(FCodigo));
+    sql.Add('   AND pais.CODIGO_PAIS = ' + IntToStrSenaoZero(FCodigo));
   end;
 
-  sql.Add('   AND `STATUS` = ' + QuotedStr(FStatus));
+  sql.Add('   AND pais.`STATUS` = ' + QuotedStr(FStatus));
+  sql.Add('   AND pessoaAlteracao.CODIGO_PESSOA = sessaoAlteracao.CODIGO_PESSOA');
+  sql.Add('   AND sessaoAlteracao.CODIGO_SESSAO = pais.CODIGO_SESSAO_ALTERACAO');
+  sql.Add('   AND pessoaCadastro.CODIGO_PESSOA = sessaoCadastro.CODIGO_PESSOA');
+  sql.Add('   AND sessaoCadastro.CODIGO_SESSAO = pais.CODIGO_SESSAO_CADASTRO');
   sql.Add(' LIMIT ' + IntToStrSenaoZero(FOffset) + ', ' + IntToStrSenaoZero(FLimite));
 
   query := FConexao.executarComandoDQL(sql.Text);
@@ -369,21 +364,16 @@ var
   paisConsultado: TPais;
 begin
   sql := TStringList.Create;
-  sql.Add('SELECT CODIGO_PAIS, CODIGO_IBGE, NOME, CODIGO_SESSAO_CADASTRO, CODIGO_SESSAO_ALTERACAO,');
-  sql.Add('DATA_CADASTRO, DATA_ULTIMA_ALTERACAO, `STATUS`');
-  sql.Add('');
-  sql.Add(', (SELECT pessoa.RAZAO_SOCIAL ');
-  sql.Add('     FROM pessoa, sessao');
-  sql.Add('	   WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
-  sql.Add('	     AND sessao.CODIGO_SESSAO = pais.CODIGO_SESSAO_CADASTRO) usuarioCadastro');
-  sql.Add('');
-  sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
-  sql.Add('     FROM pessoa, sessao ');
-  sql.Add('	   WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA ');
-  sql.Add('	     AND sessao.CODIGO_SESSAO = pais.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
-  sql.Add('');
-  sql.Add('  FROM pais');
-  sql.Add(' WHERE CODIGO_PAIS = ' + IntToStrSenaoZero(codigo));
+  sql.Add('SELECT pais.CODIGO_PAIS, pais.CODIGO_IBGE, pais.NOME, pais.CODIGO_SESSAO_CADASTRO');
+  sql.Add(', pais.CODIGO_SESSAO_ALTERACAO, pais.DATA_CADASTRO, pais.DATA_ULTIMA_ALTERACAO, pais.`STATUS`');
+  sql.Add(', pessoaCadastro.RAZAO_SOCIAL usuarioCadastro, pessoaAlteracao.RAZAO_SOCIAL usuarioAlteracao');
+  sql.Add('  FROM pais, pessoa pessoaCadastro, sessao sessaoCadastro,');
+  sql.Add('       pessoa pessoaAlteracao, sessao sessaoAlteracao');
+  sql.Add(' WHERE pais.CODIGO_PAIS = ' + IntToStrSenaoZero(codigo));
+  sql.Add('	  AND pessoaAlteracao.CODIGO_PESSOA = sessaoAlteracao.CODIGO_PESSOA');
+  sql.Add('	  AND sessaoAlteracao.CODIGO_SESSAO = pais.CODIGO_SESSAO_ALTERACAO');
+  sql.Add('	  AND pessoaCadastro.CODIGO_PESSOA = sessaoCadastro.CODIGO_PESSOA');
+  sql.Add('	  AND sessaoCadastro.CODIGO_SESSAO = pais.CODIGO_SESSAO_CADASTRO');
 
   query := FConexao.executarComandoDQL(sql.Text);
 

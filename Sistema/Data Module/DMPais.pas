@@ -166,7 +166,7 @@ begin
   Conexao.metodo := rmGET;
   Conexao.url := 'pais';
   master := TJSONArray.Create;
-  limite := 100;
+  limite := 500;
   offset := 0;
 
   repeat

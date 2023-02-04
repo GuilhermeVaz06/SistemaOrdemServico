@@ -43,7 +43,7 @@ type TCidade = class
 
     procedure limpar;
 
-    function montarEstado(query: TZQuery): TCidade;
+    function montarCidade(query: TZQuery): TCidade;
     function consultar: TArray<TCidade>;
     function consultarCodigo(codigo: integer): TCidade;
     function consultarChave: TCidade;
@@ -99,7 +99,8 @@ begin
   sql := TStringList.Create;
   sql.Add('SELECT CODIGO_CIDADE, NOME');
   sql.Add('  FROM cidade');
-  sql.Add(' WHERE (CODIGO_IBGE = ' + QuotedStr(FCodigoIbge));
+  sql.Add(' WHERE  CODIGO_ESTADO = ' + IntToStrSenaoZero(FEstado.id));
+  sql.Add('   AND (CODIGO_IBGE = ' + QuotedStr(FCodigoIbge));
   sql.Add('    OR  NOME = ' + QuotedStr(FNome) + ')');
 
   if (FCodigo > 0) then
@@ -149,7 +150,7 @@ begin
   FMaisRegistro := False;
 end;
 
-function TCidade.montarEstado(query: TZQuery): TCidade;
+function TCidade.montarCidade(query: TZQuery): TCidade;
 var
   data: TCidade;
 begin
@@ -181,13 +182,13 @@ var
   sql: TStringList;
 begin
   sql := TStringList.Create;
-//  sql.Add('UPDATE `estado`');
-//  sql.Add('   SET CODIGO_IBGE = ' + QuotedStr(FCodigoIbge));
-//  sql.Add('     , NOME = ' + QuotedStr(FNome));
-//  sql.Add('     , CODIGO_PAIS = ' + IntToStrSenaoZero(FPais.id));
-//  sql.Add('     , `STATUS` = ' + QuotedStr(FStatus));
-//  sql.Add('     , CODIGO_SESSAO_ALTERACAO = ' + IntToStrSenaoZero(FConexao.codigoSessao));
-//  sql.Add(' WHERE CODIGO_ESTADO = ' + IntToStrSenaoZero(FCodigo));
+  sql.Add('UPDATE `cidade`');
+  sql.Add('   SET CODIGO_IBGE = ' + QuotedStr(FCodigoIbge));
+  sql.Add('     , NOME = ' + QuotedStr(FNome));
+  sql.Add('     , CODIGO_ESTADO = ' + IntToStrSenaoZero(FEstado.id));
+  sql.Add('     , `STATUS` = ' + QuotedStr(FStatus));
+  sql.Add('     , CODIGO_SESSAO_ALTERACAO = ' + IntToStrSenaoZero(FConexao.codigoSessao));
+  sql.Add(' WHERE CODIGO_CIDADE = ' + IntToStrSenaoZero(FCodigo));
 
   FConexao.executarComandoDML(sql.Text);
   FreeAndNil(sql);
@@ -217,15 +218,15 @@ begin
   codigo := FConexao.ultimoRegistro('cidade', 'CODIGO_CIDADE');
 
   sql := TStringList.Create;
-//  sql.Add('INSERT INTO `estado` (`CODIGO_PAIS`, `CODIGO_ESTADO`, `CODIGO_IBGE`, `NOME`, ');
-//  sql.Add('`CODIGO_SESSAO_CADASTRO`, `CODIGO_SESSAO_ALTERACAO`) VALUES (');
-//  sql.Add(' ' + IntToStrSenaoZero(FPais.id));                                   //CODIGO_PAIS
-//  sql.Add(',' + IntToStrSenaoZero(codigo));                                     //CODIGO_ESTADO
-//  sql.Add(',' + QuotedStr(FCodigoIbge));                                        //CODIGO_IBGE
-//  sql.Add(',' + QuotedStr(FNome));                                              //NOME
-//  sql.Add(',' + IntToStrSenaoZero(FConexao.codigoSessao));                      //CODIGO_SESSAO_CADASTRO
-//  sql.Add(',' + IntToStrSenaoZero(FConexao.codigoSessao));                      //CODIGO_SESSAO_ALTERACAO
-//  sql.Add(')');
+  sql.Add('INSERT INTO `cidade` (`CODIGO_ESTADO`, `CODIGO_CIDADE`, `CODIGO_IBGE`, `NOME`, ');
+  sql.Add('`CODIGO_SESSAO_CADASTRO`, `CODIGO_SESSAO_ALTERACAO`) VALUES (');
+  sql.Add(' ' + IntToStrSenaoZero(FEstado.id));                                 //CODIGO_ESTADO
+  sql.Add(',' + IntToStrSenaoZero(codigo));                                     //CODIGO_CIDADE
+  sql.Add(',' + QuotedStr(FCodigoIbge));                                        //CODIGO_IBGE
+  sql.Add(',' + QuotedStr(FNome));                                              //NOME
+  sql.Add(',' + IntToStrSenaoZero(FConexao.codigoSessao));                      //CODIGO_SESSAO_CADASTRO
+  sql.Add(',' + IntToStrSenaoZero(FConexao.codigoSessao));                      //CODIGO_SESSAO_ALTERACAO
+  sql.Add(')');
 
   FConexao.executarComandoDML(sql.Text);
   FreeAndNil(sql);
@@ -263,9 +264,9 @@ var
   sql: TStringList;
   restante: Integer;
 begin
-  if (FLimite = 0) or(FLimite > 100) then
+  if (FLimite = 0) or(FLimite > 500) then
   begin
-    FLimite := 100;
+    FLimite := 500;
   end;
 
   restante := contar() - FLimite - FOffset;
@@ -280,54 +281,58 @@ begin
   end;
 
   sql := TStringList.Create;
-//  sql.Add('SELECT CODIGO_PAIS, CODIGO_ESTADO, CODIGO_IBGE, NOME, CODIGO_SESSAO_CADASTRO, CODIGO_SESSAO_ALTERACAO,');
-//  sql.Add('DATA_CADASTRO, DATA_ULTIMA_ALTERACAO, `STATUS`');
-//  sql.Add('');
-//  sql.Add(', (SELECT pais.NOME FROM pais WHERE pais.CODIGO_PAIS = estado.CODIGO_PAIS) nomePais');
-//  sql.Add('');
-//  sql.Add(', (SELECT pessoa.RAZAO_SOCIAL ');
-//  sql.Add('     FROM pessoa, sessao');
-//  sql.Add('	   WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
-//  sql.Add('	     AND sessao.CODIGO_SESSAO = estado.CODIGO_SESSAO_CADASTRO) usuarioCadastro');
-//  sql.Add('');
-//  sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
-//  sql.Add('     FROM pessoa, sessao ');
-//  sql.Add('	   WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA ');
-//  sql.Add('	     AND sessao.CODIGO_SESSAO = estado.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
-//  sql.Add('');
-//  sql.Add('  FROM estado');
-//  sql.Add(' WHERE (1 = 1)');
-//
-//  if (FCodigoIbge <> '') then
-//  begin
-//    sql.Add('   AND CODIGO_IBGE LIKE ' + QuotedStr('%' + FCodigoIbge + '%'));
-//  end;
-//
-//  if  (FNome <> '') then
-//  begin
-//    sql.Add('   AND NOME LIKE ' + QuotedStr('%' + FNome + '%'));
-//  end;
-//
-//  if  (FCodigo > 0) then
-//  begin
-//    sql.Add('   AND CODIGO_ESTADO = ' + IntToStrSenaoZero(FCodigo));
-//  end;
-//
-//  if  (FPais.id > 0) then
-//  begin
-//    sql.Add('   AND CODIGO_PAIS = ' + IntToStrSenaoZero(FPais.id));
-//  end;
-//
-//  if  (FPais.nome <> '') then
-//  begin
-//    sql.Add('   AND (SELECT COUNT(pais.CODIGO_PAIS)');
-//    sql.Add('          FROM pais');
-//    sql.Add('         WHERE pais.CODIGO_PAIS = estado.CODIGO_PAIS');
-//    sql.Add('           AND pais.NOME LIKE ' + QuotedStr('%' + FPais.nome + '%') + ') > 0');
-//  end;
-//
-//  sql.Add('   AND `STATUS` = ' + QuotedStr(FStatus));
-//  sql.Add(' LIMIT ' + IntToStrSenaoZero(FOffset) + ', ' + IntToStrSenaoZero(FLimite));
+  sql.Add('SELECT cidade.CODIGO_ESTADO, cidade.CODIGO_CIDADE, cidade.CODIGO_IBGE, cidade.NOME');
+  sql.Add(', cidade.CODIGO_SESSAO_CADASTRO, cidade.CODIGO_SESSAO_ALTERACAO');
+  sql.Add(', cidade.DATA_CADASTRO, cidade.DATA_ULTIMA_ALTERACAO, cidade.`STATUS`');
+  sql.Add(', pais.NOME nomePais, estado.NOME nomeEstado');
+  sql.Add(', pessoaCadastro.RAZAO_SOCIAL usuarioCadastro, pessoaAlteracao.RAZAO_SOCIAL usuarioAlteracao');
+  sql.Add('  FROM cidade, pessoa pessoaCadastro, sessao sessaoCadastro, estado,');
+  sql.Add('       pessoa pessoaAlteracao, sessao sessaoAlteracao, pais');
+  sql.Add(' WHERE 1 = 1');
+
+  if (FCodigoIbge <> '') then
+  begin
+    sql.Add('   AND cidade.CODIGO_IBGE LIKE ' + QuotedStr('%' + FCodigoIbge + '%'));
+  end;
+
+  if  (FNome <> '') then
+  begin
+    sql.Add('   AND cidade.NOME LIKE ' + QuotedStr('%' + FNome + '%'));
+  end;
+
+  if  (FCodigo > 0) then
+  begin
+    sql.Add('   AND cidade.CODIGO_CIDADE = ' + IntToStrSenaoZero(FCodigo));
+  end;
+
+  if  (FEstado.id > 0) then
+  begin
+    sql.Add('   AND cidade.CODIGO_ESTADO = ' + IntToStrSenaoZero(FEstado.id));
+  end;
+
+  if  (FEstado.nome <> '') then
+  begin
+    sql.Add('   AND estado.NOME LIKE ' + QuotedStr('%' + FEstado.nome + '%'));
+  end;
+
+  if  (FEstado.pais.id > 0) then
+  begin
+    sql.Add('   AND pais.CODIGO_PAIS = ' + IntToStrSenaoZero(FEstado.pais.id));
+  end;
+
+  if  (FEstado.pais.nome <> '') then
+  begin
+    sql.Add('   AND pais.NOME LIKE ' + QuotedStr('%' + FEstado.pais.nome + '%'));
+  end;
+
+  sql.Add('   AND cidade.`STATUS` = ' + QuotedStr(FStatus));
+  sql.Add('   AND pessoaAlteracao.CODIGO_PESSOA = sessaoAlteracao.CODIGO_PESSOA');
+  sql.Add('   AND sessaoAlteracao.CODIGO_SESSAO = estado.CODIGO_SESSAO_ALTERACAO');
+  sql.Add('   AND pessoaCadastro.CODIGO_PESSOA = sessaoCadastro.CODIGO_PESSOA');
+  sql.Add('   AND sessaoCadastro.CODIGO_SESSAO = estado.CODIGO_SESSAO_CADASTRO');
+  sql.Add('   AND pais.CODIGO_PAIS = estado.CODIGO_PAIS');
+  sql.Add('   AND cidade.CODIGO_ESTADO = estado.CODIGO_ESTADO');
+  sql.Add(' LIMIT ' + IntToStrSenaoZero(FOffset) + ', ' + IntToStrSenaoZero(FLimite));
 
   query := FConexao.executarComandoDQL(sql.Text);
 
@@ -346,7 +351,7 @@ begin
 
     while not query.Eof do
     begin
-      cidades[contador] := montarEstado(query);
+      cidades[contador] := montarCidade(query);
       query.Next;
       inc(contador);
     end;
@@ -400,22 +405,20 @@ var
   cidadeConsultado: TCidade;
 begin
   sql := TStringList.Create;
-//  sql.Add('SELECT CODIGO_PAIS, CODIGO_ESTADO, CODIGO_IBGE, NOME, CODIGO_SESSAO_CADASTRO, CODIGO_SESSAO_ALTERACAO,');
-//  sql.Add('DATA_CADASTRO, DATA_ULTIMA_ALTERACAO, `STATUS`');
-//  sql.Add('');
-//  sql.Add(', (SELECT pais.NOME FROM pais WHERE pais.CODIGO_PAIS = estado.CODIGO_PAIS) nomePais');
-//  sql.Add(', (SELECT pessoa.RAZAO_SOCIAL ');
-//  sql.Add('     FROM pessoa, sessao');
-//  sql.Add('	   WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
-//  sql.Add('	     AND sessao.CODIGO_SESSAO = estado.CODIGO_SESSAO_CADASTRO) usuarioCadastro');
-//  sql.Add('');
-//  sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
-//  sql.Add('     FROM pessoa, sessao ');
-//  sql.Add('	   WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA ');
-//  sql.Add('	     AND sessao.CODIGO_SESSAO = estado.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
-//  sql.Add('');
-//  sql.Add('  FROM estado');
-//  sql.Add(' WHERE CODIGO_ESTADO = ' + IntToStrSenaoZero(codigo));
+  sql.Add('SELECT cidade.CODIGO_ESTADO, cidade.CODIGO_CIDADE, cidade.CODIGO_IBGE, cidade.NOME');
+  sql.Add(', cidade.CODIGO_SESSAO_CADASTRO, cidade.CODIGO_SESSAO_ALTERACAO');
+  sql.Add(', cidade.DATA_CADASTRO, cidade.DATA_ULTIMA_ALTERACAO, cidade.`STATUS`');
+  sql.Add(', pais.NOME nomePais, estado.NOME nomeEstado');
+  sql.Add(', pessoaCadastro.RAZAO_SOCIAL usuarioCadastro, pessoaAlteracao.RAZAO_SOCIAL usuarioAlteracao');
+  sql.Add('  FROM cidade, pessoa pessoaCadastro, sessao sessaoCadastro, estado,');
+  sql.Add('       pessoa pessoaAlteracao, sessao sessaoAlteracao, pais');
+  sql.Add(' WHERE CODIGO_ESTADO = ' + IntToStrSenaoZero(codigo));
+  sql.Add('   AND pessoaAlteracao.CODIGO_PESSOA = sessaoAlteracao.CODIGO_PESSOA');
+  sql.Add('   AND sessaoAlteracao.CODIGO_SESSAO = estado.CODIGO_SESSAO_ALTERACAO');
+  sql.Add('   AND pessoaCadastro.CODIGO_PESSOA = sessaoCadastro.CODIGO_PESSOA');
+  sql.Add('   AND sessaoCadastro.CODIGO_SESSAO = estado.CODIGO_SESSAO_CADASTRO');
+  sql.Add('   AND pais.CODIGO_PAIS = estado.CODIGO_PAIS');
+  sql.Add('   AND cidade.CODIGO_ESTADO = estado.CODIGO_ESTADO');
 
   query := FConexao.executarComandoDQL(sql.Text);
 
@@ -429,7 +432,7 @@ begin
   begin
     query.First;
     FRegistrosAfetados := FConexao.registrosAfetados;
-    cidadeConsultado := montarEstado(query);
+    cidadeConsultado := montarCidade(query);
   end;
 
   Result := cidadeConsultado;
@@ -442,21 +445,48 @@ var
   sql: TStringList;
 begin
   sql := TStringList.Create;
-//  sql.Add('SELECT COUNT(CODIGO_CIDADE) TOTAL');
-//  sql.Add('  FROM cidade');
-//  sql.Add(' WHERE (1 = 1)');
-//
-//  if (FCodigoIbge <> '') then
-//  begin
-//    sql.Add('   AND CODIGO_IBGE LIKE ' + QuotedStr('%' + FCodigoIbge + '%'));
-//  end;
-//
-//  if  (FNome <> '') then
-//  begin
-//    sql.Add('   AND NOME LIKE ' + QuotedStr('%' + FNome + '%'));
-//  end;
-//
-//  sql.Add('   AND `STATUS` = ' + QuotedStr(FStatus));
+  sql.Add('SELECT COUNT(cidade.CODIGO_CIDADE) TOTAL');
+  sql.Add('  FROM cidade, estado, pais');
+  sql.Add(' WHERE 1 = 1');
+
+  if (FCodigoIbge <> '') then
+  begin
+    sql.Add('   AND cidade.CODIGO_IBGE LIKE ' + QuotedStr('%' + FCodigoIbge + '%'));
+  end;
+
+  if  (FNome <> '') then
+  begin
+    sql.Add('   AND cidade.NOME LIKE ' + QuotedStr('%' + FNome + '%'));
+  end;
+
+  if  (FCodigo > 0) then
+  begin
+    sql.Add('   AND cidade.CODIGO_CIDADE = ' + IntToStrSenaoZero(FCodigo));
+  end;
+
+  if  (FEstado.id > 0) then
+  begin
+    sql.Add('   AND cidade.CODIGO_ESTADO = ' + IntToStrSenaoZero(FEstado.id));
+  end;
+
+  if  (FEstado.nome <> '') then
+  begin
+    sql.Add('   AND estado.NOME LIKE ' + QuotedStr('%' + FEstado.nome + '%'));
+  end;
+
+  if  (FEstado.pais.id > 0) then
+  begin
+    sql.Add('   AND pais.CODIGO_PAIS = ' + IntToStrSenaoZero(FEstado.pais.id));
+  end;
+
+  if  (FEstado.pais.nome <> '') then
+  begin
+    sql.Add('   AND pais.NOME LIKE ' + QuotedStr('%' + FEstado.pais.nome + '%'));
+  end;
+
+  sql.Add('   AND cidade.`STATUS` = ' + QuotedStr(FStatus));
+  sql.Add('   AND pais.CODIGO_PAIS = estado.CODIGO_PAIS');
+  sql.Add('   AND cidade.CODIGO_ESTADO = estado.CODIGO_ESTADO');
 
   query := FConexao.executarComandoDQL(sql.Text);
 

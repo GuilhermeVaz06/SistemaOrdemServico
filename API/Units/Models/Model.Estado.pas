@@ -99,7 +99,8 @@ begin
   sql := TStringList.Create;
   sql.Add('SELECT CODIGO_ESTADO, NOME');
   sql.Add('  FROM estado');
-  sql.Add(' WHERE (CODIGO_IBGE = ' + QuotedStr(FCodigoIbge));
+  sql.Add(' WHERE CODIGO_PAIS = ' + IntToStrSenaoZero(FPais.id));
+  sql.Add('   AND (CODIGO_IBGE = ' + QuotedStr(FCodigoIbge));
   sql.Add('    OR  NOME = ' + QuotedStr(FNome) + ')');
 
   if (FCodigo > 0) then
@@ -261,9 +262,9 @@ var
   sql: TStringList;
   restante: Integer;
 begin
-  if (FLimite = 0) or(FLimite > 100) then
+  if (FLimite = 0) or(FLimite > 500) then
   begin
-    FLimite := 100;
+    FLimite := 500;
   end;
 
   restante := contar() - FLimite - FOffset;
@@ -278,53 +279,45 @@ begin
   end;
 
   sql := TStringList.Create;
-  sql.Add('SELECT CODIGO_PAIS, CODIGO_ESTADO, CODIGO_IBGE, NOME, CODIGO_SESSAO_CADASTRO, CODIGO_SESSAO_ALTERACAO,');
-  sql.Add('DATA_CADASTRO, DATA_ULTIMA_ALTERACAO, `STATUS`');
-  sql.Add('');
-  sql.Add(', (SELECT pais.NOME FROM pais WHERE pais.CODIGO_PAIS = estado.CODIGO_PAIS) nomePais');
-  sql.Add('');
-  sql.Add(', (SELECT pessoa.RAZAO_SOCIAL ');
-  sql.Add('     FROM pessoa, sessao');
-  sql.Add('	   WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
-  sql.Add('	     AND sessao.CODIGO_SESSAO = estado.CODIGO_SESSAO_CADASTRO) usuarioCadastro');
-  sql.Add('');
-  sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
-  sql.Add('     FROM pessoa, sessao ');
-  sql.Add('	   WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA ');
-  sql.Add('	     AND sessao.CODIGO_SESSAO = estado.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
-  sql.Add('');
-  sql.Add('  FROM estado');
-  sql.Add(' WHERE (1 = 1)');
+  sql.Add('SELECT estado.CODIGO_PAIS, estado.CODIGO_ESTADO, estado.CODIGO_IBGE, estado.NOME');
+  sql.Add(', estado.CODIGO_SESSAO_CADASTRO, estado.CODIGO_SESSAO_ALTERACAO');
+  sql.Add(', estado.DATA_CADASTRO, estado.DATA_ULTIMA_ALTERACAO, estado.`STATUS`, pais.NOME nomePais');
+  sql.Add(', pessoaCadastro.RAZAO_SOCIAL usuarioCadastro, pessoaAlteracao.RAZAO_SOCIAL usuarioAlteracao');
+  sql.Add('  FROM estado, pessoa pessoaCadastro, sessao sessaoCadastro,');
+  sql.Add('       pessoa pessoaAlteracao, sessao sessaoAlteracao, pais');
+  sql.Add(' WHERE 1 = 1');
 
   if (FCodigoIbge <> '') then
   begin
-    sql.Add('   AND CODIGO_IBGE LIKE ' + QuotedStr('%' + FCodigoIbge + '%'));
+    sql.Add('   AND estado.CODIGO_IBGE LIKE ' + QuotedStr('%' + FCodigoIbge + '%'));
   end;
 
   if  (FNome <> '') then
   begin
-    sql.Add('   AND NOME LIKE ' + QuotedStr('%' + FNome + '%'));
+    sql.Add('   AND estado.NOME LIKE ' + QuotedStr('%' + FNome + '%'));
   end;
 
   if  (FCodigo > 0) then
   begin
-    sql.Add('   AND CODIGO_ESTADO = ' + IntToStrSenaoZero(FCodigo));
+    sql.Add('   AND estado.CODIGO_ESTADO = ' + IntToStrSenaoZero(FCodigo));
   end;
 
   if  (FPais.id > 0) then
   begin
-    sql.Add('   AND CODIGO_PAIS = ' + IntToStrSenaoZero(FPais.id));
+    sql.Add('   AND estado.CODIGO_PAIS = ' + IntToStrSenaoZero(FPais.id));
   end;
 
   if  (FPais.nome <> '') then
   begin
-    sql.Add('   AND (SELECT COUNT(pais.CODIGO_PAIS)');
-    sql.Add('          FROM pais');
-    sql.Add('         WHERE pais.CODIGO_PAIS = estado.CODIGO_PAIS');
-    sql.Add('           AND pais.NOME LIKE ' + QuotedStr('%' + FPais.nome + '%') + ') > 0');
+    sql.Add('   AND pais.NOME LIKE ' + QuotedStr('%' + FPais.nome + '%'));
   end;
 
-  sql.Add('   AND `STATUS` = ' + QuotedStr(FStatus));
+  sql.Add('   AND estado.`STATUS` = ' + QuotedStr(FStatus));
+  sql.Add('   AND pessoaAlteracao.CODIGO_PESSOA = sessaoAlteracao.CODIGO_PESSOA');
+  sql.Add('   AND sessaoAlteracao.CODIGO_SESSAO = estado.CODIGO_SESSAO_ALTERACAO');
+  sql.Add('   AND pessoaCadastro.CODIGO_PESSOA = sessaoCadastro.CODIGO_PESSOA');
+  sql.Add('   AND sessaoCadastro.CODIGO_SESSAO = estado.CODIGO_SESSAO_CADASTRO');
+  sql.Add('   AND pais.CODIGO_PAIS = estado.CODIGO_PAIS');
   sql.Add(' LIMIT ' + IntToStrSenaoZero(FOffset) + ', ' + IntToStrSenaoZero(FLimite));
 
   query := FConexao.executarComandoDQL(sql.Text);
@@ -398,22 +391,18 @@ var
   estadoConsultado: TEstado;
 begin
   sql := TStringList.Create;
-  sql.Add('SELECT CODIGO_PAIS, CODIGO_ESTADO, CODIGO_IBGE, NOME, CODIGO_SESSAO_CADASTRO, CODIGO_SESSAO_ALTERACAO,');
-  sql.Add('DATA_CADASTRO, DATA_ULTIMA_ALTERACAO, `STATUS`');
-  sql.Add('');
-  sql.Add(', (SELECT pais.NOME FROM pais WHERE pais.CODIGO_PAIS = estado.CODIGO_PAIS) nomePais');
-  sql.Add(', (SELECT pessoa.RAZAO_SOCIAL ');
-  sql.Add('     FROM pessoa, sessao');
-  sql.Add('	   WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
-  sql.Add('	     AND sessao.CODIGO_SESSAO = estado.CODIGO_SESSAO_CADASTRO) usuarioCadastro');
-  sql.Add('');
-  sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
-  sql.Add('     FROM pessoa, sessao ');
-  sql.Add('	   WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA ');
-  sql.Add('	     AND sessao.CODIGO_SESSAO = estado.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
-  sql.Add('');
-  sql.Add('  FROM estado');
+  sql.Add('SELECT estado.CODIGO_PAIS, estado.CODIGO_ESTADO, estado.CODIGO_IBGE, estado.NOME');
+  sql.Add(', estado.CODIGO_SESSAO_CADASTRO, estado.CODIGO_SESSAO_ALTERACAO');
+  sql.Add(', estado.DATA_CADASTRO, estado.DATA_ULTIMA_ALTERACAO, estado.`STATUS`, pais.NOME nomePais');
+  sql.Add(', pessoaCadastro.RAZAO_SOCIAL usuarioCadastro, pessoaAlteracao.RAZAO_SOCIAL usuarioAlteracao');
+  sql.Add('  FROM estado, pessoa pessoaCadastro, sessao sessaoCadastro,');
+  sql.Add('       pessoa pessoaAlteracao, sessao sessaoAlteracao, pais');
   sql.Add(' WHERE CODIGO_ESTADO = ' + IntToStrSenaoZero(codigo));
+  sql.Add('   AND pessoaAlteracao.CODIGO_PESSOA = sessaoAlteracao.CODIGO_PESSOA');
+  sql.Add('   AND sessaoAlteracao.CODIGO_SESSAO = estado.CODIGO_SESSAO_ALTERACAO');
+  sql.Add('   AND pessoaCadastro.CODIGO_PESSOA = sessaoCadastro.CODIGO_PESSOA');
+  sql.Add('   AND sessaoCadastro.CODIGO_SESSAO = estado.CODIGO_SESSAO_CADASTRO');
+  sql.Add('   AND pais.CODIGO_PAIS = estado.CODIGO_PAIS');
 
   query := FConexao.executarComandoDQL(sql.Text);
 
@@ -440,39 +429,37 @@ var
   sql: TStringList;
 begin
   sql := TStringList.Create;
-  sql.Add('SELECT COUNT(CODIGO_ESTADO) TOTAL');
-  sql.Add('  FROM estado');
+  sql.Add('SELECT COUNT(estado.CODIGO_ESTADO) TOTAL');
+  sql.Add('  FROM estado, pais');
   sql.Add(' WHERE (1 = 1)');
 
   if (FCodigoIbge <> '') then
   begin
-    sql.Add('   AND CODIGO_IBGE LIKE ' + QuotedStr('%' + FCodigoIbge + '%'));
+    sql.Add('   AND estado.CODIGO_IBGE LIKE ' + QuotedStr('%' + FCodigoIbge + '%'));
   end;
 
   if  (FNome <> '') then
   begin
-    sql.Add('   AND NOME LIKE ' + QuotedStr('%' + FNome + '%'));
+    sql.Add('   AND estado.NOME LIKE ' + QuotedStr('%' + FNome + '%'));
   end;
 
   if  (FCodigo > 0) then
   begin
-    sql.Add('   AND CODIGO_ESTADO = ' + IntToStrSenaoZero(FCodigo));
+    sql.Add('   AND estado.CODIGO_ESTADO = ' + IntToStrSenaoZero(FCodigo));
   end;
 
   if  (FPais.id > 0) then
   begin
-    sql.Add('   AND CODIGO_PAIS = ' + IntToStrSenaoZero(FPais.id));
+    sql.Add('   AND estado.CODIGO_PAIS = ' + IntToStrSenaoZero(FPais.id));
   end;
 
   if  (FPais.nome <> '') then
   begin
-    sql.Add('   AND (SELECT COUNT(pais.CODIGO_PAIS)');
-    sql.Add('          FROM pais');
-    sql.Add('         WHERE pais.CODIGO_PAIS = estado.CODIGO_PAIS');
-    sql.Add('           AND pais.NOME LIKE ' + QuotedStr('%' + FPais.nome + '%') + ') > 0');
+    sql.Add('   AND pais.NOME LIKE ' + QuotedStr('%' + FPais.nome + '%'));
   end;
 
-  sql.Add('   AND `STATUS` = ' + QuotedStr(FStatus));
+  sql.Add('   AND estado.`STATUS` = ' + QuotedStr(FStatus));
+  sql.Add('   AND pais.CODIGO_PAIS = estado.CODIGO_PAIS');
 
   query := FConexao.executarComandoDQL(sql.Text);
 
