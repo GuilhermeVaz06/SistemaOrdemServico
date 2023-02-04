@@ -135,6 +135,10 @@ begin
   FDataCadastro := Now;
   FUltimaAlteracao := Now;
   FStatus := 'A';
+  FLimite := 0;
+  FOffset := 0;
+  FRegistrosAfetados := 0;
+  FMaisRegistro := False;
 end;
 
 function TPais.montarPais(query: TZQuery): TPais;
@@ -227,6 +231,10 @@ begin
   data.FDataCadastro := pais.FDataCadastro;
   data.FUltimaAlteracao := pais.FUltimaAlteracao;
   data.FStatus := pais.FStatus;
+  data.FLimite := pais.FLimite;
+  data.FOffset := pais.FOffset;
+  data.FRegistrosAfetados := pais.FRegistrosAfetados;
+  data.FMaisRegistro := pais.FMaisRegistro;
 
   result := data;
 end;
@@ -414,6 +422,11 @@ begin
   if  (FNome <> '') then
   begin
     sql.Add('   AND NOME LIKE ' + QuotedStr('%' + FNome + '%'));
+  end;
+
+  if  (FCodigo > 0) then
+  begin
+    sql.Add('   AND CODIGO_PAIS = ' + IntToStrSenaoZero(FCodigo));
   end;
 
   sql.Add('   AND `STATUS` = ' + QuotedStr(FStatus));

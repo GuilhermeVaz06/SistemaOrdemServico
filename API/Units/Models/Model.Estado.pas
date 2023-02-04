@@ -143,6 +143,10 @@ begin
   FDataCadastro := Now;
   FUltimaAlteracao := Now;
   FStatus := 'A';
+  FLimite := 0;
+  FOffset := 0;
+  FRegistrosAfetados := 0;
+  FMaisRegistro := False;
 end;
 
 function TEstado.montarEstado(query: TZQuery): TEstado;
@@ -241,6 +245,10 @@ begin
   data.FDataCadastro := estado.FDataCadastro;
   data.FUltimaAlteracao := estado.FUltimaAlteracao;
   data.FStatus := estado.FStatus;
+  data.FLimite := estado.FLimite;
+  data.FOffset := estado.FOffset;
+  data.FRegistrosAfetados := estado.FRegistrosAfetados;
+  data.FMaisRegistro := estado.FMaisRegistro;
 
   result := data;
 end;
@@ -444,6 +452,24 @@ begin
   if  (FNome <> '') then
   begin
     sql.Add('   AND NOME LIKE ' + QuotedStr('%' + FNome + '%'));
+  end;
+
+  if  (FCodigo > 0) then
+  begin
+    sql.Add('   AND CODIGO_ESTADO = ' + IntToStrSenaoZero(FCodigo));
+  end;
+
+  if  (FPais.id > 0) then
+  begin
+    sql.Add('   AND CODIGO_PAIS = ' + IntToStrSenaoZero(FPais.id));
+  end;
+
+  if  (FPais.nome <> '') then
+  begin
+    sql.Add('   AND (SELECT COUNT(pais.CODIGO_PAIS)');
+    sql.Add('          FROM pais');
+    sql.Add('         WHERE pais.CODIGO_PAIS = estado.CODIGO_PAIS');
+    sql.Add('           AND pais.NOME LIKE ' + QuotedStr('%' + FPais.nome + '%') + ') > 0');
   end;
 
   sql.Add('   AND `STATUS` = ' + QuotedStr(FStatus));
