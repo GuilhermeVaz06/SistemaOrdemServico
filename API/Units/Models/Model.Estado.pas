@@ -21,8 +21,6 @@ type TEstado = class
     FRegistrosAfetados: Integer;
     FMaisRegistro: Boolean;
 
-    function clone(estado: TEstado): TEstado;
-
   public
     constructor Create;
     destructor Destroy; override;
@@ -42,6 +40,7 @@ type TEstado = class
     property registrosAfetados: Integer read FRegistrosAfetados write FRegistrosAfetados;
 
     procedure limpar;
+    procedure atualizarLog(codigo: Integer; resposta: string);
 
     function montarEstado(query: TZQuery): TEstado;
     function consultar: TArray<TEstado>;
@@ -53,6 +52,7 @@ type TEstado = class
     function alterarEstado: TEstado;
     function inativarEstado: TEstado;
     function verificarToken(token: string): Boolean;
+    function GerarLog(classe, procedimento, requisicao: string): integer;
 end;
 
 implementation
@@ -130,6 +130,11 @@ begin
   Result := estadoConsultado;
 
   FreeAndNil(sql);
+end;
+
+function TEstado.GerarLog(classe, procedimento, requisicao: string): integer;
+begin
+  Result := FConexao.GerarLog(classe, procedimento, requisicao);
 end;
 
 procedure TEstado.limpar;
@@ -215,6 +220,11 @@ begin
   Result := consultarCodigo(FCodigo);
 end;
 
+procedure TEstado.atualizarLog(codigo: Integer; resposta: string);
+begin
+  FConexao.atualizarLog(codigo, resposta);
+end;
+
 function TEstado.cadastrarEstado: TEstado;
 var
   sql: TStringList;
@@ -236,29 +246,6 @@ begin
   FConexao.executarComandoDML(sql.Text);
   FreeAndNil(sql);
   Result := consultarCodigo(codigo);
-end;
-
-function TEstado.clone(estado: TEstado): TEstado;
-var
-  data: TEstado;
-begin
-  data := TEstado.Create;
-
-  data.FCodigo := estado.FCodigo;
-  data.FPais := estado.FPais;
-  data.FCodigoIbge := estado.FCodigoIbge;
-  data.FNome := estado.FNome;
-  data.FCadastradoPor := estado.FCadastradoPor;
-  data.FAlteradoPor := estado.FAlteradoPor;
-  data.FDataCadastro := estado.FDataCadastro;
-  data.FUltimaAlteracao := estado.FUltimaAlteracao;
-  data.FStatus := estado.FStatus;
-  data.FLimite := estado.FLimite;
-  data.FOffset := estado.FOffset;
-  data.FRegistrosAfetados := estado.FRegistrosAfetados;
-  data.FMaisRegistro := estado.FMaisRegistro;
-
-  result := data;
 end;
 
 function TEstado.consultar: TArray<TEstado>;

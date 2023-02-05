@@ -29,13 +29,14 @@ type
 
     procedure conectar;
     procedure executarComandoDML(query: string);
-    procedure gerarLog(nome, descricao: string);
+    procedure atualizarLog(codigo: Integer; resposta: string);
 
     function executarComandoDQL(query: string): TZQuery;
     function ultimoRegistro(tabela, coluna: string): integer;
     function criarToken(token:string):string;
     function Zeros(Valor: string; Tamanho: Integer): string;
     function verificarToken(token: string): Boolean;
+    function GerarLog(classe, procedimento, requisicao: string): integer;
 end;
 
 var
@@ -43,6 +44,8 @@ var
   componente: TZQuery;
 
 implementation
+
+uses UFuncao;
 
 procedure TConexao.conectar;
 begin
@@ -79,6 +82,18 @@ begin
   on E: Exception do
     raise Exception.Create('Erro ao criar a conexão com o banco de dados!' +#13#10+ e.Message);
   end;
+end;
+
+procedure TConexao.atualizarLog(codigo: Integer; resposta: string);
+begin
+  executarComandoDML('UPDATE `log_requisicao`'
+             +#13#10+'   SET log_requisicao.RESPOSTA = ' + QuotedStr(resposta)
+             +#13#10+'     , log_requisicao.CODIGO_SESSAO = ' + IntToStrSenaoZero(FCodigoSessao)
+             +#13#10+'     , log_requisicao.DATA_ULTIMA_ALTERACAO = CURRENT_TIMESTAMP '
+             +#13#10+'     , log_requisicao.TEMPO_RESPOSTA = TIME(log_requisicao.DATA_ULTIMA_ALTERACAO) - ' 
+             +#13#10+'                                       TIME(log_requisicao.DATA_CADASTRO) '
+             +#13#10+' WHERE log_requisicao.CODIGO_LOG = ' + IntToStrSenaoZero(codigo) 
+             );
 end;
 
 procedure TConexao.carregarConfiguracao();
@@ -198,9 +213,30 @@ begin
   end;
 end;
 
-procedure TConexao.gerarLog(nome, descricao: string);
+function TConexao.GerarLog(classe, procedimento, requisicao: string): integer;
+var
+  codigo: integer;
 begin
-//
+  codigo := ultimoRegistro('log_requisicao', 'CODIGO_LOG');
+
+  executarComandoDML('INSERT INTO `log_requisicao` (`CODIGO_LOG`, `CLASSE`, `PROCEDIMENTO`'
+             +#13#10+', `REQUISICAO`, `CODIGO_SESSAO`) VALUES ( '
+             +#13#10+' ' + IntToStrSenaoZero(codigo)                            //CODIGO_LOG
+             +#13#10+',' + QuotedStr(classe)                                    //CLASSE
+             +#13#10+',' + QuotedStr(procedimento)                              //PROCEDIMENTO
+             +#13#10+',' + QuotedStr(requisicao)                                //REQUISICAO
+             +#13#10+', 1'                                                      //CODIGO_SESSAO
+             +#13#10+')'
+             );
+
+  if FRegistrosAfetados > 0 then
+  begin
+    Result := codigo;
+  end
+  else
+  begin
+    Result := 0;
+  end;
 end;
 
 function TConexao.ultimoRegistro(tabela, coluna: string): integer;

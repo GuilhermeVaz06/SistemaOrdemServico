@@ -5,7 +5,8 @@ interface
 uses Vcl.Forms, Vcl.Grids, Winapi.Windows, FireDAC.Comp.Client, REST.Client,
      System.SysUtils, Vcl.Dialogs, System.DateUtils, Vcl.DBCtrls, Vcl.ExtCtrls,
      Vcl.Buttons, System.UITypes, System.JSON, DataSet.Serialize, Vcl.DBGrids,
-     Vcl.Graphics, System.IniFiles;
+     Vcl.Graphics, System.IniFiles, Horse, System.Classes, System.Generics.Collections,
+     Web.HTTPApp;
 
 function JsonErro(codigo, descricao: string): TJSONObject;
 function soNumeros(Valor: string): string;
@@ -25,11 +26,90 @@ function lastDayOfMoth(data: TDateTime): TDateTime;
 function formatarValorMonetario(valor: Double): string;
 function arredondar(valor: Double): string;
 function removerCasaDecimal(valor: Double): Double;
+function imprimirRequisicao(requisicao: THorseRequest): string;
+function imprimirResposta(status: Integer; resposta: TJSONObject): string;
+function metodoString(metodo: TMethodType): string;
 procedure desativaBotoes(form: TForm);
-procedure colorirGrid(Sender: TObject; const Rect: TRect;
-  DataCol: Integer; Column: TColumn; State: TGridDrawState);
+procedure colorirGrid(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
 
 implementation
+
+function metodoString(metodo: TMethodType): string;
+begin
+  case metodo of
+    mtAny: Result := 'ANY';
+    mtGet: Result := 'GET';
+    mtPut: Result := 'PUT';
+    mtPost: Result := 'POST';
+    mtHead: Result := 'HEAD';
+    mtDelete: Result := 'DELETE';
+    mtPatch : Result := 'PATCH';
+  end;
+end;
+
+function imprimirResposta(status: Integer; resposta: TJSONObject): string;
+var
+  JsonResposta: TJSONObject;
+begin
+  JsonResposta := TJSONObject.Create;
+  JsonResposta.AddPair('Status', IntToStrSenaoZero(status));
+  JsonResposta.AddPair('Body', (resposta.Clone as TJSONObject));
+
+  Result := JsonResposta.ToJSON;
+  FreeAndNil(JsonResposta);
+end;
+
+function imprimirRequisicao(requisicao: THorseRequest): string;
+var
+  resposta, respostaItem: TJSONObject;
+  i: integer;
+  itens: TArray<TPair<string, string>>;
+  body: TJSONValue;
+begin
+  resposta := TJSONObject.Create;
+
+  resposta.AddPair('Type', metodoString(requisicao.MethodType));
+
+  try
+    if (requisicao.MethodType = mtPut) or (requisicao.MethodType = mtPost) then
+    begin
+      body := TJSONObject.ParseJSONValue(TEncoding.UTF8.GetBytes(requisicao.Body), 0) as TJSONValue;
+      resposta.AddPair('Body', body);
+    end;
+  except
+//  nao faz nada, isso foi feito so para nao travar o processamento
+  end;
+
+  if (requisicao.Headers.Count > 0) then
+  begin
+    respostaItem :=  TJSONObject.Create;
+    itens := requisicao.Headers.ToArray;
+
+    for i := 0 to Length(itens) - 1 do
+    begin
+      respostaItem.AddPair(itens[i].Key, itens[i].Value);
+    end;
+
+    resposta.AddPair('Headers', respostaItem);
+  end;
+
+  if (requisicao.Query.Count > 0) then
+  begin
+    respostaItem :=  TJSONObject.Create;
+    itens := requisicao.Query.ToArray;
+
+    for i := 0 to Length(itens) - 1 do
+    begin
+      respostaItem.AddPair(itens[i].Key, itens[i].Value);
+    end;
+
+    resposta.AddPair('Params', respostaItem);
+  end;
+
+
+  Result := resposta.ToJSON;
+  FreeAndNil(resposta);
+end;
 
 procedure colorirGrid(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);

@@ -33,6 +33,32 @@ begin
   resposta.AddPair('status',paisItem.status);
 end;
 
+function gerarLogPais(Req: THorseRequest; Res: THorseResponse; procedimento: string): Integer;
+var
+  resposta: TJSONObject;
+  mensagem: string;
+begin
+  resposta := TJSONObject.Create;
+
+  try
+    Result := pais.GerarLog('Pais',
+                             procedimento,
+                             imprimirRequisicao(req)
+    );
+  except
+    on E: Exception do
+    begin
+      mensagem := 'Erro não tratado ao Gerar Log!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('PAIS018', mensagem))));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+      continuar := False;
+      Result := 0;
+    end;
+  end;
+
+  FreeAndNil(resposta);
+end;
+
 procedure destruirConexao;
 begin
   try
@@ -94,10 +120,13 @@ var
   paises: TArray<TPais>;
   filtrado: Boolean;
   mensagem: string;
+  codigoLog: integer;
 begin
   continuar := True;
   resposta := TJSONObject.Create;
+  codigoLog := gerarLogPais(Req, Res, 'buscarPaises');
 
+  if (continuar) then
   try
     token := Req.Headers['token'];
     pais.id := strToIntZero(Req.Query['codigo']);
@@ -179,12 +208,18 @@ begin
   except
     on E: Exception do
     begin
+      if not (Assigned(arrayResposta)) then
+      begin
+        arrayResposta := TJSONArray.Create;
+      end;
+
       arrayResposta.Add(UFuncao.JsonErro('PAIS003', 'Erro não tratado ao listar todos os paises!'));
       resposta.AddPair(TJSONPair.Create('Erros', arrayResposta));
       Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
     end;
   end;
 
+  pais.atualizarLog(codigoLog, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;
@@ -198,10 +233,13 @@ var
   paisConsultado: TPais;
   i: integer;
   mensagem: string;
+  codigoLog: integer;
 begin
   continuar := True;
   resposta := TJSONObject.Create;
+  codigoLog := gerarLogPais(Req, Res, 'cadastrarPais');
 
+  if (continuar) then
   try
     body := TJSONObject.ParseJSONValue(TEncoding.UTF8.GetBytes(req.Body), 0) as TJSONValue;
 
@@ -302,6 +340,7 @@ begin
     end;
   end;
 
+  pais.atualizarLog(codigoLog, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;
@@ -315,10 +354,13 @@ var
   paisConsultado: TPais;
   i: integer;
   mensagem: string;
+  codigoLog: integer;
 begin
   continuar := True;
   resposta := TJSONObject.Create;
+  codigoLog := gerarLogPais(Req, Res, 'alterarPais');
 
+  if (continuar) then
   try
     body := TJSONObject.ParseJSONValue(TEncoding.UTF8.GetBytes(req.Body), 0) as TJSONValue;
 
@@ -440,6 +482,7 @@ begin
     end;
   end;
 
+  pais.atualizarLog(codigoLog, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;
@@ -448,15 +491,17 @@ procedure inativarPais(Req: THorseRequest; Res: THorseResponse; Next: TProc);
 var
   erros: TStringList;
   resposta: TJSONObject;
-  body: TJSONValue;
   arrayResposta: TJSONArray;
   paisConsultado: TPais;
   i: integer;
   mensagem: string;
+  codigoLog: integer;
 begin
   continuar := True;
   resposta := TJSONObject.Create;
+  codigoLog := gerarLogPais(Req, Res, 'inativarPais');
 
+  if (continuar) then
   try
     token := Req.Headers['token'];
     pais.id := strToIntZero(Req.Params['id']);
@@ -536,6 +581,7 @@ begin
     end;
   end;
 
+  pais.atualizarLog(codigoLog, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;

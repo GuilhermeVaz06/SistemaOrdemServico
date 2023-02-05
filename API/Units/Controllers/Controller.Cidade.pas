@@ -37,6 +37,32 @@ begin
   resposta.AddPair('status',cidadeItem.status);
 end;
 
+function gerarLogCidade(Req: THorseRequest; Res: THorseResponse; procedimento: string): Integer;
+var
+  resposta: TJSONObject;
+  mensagem: string;
+begin
+  resposta := TJSONObject.Create;
+
+  try
+    Result := cidade.GerarLog('Cidade',
+                              procedimento,
+                              imprimirRequisicao(req)
+    );
+  except
+    on E: Exception do
+    begin
+      mensagem := 'Erro não tratado ao Gerar Log!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('CIDADE018', mensagem))));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+      continuar := False;
+      Result := 0;
+    end;
+  end;
+
+  FreeAndNil(resposta);
+end;
+
 procedure criarConexao;
 begin
   try
@@ -98,10 +124,13 @@ var
   cidades: TArray<TCidade>;
   filtrado: Boolean;
   mensagem: string;
+  codigoLog: integer;
 begin
   continuar := True;
   resposta := TJSONObject.Create;
+  codigoLog := gerarLogCidade(Req, Res, 'buscarCidades');
 
+  if (continuar) then
   try
     token := Req.Headers['token'];
     cidade.id := strToIntZero(Req.Query['codigo']);
@@ -192,12 +221,18 @@ begin
   except
     on E: Exception do
     begin
+      if not (Assigned(arrayResposta)) then
+      begin
+        arrayResposta := TJSONArray.Create;
+      end;
+
       arrayResposta.Add(UFuncao.JsonErro('CIDADE003', 'Erro não tratado ao listar todos os cidades!'));
       resposta.AddPair(TJSONPair.Create('Erros', arrayResposta));
       Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
     end;
   end;
 
+  cidade.atualizarLog(codigoLog, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;
@@ -211,10 +246,13 @@ var
   cidadeConsultado: TCidade;
   i: integer;
   mensagem: string;
+  codigoLog: integer;
 begin
   continuar := True;
   resposta := TJSONObject.Create;
+  codigoLog := gerarLogCidade(Req, Res, 'cadastrarCidade');
 
+  if (continuar) then
   try
     body := TJSONObject.ParseJSONValue(TEncoding.UTF8.GetBytes(req.Body), 0) as TJSONValue;
 
@@ -334,6 +372,7 @@ begin
     end;
   end;
 
+  cidade.atualizarLog(codigoLog, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;
@@ -347,10 +386,13 @@ var
   cidadeConsultado: TCidade;
   i: integer;
   mensagem: string;
+  codigoLog: integer;
 begin
   continuar := True;
   resposta := TJSONObject.Create;
+  codigoLog := gerarLogCidade(Req, Res, 'alterarCidade');
 
+  if (continuar) then
   try
     body := TJSONObject.ParseJSONValue(TEncoding.UTF8.GetBytes(req.Body), 0) as TJSONValue;
 
@@ -489,6 +531,7 @@ begin
     end;
   end;
 
+  cidade.atualizarLog(codigoLog, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;
@@ -502,10 +545,13 @@ var
   cidadeConsultado: TCidade;
   i: integer;
   mensagem: string;
+  codigoLog: integer;
 begin
   continuar := True;
   resposta := TJSONObject.Create;
+  codigoLog := gerarLogCidade(Req, Res, 'inativarCidade');
 
+  if (continuar) then
   try
     token := Req.Headers['token'];
     cidade.id := strToIntZero(Req.Params['id']);
@@ -585,6 +631,7 @@ begin
     end;
   end;
 
+  cidade.atualizarLog(codigoLog, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;

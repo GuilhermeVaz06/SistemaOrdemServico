@@ -21,8 +21,6 @@ type TCidade = class
     FRegistrosAfetados: Integer;
     FMaisRegistro: Boolean;
 
-    function clone(cidade: TCidade): TCidade;
-
   public
     constructor Create;
     destructor Destroy; override;
@@ -42,6 +40,7 @@ type TCidade = class
     property registrosAfetados: Integer read FRegistrosAfetados write FRegistrosAfetados;
 
     procedure limpar;
+    procedure atualizarLog(codigo: Integer; resposta: string);
 
     function montarCidade(query: TZQuery): TCidade;
     function consultar: TArray<TCidade>;
@@ -53,6 +52,7 @@ type TCidade = class
     function alterarCidade: TCidade;
     function inativarCidade: TCidade;
     function verificarToken(token: string): Boolean;
+    function GerarLog(classe, procedimento, requisicao: string): integer;
 end;
 
 implementation
@@ -130,6 +130,11 @@ begin
   Result := cidadeConsultado;
 
   FreeAndNil(sql);
+end;
+
+function TCidade.GerarLog(classe, procedimento, requisicao: string): integer;
+begin
+  Result := FConexao.GerarLog(classe, procedimento, requisicao);
 end;
 
 procedure TCidade.limpar;
@@ -217,6 +222,11 @@ begin
   Result := consultarCodigo(FCodigo);
 end;
 
+procedure TCidade.atualizarLog(codigo: Integer; resposta: string);
+begin
+  FConexao.atualizarLog(codigo, resposta);
+end;
+
 function TCidade.cadastrarCidade: TCidade;
 var
   sql: TStringList;
@@ -238,29 +248,6 @@ begin
   FConexao.executarComandoDML(sql.Text);
   FreeAndNil(sql);
   Result := consultarCodigo(codigo);
-end;
-
-function TCidade.clone(cidade: TCidade): TCidade;
-var
-  data: TCidade;
-begin
-  data := TCidade.Create;
-
-  data.FCodigo := cidade.FCodigo;
-  data.FEstado := cidade.FEstado;
-  data.FCodigoIbge := cidade.FCodigoIbge;
-  data.FNome := cidade.FNome;
-  data.FCadastradoPor := cidade.FCadastradoPor;
-  data.FAlteradoPor := cidade.FAlteradoPor;
-  data.FDataCadastro := cidade.FDataCadastro;
-  data.FUltimaAlteracao := cidade.FUltimaAlteracao;
-  data.FStatus := cidade.FStatus;
-  data.FLimite := cidade.FLimite;
-  data.FOffset := cidade.FOffset;
-  data.FRegistrosAfetados := cidade.FRegistrosAfetados;
-  data.FMaisRegistro := cidade.FMaisRegistro;
-
-  result := data;
 end;
 
 function TCidade.consultar: TArray<TCidade>;

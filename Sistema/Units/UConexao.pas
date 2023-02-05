@@ -27,14 +27,14 @@ type
     procedure CarregarIP;
 
   public
+    constructor Create;
+    destructor Destroy;
+
     property url: string read FUrl write FUrl;
     property erro: string read FErro write FErro;
     property resposta: string read FResposta write FResposta;
     property status: integer read FStatus write FStatus;
     property metodo: TRESTRequestMethod read FMetodo write FMetodo;
-
-    constructor Create;
-    destructor Destroy;
 
     procedure Limpar;
     procedure Enviar;

@@ -21,8 +21,6 @@ type TPais = class
     FRegistrosAfetados: Integer;
     FMaisRegistro: Boolean;
 
-    function clone(pais: TPais): TPais;
-
   public
     constructor Create;
     destructor Destroy; override;
@@ -41,6 +39,7 @@ type TPais = class
     property status: string read FStatus write FStatus;
 
     procedure limpar;
+    procedure atualizarLog(codigo: Integer; resposta: string);
 
     function montarPais(query: TZQuery): TPais;
     function consultar: TArray<TPais>;
@@ -52,6 +51,7 @@ type TPais = class
     function alterarPais: TPais;
     function inativarPais: TPais;
     function verificarToken(token: string): Boolean;
+    function GerarLog(classe, procedimento, requisicao: string): integer;
 end;
 
 implementation
@@ -123,6 +123,11 @@ begin
   Result := paisConsultado;
 
   FreeAndNil(sql);
+end;
+
+function TPais.GerarLog(classe, procedimento, requisicao: string): integer;
+begin
+  Result := FConexao.GerarLog(classe, procedimento, requisicao);
 end;
 
 procedure TPais.limpar;
@@ -203,6 +208,11 @@ begin
   Result := consultarCodigo(FCodigo);
 end;
 
+procedure TPais.atualizarLog(codigo: Integer; resposta: string);
+begin
+  FConexao.atualizarLog(codigo, resposta);
+end;
+
 function TPais.cadastrarPais: TPais;
 var
   sql: TStringList;
@@ -223,28 +233,6 @@ begin
   FConexao.executarComandoDML(sql.Text);
   FreeAndNil(sql);
   Result := consultarCodigo(codigo);
-end;
-
-function TPais.clone(pais: TPais): TPais;
-var
-  data: TPais;
-begin
-  data := TPais.Create;
-
-  data.FCodigo := pais.FCodigo;
-  data.FCodigoIbge := pais.FCodigoIbge;
-  data.FNome := pais.FNome;
-  data.FCadastradoPor := pais.FCadastradoPor;
-  data.FAlteradoPor := pais.FAlteradoPor;
-  data.FDataCadastro := pais.FDataCadastro;
-  data.FUltimaAlteracao := pais.FUltimaAlteracao;
-  data.FStatus := pais.FStatus;
-  data.FLimite := pais.FLimite;
-  data.FOffset := pais.FOffset;
-  data.FRegistrosAfetados := pais.FRegistrosAfetados;
-  data.FMaisRegistro := pais.FMaisRegistro;
-
-  result := data;
 end;
 
 function TPais.consultar: TArray<TPais>;

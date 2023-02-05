@@ -35,6 +35,32 @@ begin
   resposta.AddPair('status',estadoItem.status);
 end;
 
+function gerarLogEstado(Req: THorseRequest; Res: THorseResponse; procedimento: string): Integer;
+var
+  resposta: TJSONObject;
+  mensagem: string;
+begin
+  resposta := TJSONObject.Create;
+
+  try
+    Result := estado.GerarLog('Estado',
+                              procedimento,
+                              imprimirRequisicao(req)
+    );
+  except
+    on E: Exception do
+    begin
+      mensagem := 'Erro não tratado ao Gerar Log!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('ESTADO018', mensagem))));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+      continuar := False;
+      Result := 0;
+    end;
+  end;
+
+  FreeAndNil(resposta);
+end;
+
 procedure criarConexao;
 begin
   try
@@ -96,10 +122,13 @@ var
   estados: TArray<TEstado>;
   filtrado: Boolean;
   mensagem: string;
+  codigoLog: integer;
 begin
   continuar := True;
   resposta := TJSONObject.Create;
+  codigoLog := gerarLogEstado(Req, Res, 'buscarEstados');
 
+  if (continuar) then
   try
     token := Req.Headers['token'];
     estado.id := strToIntZero(Req.Query['codigo']);
@@ -186,12 +215,18 @@ begin
   except
     on E: Exception do
     begin
+      if not (Assigned(arrayResposta)) then
+      begin
+        arrayResposta := TJSONArray.Create;
+      end;
+
       arrayResposta.Add(UFuncao.JsonErro('ESTADO003', 'Erro não tratado ao listar todos os estados!'));
       resposta.AddPair(TJSONPair.Create('Erros', arrayResposta));
       Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
     end;
   end;
 
+  estado.atualizarLog(codigoLog, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;
@@ -205,10 +240,13 @@ var
   estadoConsultado: TEstado;
   i: integer;
   mensagem: string;
+  codigoLog: integer;
 begin
   continuar := True;
   resposta := TJSONObject.Create;
+  codigoLog := gerarLogEstado(Req, Res, 'cadastrarEstado');
 
+  if (continuar) then
   try
     body := TJSONObject.ParseJSONValue(TEncoding.UTF8.GetBytes(req.Body), 0) as TJSONValue;
 
@@ -328,6 +366,7 @@ begin
     end;
   end;
 
+  estado.atualizarLog(codigoLog, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;
@@ -341,10 +380,13 @@ var
   estadoConsultado: TEstado;
   i: integer;
   mensagem: string;
+  codigoLog: integer;
 begin
   continuar := True;
   resposta := TJSONObject.Create;
+  codigoLog := gerarLogEstado(Req, Res, 'alterarEstado');
 
+  if (continuar) then
   try
     body := TJSONObject.ParseJSONValue(TEncoding.UTF8.GetBytes(req.Body), 0) as TJSONValue;
 
@@ -483,6 +525,7 @@ begin
     end;
   end;
 
+  estado.atualizarLog(codigoLog, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;
@@ -491,15 +534,17 @@ procedure inativarEstado(Req: THorseRequest; Res: THorseResponse; Next: TProc);
 var
   erros: TStringList;
   resposta: TJSONObject;
-  body: TJSONValue;
   arrayResposta: TJSONArray;
   estadoConsultado: TEstado;
   i: integer;
   mensagem: string;
+  codigoLog: integer;
 begin
   continuar := True;
   resposta := TJSONObject.Create;
+  codigoLog := gerarLogEstado(Req, Res, 'inativarEstado');
 
+  if (continuar) then
   try
     token := Req.Headers['token'];
     estado.id := strToIntZero(Req.Params['id']);
@@ -579,6 +624,7 @@ begin
     end;
   end;
 
+  estado.atualizarLog(codigoLog, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;
