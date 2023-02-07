@@ -104,6 +104,7 @@ var
   resposta: Boolean;
 begin
   PDados.SetFocus;
+  resposta := False;
 
   if (validarCampos) then
   begin
@@ -250,6 +251,10 @@ begin
   else if (Length(Trim(FDMEstado.TEstadonome.Value)) <= 2) then
   begin
     mensagem.Add('O nome do Estado deve conter no minimo 3 caracteres validos!');
+  end
+  else if (Length(Trim(FDMEstado.TEstadonome.Value)) > 150) then
+  begin
+    mensagem.Add('O nome do Estado deve conter no maximo 150 caracteres validos!');
   end;
 
   if (Trim(FDMEstado.TEstadocodigoIbge.Value) = '') then

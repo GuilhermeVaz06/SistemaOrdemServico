@@ -45,7 +45,6 @@ function TFDMCidade.cadastrarCidade: Boolean;
 var
   Conexao: TConexao;
   json: TJSONValue;
-  jsonArray: TJSONArray;
 begin
   Conexao := TConexao.Create;
 
@@ -89,7 +88,6 @@ function TFDMCidade.alterarCidade: Boolean;
 var
   Conexao: TConexao;
   json: TJSONValue;
-  jsonArray: TJSONArray;
 begin
   Conexao := TConexao.Create;
 
@@ -135,7 +133,7 @@ var
   Conexao: TConexao;
   master, item: TJSONArray;
   json: TJSONValue;
-  i, limite, offset: integer;
+  limite, offset: integer;
   continuar: Boolean;
 begin
   Conexao := TConexao.Create;
@@ -211,7 +209,6 @@ function TFDMCidade.inativarCidade: Boolean;
 var
   Conexao: TConexao;
   json: TJSONValue;
-  jsonArray: TJSONArray;
 begin
   Conexao := TConexao.Create;
 

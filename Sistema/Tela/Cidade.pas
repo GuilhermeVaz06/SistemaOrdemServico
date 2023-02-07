@@ -107,6 +107,7 @@ var
   resposta: Boolean;
 begin
   PDados.SetFocus;
+  resposta := False;
 
   if (validarCampos) then
   begin
@@ -255,6 +256,10 @@ begin
   else if (Length(Trim(FDMCidade.TCidadenome.Value)) <= 2) then
   begin
     mensagem.Add('O nome da Cidade deve conter no minimo 3 caracteres validos!');
+  end
+  else if (Length(Trim(FDMCidade.TCidadenome.Value)) > 150) then
+  begin
+    mensagem.Add('O nome da Cidade deve conter no maximo 150 caracteres validos!');
   end;
 
   if (Trim(FDMCidade.TCidadecodigoIbge.Value) = '') then

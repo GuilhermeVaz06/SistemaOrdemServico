@@ -27,6 +27,7 @@ type
     procedure FormShow(Sender: TObject);
     procedure estado1Click(Sender: TObject);
     procedure cidade1Click(Sender: TObject);
+    procedure tipoDocumento1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -38,7 +39,7 @@ var
 
 implementation
 
-uses UFuncao, Pais, Estado, Cidade;
+uses UFuncao, Pais, Estado, Cidade, TipoDocumento;
 
 {$R *.dfm}
 
@@ -94,6 +95,16 @@ begin
   else
   begin
     Abort;
+  end;
+end;
+
+procedure TFMenuPrincipal.tipoDocumento1Click(Sender: TObject);
+begin
+  try
+    Application.CreateForm(TFTipoDocumento, FTipoDocumento);
+    FTipoDocumento.ShowModal;
+  finally
+    FreeAndNil(FTipoDocumento);
   end;
 end;
 

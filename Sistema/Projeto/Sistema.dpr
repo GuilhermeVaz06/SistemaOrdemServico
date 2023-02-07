@@ -10,7 +10,9 @@ uses
   DMPais in '..\Data Module\DMPais.pas' {FDMPais: TDataModule},
   Estado in '..\Tela\Estado.pas' {FEstado},
   DMCidade in '..\Data Module\DMCidade.pas' {FDMCidade: TDataModule},
-  Cidade in '..\Tela\Cidade.pas' {FCidade};
+  Cidade in '..\Tela\Cidade.pas' {FCidade},
+  DMTipoDocumento in '..\Data Module\DMTipoDocumento.pas' {FDMTipoDocumento: TDataModule},
+  TipoDocumento in '..\Tela\TipoDocumento.pas' {FTipoDocumento};
 
 {$R *.res}
 
@@ -22,6 +24,6 @@ begin
   Application.CreateForm(TFDMEstado, FDMEstado);
   Application.CreateForm(TFDMPais, FDMPais);
   Application.CreateForm(TFDMCidade, FDMCidade);
-  Application.CreateForm(TFCidade, FCidade);
+  Application.CreateForm(TFDMTipoDocumento, FDMTipoDocumento);
   Application.Run;
 end.

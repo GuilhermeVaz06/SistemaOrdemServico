@@ -82,6 +82,7 @@ object FMenuPrincipal: TFMenuPrincipal
       end
       object tipoDocumento1: TMenuItem
         Caption = 'Tipo de Documento'
+        OnClick = tipoDocumento1Click
       end
       object tipoEndereco1: TMenuItem
         Caption = 'Tipo de Endere'#231'o'

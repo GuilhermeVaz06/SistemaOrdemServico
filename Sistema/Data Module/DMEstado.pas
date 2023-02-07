@@ -43,7 +43,6 @@ function TFDMEstado.cadastrarEstado: Boolean;
 var
   Conexao: TConexao;
   json: TJSONValue;
-  jsonArray: TJSONArray;
 begin
   Conexao := TConexao.Create;
 
@@ -87,7 +86,6 @@ function TFDMEstado.alterarEstado: Boolean;
 var
   Conexao: TConexao;
   json: TJSONValue;
-  jsonArray: TJSONArray;
 begin
   Conexao := TConexao.Create;
 
@@ -133,7 +131,7 @@ var
   Conexao: TConexao;
   master, item: TJSONArray;
   json: TJSONValue;
-  i, limite, offset: integer;
+  limite, offset: integer;
   continuar: Boolean;
 begin
   Conexao := TConexao.Create;
@@ -209,7 +207,6 @@ function TFDMEstado.inativarEstado: Boolean;
 var
   Conexao: TConexao;
   json: TJSONValue;
-  jsonArray: TJSONArray;
 begin
   Conexao := TConexao.Create;
 

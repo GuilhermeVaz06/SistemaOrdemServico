@@ -1,4 +1,4 @@
-unit Pais;
+unit TipoDocumento;
 
 interface
 
@@ -7,7 +7,7 @@ uses Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.StdCtrls, Vcl.DBCtrls, Vcl.Mask,
   Vcl.Forms, Winapi.Windows;
 
 type
-  TFPais = class(TForm)
+  TFTipoDocumento = class(TForm)
     Panel1: TPanel;
     PDados: TPanel;
     BFechar: TSpeedButton;
@@ -39,10 +39,10 @@ type
     EAlteradoPor: TDBEdit;
     EDataCadastro: TDBEdit;
     EDataAlteracao: TDBEdit;
-    ELocalizarCodigoIBGE: TEdit;
-    Label9: TLabel;
-    ELocalizarNome: TEdit;
+    ELocalizarDescricao: TEdit;
     Label10: TLabel;
+    Estado: TLabel;
+    DBQtdeCaracteres: TDBEdit;
     procedure BFecharClick(Sender: TObject);
     procedure BCadastrarClick(Sender: TObject);
     procedure BAlterarClick(Sender: TObject);
@@ -56,8 +56,8 @@ type
     procedure BInativarClick(Sender: TObject);
     procedure GDadosTitleClick(Column: TColumn);
     procedure CBMostrarInativoClick(Sender: TObject);
-    procedure FormCreate(Sender: TObject);
     procedure GDadosDblClick(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
   private
     { Private declarations }
     function validarCampos: boolean;
@@ -67,34 +67,34 @@ type
   end;
 
 var
-  FPais: TFPais;
+  FTipoDocumento: TFTipoDocumento;
 
 implementation
 
-uses UFuncao, DMPais;
+uses UFuncao, DMTipoDocumento, Estado;
 
 {$R *.dfm}
 
-procedure TFPais.BAlterarClick(Sender: TObject);
+procedure TFTipoDocumento.BAlterarClick(Sender: TObject);
 begin
   UFuncao.desativaBotoes(self);
-  FDMPais.TPais.Edit;
+  FDMTipoDocumento.TTipoDocumento.Edit;
 end;
 
-procedure TFPais.BCadastrarClick(Sender: TObject);
+procedure TFTipoDocumento.BCadastrarClick(Sender: TObject);
 begin
   UFuncao.desativaBotoes(self);
-  FDMPais.TPais.Append;
+  FDMTipoDocumento.TTipoDocumento.Append;
 end;
 
-procedure TFPais.BCancelarClick(Sender: TObject);
+procedure TFTipoDocumento.BCancelarClick(Sender: TObject);
 begin
   PDados.SetFocus;
-  FDMPais.TPais.Cancel;
+  FDMTipoDocumento.TTipoDocumento.Cancel;
   UFuncao.desativaBotoes(self);
 end;
 
-procedure TFPais.BConfirmarClick(Sender: TObject);
+procedure TFTipoDocumento.BConfirmarClick(Sender: TObject);
 var
   resposta: Boolean;
 begin
@@ -103,52 +103,52 @@ begin
 
   if (validarCampos) then
   begin
-    if (FDMPais.TPais.State = dsInsert) then
+    if (FDMTipoDocumento.TTipoDocumento.State = dsInsert) then
     begin
-      resposta := FDMPais.cadastrarPais;
+      resposta := FDMTipoDocumento.cadastrarTipoDocumento;
     end
-    else if (FDMPais.TPais.State = dsEdit) then
+    else if (FDMTipoDocumento.TTipoDocumento.State = dsEdit) then
     begin
-      resposta := FDMPais.alterarPais;
+      resposta := FDMTipoDocumento.alterarTipoDocumento;
     end;
 
     if (resposta) then
     begin
-      FDMPais.TPais.Post;
+      FDMTipoDocumento.TTipoDocumento.Post;
       UFuncao.desativaBotoes(self);
     end;
   end;
 end;
 
-procedure TFPais.BConsultarClick(Sender: TObject);
+procedure TFTipoDocumento.BConsultarClick(Sender: TObject);
 begin
   BConsultar.Enabled := False;
 
   try
-    FDMPais.consultarDados(0);
+    FDMTipoDocumento.consultarDados(0);
   finally
     BConsultar.Enabled := True;
   end;
 end;
 
-procedure TFPais.BFecharClick(Sender: TObject);
+procedure TFTipoDocumento.BFecharClick(Sender: TObject);
 begin
   close;
 end;
 
-procedure TFPais.BInativarClick(Sender: TObject);
+procedure TFTipoDocumento.BInativarClick(Sender: TObject);
 var
   codigo: integer;
 begin
   if (UsuarioAdmnistrador) and
-     (confirmar('Realmente deseja inativar o registro: ' + FDMPais.TPaisnome.Value + '?')) then
+     (confirmar('Realmente deseja inativar o registro: ' + FDMTipoDocumento.TTipoDocumentodescricao.Value + '?')) then
   begin
-    codigo := FDMPais.TPaiscodigo.Value;
+    codigo := FDMTipoDocumento.TTipoDocumentocodigo.Value;
 
-    if (FDMPais.inativarPais) then
+    if (FDMTipoDocumento.inativarTipoDocumento) then
     begin
-      FDMPais.consultarDados(0);
-      FDMPais.TPais.Locate('codigo', codigo, [loCaseInsensitive]);
+      FDMTipoDocumento.consultarDados(0);
+      FDMTipoDocumento.TTipoDocumento.Locate('codigo', codigo, [loCaseInsensitive]);
     end;
   end
   else if not (UsuarioAdmnistrador) then
@@ -157,12 +157,12 @@ begin
   end;
 end;
 
-procedure TFPais.CBMostrarInativoClick(Sender: TObject);
+procedure TFTipoDocumento.CBMostrarInativoClick(Sender: TObject);
 begin
   BConsultarClick(nil);
 end;
 
-procedure TFPais.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TFTipoDocumento.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   if BConfirmar.Enabled then
   begin
@@ -170,17 +170,17 @@ begin
   end;
 end;
 
-procedure TFPais.FormCreate(Sender: TObject);
+procedure TFTipoDocumento.FormCreate(Sender: TObject);
 begin
   consulta := False;
 end;
 
-procedure TFPais.FormShow(Sender: TObject);
+procedure TFTipoDocumento.FormShow(Sender: TObject);
 begin
   BConsultarClick(nil);
 end;
 
-procedure TFPais.GDadosDblClick(Sender: TObject);
+procedure TFTipoDocumento.GDadosDblClick(Sender: TObject);
 begin
   if (consulta) then
   begin
@@ -188,45 +188,53 @@ begin
   end;
 end;
 
-procedure TFPais.GDadosDrawColumnCell(Sender: TObject; const Rect: TRect;
+procedure TFTipoDocumento.GDadosDrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
 begin
   colorirGrid(Sender, Rect, DataCol, Column, State);
 end;
 
-procedure TFPais.GDadosTitleClick(Column: TColumn);
+procedure TFTipoDocumento.GDadosTitleClick(Column: TColumn);
 begin
   OrdenarGrid(Column);
 end;
 
-function TFPais.validarCampos: boolean;
+function TFTipoDocumento.validarCampos: boolean;
 var
   mensagem: TStringList;
 begin
   mensagem := TStringList.Create;
 
-  if (FDMPais.TPaisnome.Value = '') then
+  if (FDMTipoDocumento.TTipoDocumentodescricao.Value = '') then
   begin
-    mensagem.Add('O Nome do País deve ser informado!');
+    mensagem.Add('A descrição deve ser informada!');
   end
-  else if (Length(Trim(FDMPais.TPaisnome.Value)) <= 2) then
+  else if (Length(Trim(FDMTipoDocumento.TTipoDocumentodescricao.Value)) <= 1) then
   begin
-    mensagem.Add('O nome do País deve conter no minimo 3 caracteres validos!');
+    mensagem.Add('A descrição deve conter no minimo 2 caracteres validos!');
   end
-  else if (Length(Trim(FDMPais.TPaisnome.Value)) > 150) then
+  else if (Length(Trim(FDMTipoDocumento.TTipoDocumentodescricao.Value)) > 10) then
   begin
-    mensagem.Add('O nome do País deve conter no maximo 150 caracteres validos!');
+    mensagem.Add('A descrição deve conter no maximo 10 caracteres validos!');
   end;
 
-  if (Trim(FDMPais.TPaiscodigoIbge.Value) = '') then
+  if (Trim(FDMTipoDocumento.TTipoDocumentomascara.Value) = '') then
   begin
-    mensagem.Add('O codigo do IBGE deve ser informado!');
+    mensagem.Add('A mascara deve ser informada!');
   end
-  else if (Length(Trim(soNumeros(FDMPais.TPaiscodigoIbge.Value))) <> 4) then
+  else if (Length(Trim(FDMTipoDocumento.TTipoDocumentomascara.Value)) <= 2) then
   begin
-    mensagem.Add('O codigo do IBGE deve conter 4 caracteres numericos validos!');
+    mensagem.Add('A mascara deve conter no minimo 3 caracteres numericos validos!');
+  end
+  else if (Length(Trim(soNumeros(FDMTipoDocumento.TTipoDocumentomascara.Value))) > 30) then
+  begin
+    mensagem.Add('A mascara deve conter no maximo 30 caracteres numericos validos!');
   end;
 
+  if not (FDMTipoDocumento.TTipoDocumentoqtdeCaracteres.Value > 0) then
+  begin
+    mensagem.Add('A Quantidade de caracteres deve ser informado!');
+  end;
   if (mensagem.Text <> '') then
   begin
     informar(mensagem.Text);
