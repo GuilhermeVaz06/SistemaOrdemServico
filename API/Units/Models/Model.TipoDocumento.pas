@@ -328,12 +328,13 @@ constructor TTipoDocumento.Create;
 begin
   FCadastradoPor := TSessao.Create;
   FAlteradoPor := TSessao.Create;
+
   inherited;
 end;
 
 destructor TTipoDocumento.Destroy;
 begin
-if Assigned(FCadastradoPor) then
+  if Assigned(FCadastradoPor) then
   begin
     FCadastradoPor.Destroy;
   end;
