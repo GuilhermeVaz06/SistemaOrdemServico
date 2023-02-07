@@ -277,10 +277,19 @@ begin
     sql.Add('SELECT estado.CODIGO_PAIS, estado.CODIGO_ESTADO, estado.CODIGO_IBGE, estado.NOME');
     sql.Add(', estado.CODIGO_SESSAO_CADASTRO, estado.CODIGO_SESSAO_ALTERACAO');
     sql.Add(', estado.DATA_CADASTRO, estado.DATA_ULTIMA_ALTERACAO, estado.`STATUS`, pais.NOME nomePais');
-    sql.Add(', pessoaCadastro.RAZAO_SOCIAL usuarioCadastro, pessoaAlteracao.RAZAO_SOCIAL usuarioAlteracao');
-    sql.Add('  FROM estado, pessoa pessoaCadastro, sessao sessaoCadastro,');
-    sql.Add('       pessoa pessoaAlteracao, sessao sessaoAlteracao, pais');
-    sql.Add(' WHERE 1 = 1');
+    sql.Add('');
+    sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
+    sql.Add('     FROM pessoa, sessao ');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
+    sql.Add('      AND sessao.CODIGO_SESSAO = estado.CODIGO_SESSAO_CADASTRO) usuarioCadastro');
+    sql.Add('');
+    sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
+    sql.Add('     FROM pessoa, sessao ');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
+    sql.Add('      AND sessao.CODIGO_SESSAO = estado.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
+    sql.Add('');
+    sql.Add('  FROM estado, pais');
+    sql.Add(' WHERE pais.CODIGO_PAIS = estado.CODIGO_PAIS');
 
     if (FCodigoIbge <> '') then
     begin
@@ -308,11 +317,6 @@ begin
     end;
 
     sql.Add('   AND estado.`STATUS` = ' + QuotedStr(FStatus));
-    sql.Add('   AND pessoaAlteracao.CODIGO_PESSOA = sessaoAlteracao.CODIGO_PESSOA');
-    sql.Add('   AND sessaoAlteracao.CODIGO_SESSAO = estado.CODIGO_SESSAO_ALTERACAO');
-    sql.Add('   AND pessoaCadastro.CODIGO_PESSOA = sessaoCadastro.CODIGO_PESSOA');
-    sql.Add('   AND sessaoCadastro.CODIGO_SESSAO = estado.CODIGO_SESSAO_CADASTRO');
-    sql.Add('   AND pais.CODIGO_PAIS = estado.CODIGO_PAIS');
     sql.Add(' LIMIT ' + IntToStrSenaoZero(FOffset) + ', ' + IntToStrSenaoZero(FLimite));
 
     query := FConexao.executarComandoDQL(sql.Text);
@@ -397,15 +401,20 @@ begin
   sql.Add('SELECT estado.CODIGO_PAIS, estado.CODIGO_ESTADO, estado.CODIGO_IBGE, estado.NOME');
   sql.Add(', estado.CODIGO_SESSAO_CADASTRO, estado.CODIGO_SESSAO_ALTERACAO');
   sql.Add(', estado.DATA_CADASTRO, estado.DATA_ULTIMA_ALTERACAO, estado.`STATUS`, pais.NOME nomePais');
-  sql.Add(', pessoaCadastro.RAZAO_SOCIAL usuarioCadastro, pessoaAlteracao.RAZAO_SOCIAL usuarioAlteracao');
-  sql.Add('  FROM estado, pessoa pessoaCadastro, sessao sessaoCadastro,');
-  sql.Add('       pessoa pessoaAlteracao, sessao sessaoAlteracao, pais');
-  sql.Add(' WHERE CODIGO_ESTADO = ' + IntToStrSenaoZero(codigo));
-  sql.Add('   AND pessoaAlteracao.CODIGO_PESSOA = sessaoAlteracao.CODIGO_PESSOA');
-  sql.Add('   AND sessaoAlteracao.CODIGO_SESSAO = estado.CODIGO_SESSAO_ALTERACAO');
-  sql.Add('   AND pessoaCadastro.CODIGO_PESSOA = sessaoCadastro.CODIGO_PESSOA');
-  sql.Add('   AND sessaoCadastro.CODIGO_SESSAO = estado.CODIGO_SESSAO_CADASTRO');
-  sql.Add('   AND pais.CODIGO_PAIS = estado.CODIGO_PAIS');
+  sql.Add('');
+  sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
+  sql.Add('     FROM pessoa, sessao ');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
+  sql.Add('      AND sessao.CODIGO_SESSAO = estado.CODIGO_SESSAO_CADASTRO) usuarioCadastro');
+  sql.Add('');
+  sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
+  sql.Add('     FROM pessoa, sessao ');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
+  sql.Add('      AND sessao.CODIGO_SESSAO = estado.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
+  sql.Add('');
+  sql.Add('  FROM estado, pais');
+  sql.Add(' WHERE pais.CODIGO_PAIS = estado.CODIGO_PAIS');
+  sql.Add('   AND CODIGO_ESTADO = ' + IntToStrSenaoZero(codigo));
 
   query := FConexao.executarComandoDQL(sql.Text);
 
