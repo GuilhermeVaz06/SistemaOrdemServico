@@ -272,22 +272,22 @@ begin
 
     if (tipoDocumento.descricao = '') then
     begin
-      erros.Add('A descrição do Tipo do documento deve ser informada!');
+      erros.Add('A descrição deve ser informada!');
     end
-    else if (Length(Trim(tipoDocumento.descricao)) <= 3) then
+    else if (Length(Trim(tipoDocumento.descricao)) <= 2) then
     begin
-      erros.Add('A descrição do Tipo do documento deve conter no minimo 3 caracteres validos!');
+      erros.Add('A descrição deve conter no minimo 3 caracteres validos!');
     end
     else if (Length(Trim(tipoDocumento.descricao)) > 10) then
     begin
-      erros.Add('A descrição do Tipo do documento deve conter no maximo 10 caracteres validos!');
+      erros.Add('A descrição deve conter no maximo 10 caracteres validos!');
     end;
 
     if (Trim(tipoDocumento.mascara) = '') then
     begin
       erros.Add('A Mascara deve ser informada!');
     end
-    else if (Length(Trim(tipoDocumento.mascara)) <= 3) then
+    else if (Length(Trim(tipoDocumento.mascara)) <= 2) then
     begin
       erros.Add('A Mascara deve conter no minimo 3 caracteres validos!');
     end

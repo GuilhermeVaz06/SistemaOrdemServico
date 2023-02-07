@@ -17,7 +17,8 @@ uses
   Controller.Pais in '..\Units\Controllers\Controller.Pais.pas',
   UFuncao in '..\Units\UFuncao.pas',
   Controller.Estado in '..\Units\Controllers\Controller.Estado.pas',
-  Controller.Cidade in '..\Units\Controllers\Controller.Cidade.pas';
+  Controller.Cidade in '..\Units\Controllers\Controller.Cidade.pas',
+  Controller.TipoDocumento in '..\Units\Controllers\Controller.TipoDocumento.pas';
 
 {$R *.res}
 

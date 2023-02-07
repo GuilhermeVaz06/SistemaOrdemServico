@@ -156,6 +156,16 @@ begin
       sql.Add('   AND tipo_documento.DESCRICAO LIKE ' + QuotedStr('%' + FDescricao + '%'));
     end;
 
+    if (FMascara <> '') then
+    begin
+      sql.Add('   AND tipo_documento.MASCARA_CARACTERES LIKE ' + QuotedStr('%' + FMascara + '%'));
+    end;
+
+    if  (FQtdeCaracteres > 0) then
+    begin
+      sql.Add('   AND tipo_documento.QTDE_CARACTERES = ' + IntToStrSenaoZero(FQtdeCaracteres));
+    end;
+
     if  (FCodigo > 0) then
     begin
       sql.Add('   AND tipo_documento.CODIGO_TIPO_DOCUMENTO = ' + IntToStrSenaoZero(FCodigo));
@@ -257,7 +267,7 @@ begin
   sql.Add('      AND sessao.CODIGO_SESSAO = tipo_documento.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
   sql.Add('');
   sql.Add('  FROM tipo_documento');
-  sql.Add('   AND tipo_documento.CODIGO_TIPO_DOCUMENTO = ' + IntToStrSenaoZero(codigo));
+  sql.Add(' WHERE tipo_documento.CODIGO_TIPO_DOCUMENTO = ' + IntToStrSenaoZero(codigo));
 
   query := FConexao.executarComandoDQL(sql.Text);
 
