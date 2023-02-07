@@ -443,7 +443,7 @@ begin
   sql := TStringList.Create;
   sql.Add('SELECT COUNT(estado.CODIGO_ESTADO) TOTAL');
   sql.Add('  FROM estado, pais');
-  sql.Add(' WHERE (1 = 1)');
+  sql.Add(' WHERE pais.CODIGO_PAIS = estado.CODIGO_PAIS');
 
   if (FCodigoIbge <> '') then
   begin
@@ -471,7 +471,6 @@ begin
   end;
 
   sql.Add('   AND estado.`STATUS` = ' + QuotedStr(FStatus));
-  sql.Add('   AND pais.CODIGO_PAIS = estado.CODIGO_PAIS');
 
   query := FConexao.executarComandoDQL(sql.Text);
 

@@ -2,7 +2,7 @@ object FCidade: TFCidade
   Left = 0
   Top = 0
   BorderStyle = bsSingle
-  Caption = 'Cadastro de Estados'
+  Caption = 'Cadastro de Cidades'
   ClientHeight = 531
   ClientWidth = 1363
   Color = clBtnFace
@@ -148,9 +148,9 @@ object FCidade: TFCidade
     object Label3: TLabel
       Left = 9
       Top = 45
-      Width = 75
+      Width = 76
       Height = 16
-      Caption = 'Nome Estado'
+      Caption = 'Nome Cidade'
     end
     object Estado: TLabel
       Left = 9

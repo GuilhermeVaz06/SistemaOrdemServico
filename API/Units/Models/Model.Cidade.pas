@@ -459,7 +459,8 @@ begin
   sql := TStringList.Create;
   sql.Add('SELECT COUNT(cidade.CODIGO_CIDADE) TOTAL');
   sql.Add('  FROM cidade, estado, pais');
-  sql.Add(' WHERE 1 = 1');
+  sql.Add(' WHERE pais.CODIGO_PAIS = estado.CODIGO_PAIS');
+  sql.Add('   AND cidade.CODIGO_ESTADO = estado.CODIGO_ESTADO');
 
   if (FCodigoIbge <> '') then
   begin
@@ -497,8 +498,6 @@ begin
   end;
 
   sql.Add('   AND cidade.`STATUS` = ' + QuotedStr(FStatus));
-  sql.Add('   AND pais.CODIGO_PAIS = estado.CODIGO_PAIS');
-  sql.Add('   AND cidade.CODIGO_ESTADO = estado.CODIGO_ESTADO');
 
   query := FConexao.executarComandoDQL(sql.Text);
 

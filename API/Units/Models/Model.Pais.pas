@@ -416,7 +416,7 @@ begin
   sql := TStringList.Create;
   sql.Add('SELECT COUNT(CODIGO_PAIS) TOTAL');
   sql.Add('  FROM pais');
-  sql.Add(' WHERE (1 = 1)');
+  sql.Add(' WHERE `STATUS` = ' + QuotedStr(FStatus));
 
   if (FCodigoIbge <> '') then
   begin
@@ -432,8 +432,6 @@ begin
   begin
     sql.Add('   AND CODIGO_PAIS = ' + IntToStrSenaoZero(FCodigo));
   end;
-
-  sql.Add('   AND `STATUS` = ' + QuotedStr(FStatus));
 
   query := FConexao.executarComandoDQL(sql.Text);
 
