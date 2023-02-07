@@ -122,6 +122,15 @@
             <Form>FEstado</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="..\Data Module\DMCidade.pas">
+            <Form>FDMCidade</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TDataModule</DesignClass>
+        </DCCReference>
+        <DCCReference Include="..\Tela\Cidade.pas">
+            <Form>FCidade</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

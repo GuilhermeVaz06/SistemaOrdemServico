@@ -78,6 +78,7 @@ object FMenuPrincipal: TFMenuPrincipal
       end
       object cidade1: TMenuItem
         Caption = 'Cidade'
+        OnClick = cidade1Click
       end
       object tipoDocumento1: TMenuItem
         Caption = 'Tipo de Documento'

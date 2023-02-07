@@ -26,6 +26,7 @@ type
     procedure pais1Click(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure estado1Click(Sender: TObject);
+    procedure cidade1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -37,9 +38,19 @@ var
 
 implementation
 
-uses UFuncao, Pais, Estado;
+uses UFuncao, Pais, Estado, Cidade;
 
 {$R *.dfm}
+
+procedure TFMenuPrincipal.cidade1Click(Sender: TObject);
+begin
+  try
+    Application.CreateForm(TFCidade, FCidade);
+    FCidade.ShowModal;
+  finally
+    FreeAndNil(FCidade);
+  end;
+end;
 
 procedure TFMenuPrincipal.estado1Click(Sender: TObject);
 begin
