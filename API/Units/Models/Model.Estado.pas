@@ -21,6 +21,10 @@ type TEstado = class
     FRegistrosAfetados: Integer;
     FMaisRegistro: Boolean;
 
+    function contar: integer;
+    function montarEstado(query: TZQuery): TEstado;
+    function consultarCodigo(codigo: integer): TEstado;
+
   public
     constructor Create;
     destructor Destroy; override;
@@ -42,12 +46,9 @@ type TEstado = class
     procedure limpar;
     procedure atualizarLog(codigo: Integer; resposta: string);
 
-    function montarEstado(query: TZQuery): TEstado;
     function consultar: TArray<TEstado>;
-    function consultarCodigo(codigo: integer): TEstado;
     function consultarChave: TEstado;
     function existeRegistro: TEstado;
-    function contar: integer;
     function cadastrarEstado: TEstado;
     function alterarEstado: TEstado;
     function inativarEstado: TEstado;

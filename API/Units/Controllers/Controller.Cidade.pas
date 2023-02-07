@@ -540,7 +540,6 @@ procedure inativarCidade(Req: THorseRequest; Res: THorseResponse; Next: TProc);
 var
   erros: TStringList;
   resposta: TJSONObject;
-  body: TJSONValue;
   arrayResposta: TJSONArray;
   cidadeConsultado: TCidade;
   i: integer;

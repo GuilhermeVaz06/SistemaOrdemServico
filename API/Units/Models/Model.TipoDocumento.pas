@@ -22,6 +22,10 @@ type
     FRegistrosAfetados: Integer;
     FMaisRegistro: Boolean;
 
+    function contar: integer;
+    function montarTipoDocumento(query: TZQuery): TTipoDocumento;
+    function consultarCodigo(codigo: integer): TTipoDocumento;
+
   public
     constructor Create;
     destructor Destroy; override;
@@ -42,13 +46,9 @@ type
 
     procedure limpar;
     procedure atualizarLog(codigo: Integer; resposta: string);
-
-    function montarTipoDocumento(query: TZQuery): TTipoDocumento;
     function consultar: TArray<TTipoDocumento>;
-    function consultarCodigo(codigo: integer): TTipoDocumento;
     function consultarChave: TTipoDocumento;
     function existeRegistro: TTipoDocumento;
-    function contar: integer;
     function cadastrarTipoDocumento: TTipoDocumento;
     function alterarTipoDocumento: TTipoDocumento;
     function inativarTipoDocumento: TTipoDocumento;

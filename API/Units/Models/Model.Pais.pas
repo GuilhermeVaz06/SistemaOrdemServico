@@ -21,6 +21,10 @@ type TPais = class
     FRegistrosAfetados: Integer;
     FMaisRegistro: Boolean;
 
+    function contar: integer;
+    function montarPais(query: TZQuery): TPais;
+    function consultarCodigo(codigo: integer): TPais;
+
   public
     constructor Create;
     destructor Destroy; override;
@@ -41,12 +45,9 @@ type TPais = class
     procedure limpar;
     procedure atualizarLog(codigo: Integer; resposta: string);
 
-    function montarPais(query: TZQuery): TPais;
     function consultar: TArray<TPais>;
-    function consultarCodigo(codigo: integer): TPais;
     function consultarChave: TPais;
     function existeRegistro: TPais;
-    function contar: integer;
     function cadastrarPais: TPais;
     function alterarPais: TPais;
     function inativarPais: TPais;

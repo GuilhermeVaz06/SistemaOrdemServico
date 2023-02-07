@@ -21,6 +21,10 @@ type TCidade = class
     FRegistrosAfetados: Integer;
     FMaisRegistro: Boolean;
 
+    function contar: integer;
+    function consultarCodigo(codigo: integer): TCidade;
+    function montarCidade(query: TZQuery): TCidade;
+
   public
     constructor Create;
     destructor Destroy; override;
@@ -42,12 +46,9 @@ type TCidade = class
     procedure limpar;
     procedure atualizarLog(codigo: Integer; resposta: string);
 
-    function montarCidade(query: TZQuery): TCidade;
     function consultar: TArray<TCidade>;
-    function consultarCodigo(codigo: integer): TCidade;
     function consultarChave: TCidade;
     function existeRegistro: TCidade;
-    function contar: integer;
     function cadastrarCidade: TCidade;
     function alterarCidade: TCidade;
     function inativarCidade: TCidade;
