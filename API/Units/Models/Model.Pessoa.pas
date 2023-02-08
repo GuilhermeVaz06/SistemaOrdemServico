@@ -2,34 +2,41 @@ unit Model.Pessoa;
 
 interface
 
-uses Model.Sessao, Model.TipoDocumento, Model.TipoPessoa, Model.Contato,
-     System.SysUtils, Model.Endereco, Model.Connection;
+uses Model.Sessao, Model.TipoPessoa, Model.TipoDocumento, System.SysUtils,
+     ZDataset, System.Classes;
 
 type TPessoa = class
-  FCodigo: integer;
-  FTipoCadastro: TTipoPessoa;
-  FTipoDocumento: TTipoDocumento;
-  FDocumento: string;
-  FRazaoSocial: string;
-  FNomeFantasia: string;
-  FTelefone: string;
-  FEmail: string;
-  FSenha: string;
-  FObservacao: string;
-  FContatos: TArray<TContato>;
-  FEnderecos: TArray<TEndereco>;
-  FCadastradoPor: TSessao;
-  FAlteradoPor: TSessao;
-  FDataCadastro: TDateTime;
-  FUltimaAlteracao: TDateTime;
-  FStatus: string;
+
   private
+    FCodigo: integer;
+    FTipoCadastro: TTipoPessoa;
+    FTipoDocumento: TTipoDocumento;
+    FDocumento: string;
+    FRazaoSocial: string;
+    FNomeFantasia: string;
+    FTelefone: string;
+    FEmail: string;
+    FSenha: string;
+    FObservacao: string;
+    FCadastradoPor: TSessao;
+    FAlteradoPor: TSessao;
+    FDataCadastro: TDateTime;
+    FUltimaAlteracao: TDateTime;
+    FStatus: string;
+    FLimite: integer;
+    FOffset: Integer;
+    FRegistrosAfetados: Integer;
+    FMaisRegistro: Boolean;
+
+    function contar: integer;
+    function consultarCodigo(codigo: integer): TPessoa;
+    function montarPessoa(query: TZQuery): TPessoa;
 
   public
     constructor Create;
     destructor Destroy; override;
 
-    property id:Integer read FCodigo;
+    property id:Integer read FCodigo write FCodigo;
     property tipoPessoa: TTipoPessoa read FTipoCadastro write FTipoCadastro;
     property tipoDocumento: TTipoDocumento read FTipoDocumento write FTipoDocumento;
     property documento: string read FDocumento write FDocumento;
@@ -39,31 +46,223 @@ type TPessoa = class
     property email: string read FEmail write FEmail;
     property senha: string read FSenha write FSenha;
     property observacao: string read FObservacao write FObservacao;
-    property contatos: TArray<TContato> read FContatos write FContatos;
-    property enderecos: TArray<TEndereco> read FEnderecos write FEnderecos;
-    property cadastradoPor: TSessao read FCadastradoPor;
-    property alteradoPor: TSessao read FAlteradoPor;
-    property dataCadastro: TDateTime read FDataCadastro;
-    property ultimaAlteracao: TDateTime read FUltimaAlteracao;
-    property status: string read FStatus;
-end;
+    property cadastradoPor: TSessao read FCadastradoPor write FCadastradoPor;
+    property alteradoPor: TSessao read FAlteradoPor write FAlteradoPor;
+    property dataCadastro: TDateTime read FDataCadastro write FDataCadastro;
+    property ultimaAlteracao: TDateTime read FUltimaAlteracao write FUltimaAlteracao;
+    property status: string read FStatus write FStatus;
+    property maisRegistro: Boolean read FMaisRegistro;
+    property offset: Integer read FOffset write FOffset;
+    property limite: Integer read FLimite write FLimite;
+    property registrosAfetados: Integer read FRegistrosAfetados write FRegistrosAfetados;
 
-var
-  FConexecao: TConexao;
+//    procedure limpar;
+//    procedure atualizarLog(codigo, status: Integer; resposta: string);
+//
+//    function consultar: TArray<TPessoa>;
+//    function consultarChave: TPessoa;
+//    function existeRegistro: TPessoa;
+//    function cadastrarPessoa: TPessoa;
+//    function alterarPessoa: TPessoa;
+//    function inativarPessoa: TPessoa;
+//    function verificarToken(token: string): Boolean;
+//    function GerarLog(classe, procedimento, requisicao: string): integer;
+end;
 
 implementation
 
+uses Principal, UFuncao;
+
 { TPessoa }
+
+function TPessoa.consultarCodigo(codigo: integer): TPessoa;
+var
+  query: TZQuery;
+  sql: TStringList;
+  pessoaConsultado: TPessoa;
+begin
+  sql := TStringList.Create;
+  sql.Add('pessoa.CODIGO_PESSOA, pessoa.CODIGO_TIPO_PESSOA, pessoa.CODIGO_TIPO_DOCUMENTO, pessoa.DOCUMENTO');
+  sql.Add(', pessoa.RAZAO_SOCIAL, pessoa.NOME_FANTASIA, pessoa.TELEFONE, pessoa.EMAIL, pessoa.SENHA, pessoa.OBSERVACAO');
+  sql.Add(', pessoa.CODIGO_SESSAO_CADASTRO, pessoa.CODIGO_SESSAO_ALTERACAO, pessoa.DATA_CADASTRO, pessoa.DATA_ULTIMA_ALTERACAO');
+  sql.Add(', pessoa.`STATUS`, tipo_documento.DESCRICAO, tipo_documento.QTDE_CARACTERES, tipo_documento.MASCARA_CARACTERES');
+  sql.Add('');
+  sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
+  sql.Add('     FROM pessoa, sessao ');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
+  sql.Add('      AND sessao.CODIGO_SESSAO = pessoa.CODIGO_SESSAO_CADASTRO) usuarioCadastro');
+  sql.Add('');
+  sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
+  sql.Add('     FROM pessoa, sessao ');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
+  sql.Add('      AND sessao.CODIGO_SESSAO = pessoa.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
+  sql.Add('');
+  sql.Add('  FROM pessoa, tipo_documento');
+  sql.Add(' WHERE pessoa.TIPO_DOCUMENTO = tipo_documento.CODIGO_TIPO_DOCUMENTO');
+  sql.Add('   AND pessoa.CODIGO_PESSOA = ' + IntToStrSenaoZero(codigo));
+
+  query := FConexao.executarComandoDQL(sql.Text);
+
+  if not Assigned(query)
+  or (query = nil)
+  or (query.RecordCount = 0) then
+  begin
+    pessoaConsultado := nil;
+  end
+  else
+  begin
+    query.First;
+    FRegistrosAfetados := FConexao.registrosAfetados;
+    pessoaConsultado := montarPessoa(query);
+  end;
+
+  Result := pessoaConsultado;
+  FreeAndNil(sql);
+end;
+
+function TPessoa.contar: integer;
+var
+  query: TZQuery;
+  sql: TStringList;
+begin
+  sql := TStringList.Create;
+  sql.Add('SELECT COUNT(pessoa.CODIGO_PESSOA) TOTAL');
+  sql.Add('  FROM pessoa, tipo_documento');
+  sql.Add(' WHERE pessoa.TIPO_DOCUMENTO = tipo_documento.CODIGO_TIPO_DOCUMENTO ');
+
+  if  (FTipoCadastro.id > 0) then
+  begin
+    sql.Add('   AND pessoa.CODIGO_TIPO_PESSOA = ' + IntToStrSenaoZero(FTipoCadastro.id));
+  end;
+
+  if  (FTipoDocumento.id > 0) then
+  begin
+    sql.Add('   AND pessoa.TIPO_DOCUMENTO = ' + IntToStrSenaoZero(FTipoDocumento.id));
+  end;
+
+  if  (FTipoDocumento.descricao <> '') then
+  begin
+    sql.Add('   AND tipo_documento.NOME LIKE ' + QuotedStr('%' + FTipoDocumento.descricao + '%'));
+  end;
+
+  if  (FDocumento <> '') then
+  begin
+    sql.Add('   AND pessoa.DOCUMENTO LIKE ' + QuotedStr('%' + FDocumento + '%'));
+  end;
+
+  if  (FRazaoSocial <> '') then
+  begin
+    sql.Add('   AND pessoa.RAZAO_SOCIAL LIKE ' + QuotedStr('%' + FRazaoSocial + '%'));
+  end;
+
+  if  (FNomeFantasia <> '') then
+  begin
+    sql.Add('   AND pessoa.NOME_FANTASIA LIKE ' + QuotedStr('%' + FNomeFantasia + '%'));
+  end;
+
+  if  (FTelefone <> '') then
+  begin
+    sql.Add('   AND pessoa.TELEFONE LIKE ' + QuotedStr('%' + FTelefone + '%'));
+  end;
+
+  if  (FEmail <> '') then
+  begin
+    sql.Add('   AND pessoa.EMAIL LIKE ' + QuotedStr('%' + FEmail + '%'));
+  end;
+
+  if  (FObservacao <> '') then
+  begin
+    sql.Add('   AND pessoa.OBSERVACAO LIKE ' + QuotedStr('%' + FObservacao + '%'));
+  end;
+
+  sql.Add('   AND cidade.`STATUS` = ' + QuotedStr(FStatus));
+
+  query := FConexao.executarComandoDQL(sql.Text);
+
+  if not Assigned(query)
+  or (query = nil)
+  or (query.RecordCount = 0) then
+  begin
+    Result := 0;
+  end
+  else
+  begin
+    Result := query.FieldByName('TOTAL').Value;
+  end;
+
+  FreeAndNil(sql);
+end;
 
 constructor TPessoa.Create;
 begin
-  FConexecao := TConexao.Create;
+  FTipoCadastro := TTipoPessoa.Create;
+  FTipoDocumento := TTipoDocumento.Create;
+  FCadastradoPor := TSessao.Create;
+  FAlteradoPor := TSessao.Create;
+  inherited;
 end;
 
 destructor TPessoa.Destroy;
+var
+  i: integer;
 begin
-  FConexecao.Destroy;
+  if Assigned(FTipoCadastro) then
+  begin
+    FTipoCadastro.Destroy;
+  end;
+
+  if Assigned(FTipoDocumento) then
+  begin
+    FTipoDocumento.Destroy;
+  end;
+
+  if Assigned(FCadastradoPor) then
+  begin
+    FCadastradoPor.Destroy;
+  end;
+
+  if Assigned(FAlteradoPor) then
+  begin
+    FAlteradoPor.Destroy;
+  end;
+
   inherited;
+end;
+
+function TPessoa.montarPessoa(query: TZQuery): TPessoa;
+var
+  data: TPessoa;
+begin
+  try
+    data := TPessoa.Create;
+
+    data.FCodigo := query.FieldByName('CODIGO_PESSOA').Value;
+    data.FTipoCadastro.id := query.FieldByName('CODIGO_TIPO_PESSOA').Value;
+    data.FTipoDocumento.id := query.FieldByName('CODIGO_TIPO_DOCUMENTO').Value;
+    data.FTipoDocumento.descricao := query.FieldByName('DESCRICAO').Value;
+    data.FTipoDocumento.qtdeCaracteres := query.FieldByName('QTDE_CARACTERES').Value;
+    data.FTipoDocumento.mascara := query.FieldByName('MASCARA_CARACTERES').Value;
+    data.FDocumento := query.FieldByName('DOCUMENTO').Value;
+    data.FRazaoSocial := query.FieldByName('RAZAO_SOCIAL').Value;
+    data.FNomeFantasia := query.FieldByName('NOME_FANTASIA').Value;
+    data.FTelefone := query.FieldByName('TELEFONE').Value;
+    data.FEmail := query.FieldByName('EMAIL').Value;
+    data.FSenha := query.FieldByName('SENHA').Value;
+    data.FObservacao := query.FieldByName('OBSERVACAO').Value;
+    data.FCadastradoPor.usuario := query.FieldByName('usuarioCadastro').Value;
+    data.FAlteradoPor.usuario := query.FieldByName('usuarioAlteracao').Value;
+    data.FDataCadastro := query.FieldByName('DATA_CADASTRO').Value;
+    data.FUltimaAlteracao := query.FieldByName('DATA_ULTIMA_ALTERACAO').Value;
+    data.FStatus := query.FieldByName('STATUS').Value;
+
+    Result := data;
+  except
+    on E: Exception do
+    begin
+      raise Exception.Create('Erro ao montar Cidade ' + e.Message);
+      Result := nil;
+    end;
+  end;
 end;
 
 end.
