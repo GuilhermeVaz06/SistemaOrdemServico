@@ -227,7 +227,7 @@ begin
     end;
   end;
 
-  estado.atualizarLog(codigoLog, imprimirResposta(Res.Status, resposta));
+  estado.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;
@@ -367,7 +367,7 @@ begin
     end;
   end;
 
-  estado.atualizarLog(codigoLog, imprimirResposta(Res.Status, resposta));
+  estado.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;
@@ -526,7 +526,7 @@ begin
     end;
   end;
 
-  estado.atualizarLog(codigoLog, imprimirResposta(Res.Status, resposta));
+  estado.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;
@@ -625,7 +625,7 @@ begin
     end;
   end;
 
-  estado.atualizarLog(codigoLog, imprimirResposta(Res.Status, resposta));
+  estado.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;

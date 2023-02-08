@@ -29,7 +29,7 @@ type
 
     procedure conectar;
     procedure executarComandoDML(query: string);
-    procedure atualizarLog(codigo: Integer; resposta: string);
+    procedure atualizarLog(codigo, status: Integer; resposta: string);
 
     function executarComandoDQL(query: string): TZQuery;
     function ultimoRegistro(tabela, coluna: string): integer;
@@ -84,11 +84,12 @@ begin
   end;
 end;
 
-procedure TConexao.atualizarLog(codigo: Integer; resposta: string);
+procedure TConexao.atualizarLog(codigo, status: Integer; resposta: string);
 begin
   executarComandoDML('UPDATE `log_requisicao`'
              +#13#10+'   SET log_requisicao.RESPOSTA = ' + QuotedStr(resposta)
              +#13#10+'     , log_requisicao.CODIGO_SESSAO = ' + IntToStrSenaoZero(FCodigoSessao)
+             +#13#10+'     , log_requisicao.CODIGO_STATUS = ' + IntToStrSenaoZero(status)
              +#13#10+'     , log_requisicao.DATA_ULTIMA_ALTERACAO = CURRENT_TIMESTAMP '
              +#13#10+'     , log_requisicao.TEMPO_RESPOSTA = TIME(log_requisicao.DATA_ULTIMA_ALTERACAO) - ' 
              +#13#10+'                                       TIME(log_requisicao.DATA_CADASTRO) '

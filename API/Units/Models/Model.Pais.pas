@@ -43,7 +43,7 @@ type TPais = class
     property status: string read FStatus write FStatus;
 
     procedure limpar;
-    procedure atualizarLog(codigo: Integer; resposta: string);
+    procedure atualizarLog(codigo, status: Integer; resposta: string);
 
     function consultar: TArray<TPais>;
     function consultarChave: TPais;
@@ -209,9 +209,9 @@ begin
   Result := consultarCodigo(FCodigo);
 end;
 
-procedure TPais.atualizarLog(codigo: Integer; resposta: string);
+procedure TPais.atualizarLog(codigo, status: Integer; resposta: string);
 begin
-  FConexao.atualizarLog(codigo, resposta);
+  FConexao.atualizarLog(codigo, status, resposta);
 end;
 
 function TPais.cadastrarPais: TPais;

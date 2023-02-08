@@ -45,7 +45,8 @@ type
     property registrosAfetados: Integer read FRegistrosAfetados write FRegistrosAfetados;
 
     procedure limpar;
-    procedure atualizarLog(codigo: Integer; resposta: string);
+    procedure atualizarLog(codigo, status: Integer; resposta: string);
+
     function consultar: TArray<TTipoDocumento>;
     function consultarChave: TTipoDocumento;
     function existeRegistro: TTipoDocumento;
@@ -80,9 +81,9 @@ begin
   Result := consultarCodigo(FCodigo);
 end;
 
-procedure TTipoDocumento.atualizarLog(codigo: Integer; resposta: string);
+procedure TTipoDocumento.atualizarLog(codigo, status: Integer; resposta: string);
 begin
-  FConexao.atualizarLog(codigo, resposta);
+  FConexao.atualizarLog(codigo, status, resposta);
 end;
 
 function TTipoDocumento.cadastrarTipoDocumento: TTipoDocumento;

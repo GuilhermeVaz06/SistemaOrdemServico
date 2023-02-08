@@ -40,7 +40,8 @@ type TTipoEndereco = class
     property registrosAfetados: Integer read FRegistrosAfetados write FRegistrosAfetados;
 
     procedure limpar;
-    procedure atualizarLog(codigo: Integer; resposta: string);
+    procedure atualizarLog(codigo, status: Integer; resposta: string);
+
     function consultar: TArray<TTipoEndereco>;
     function consultarChave: TTipoEndereco;
     function existeRegistro: TTipoEndereco;
@@ -74,9 +75,9 @@ begin
   Result := consultarCodigo(FCodigo);
 end;
 
-procedure TTipoEndereco.atualizarLog(codigo: Integer; resposta: string);
+procedure TTipoEndereco.atualizarLog(codigo, status: Integer; resposta: string);
 begin
-  FConexao.atualizarLog(codigo, resposta);
+  FConexao.atualizarLog(codigo, status, resposta);
 end;
 
 function TTipoEndereco.cadastrarTipoEndereco: TTipoEndereco;

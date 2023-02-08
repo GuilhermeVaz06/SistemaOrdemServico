@@ -218,7 +218,7 @@ begin
     end;
   end;
 
-  tipoEndereco.atualizarLog(codigoLog, imprimirResposta(Res.Status, resposta));
+  tipoEndereco.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;
@@ -329,7 +329,7 @@ begin
     end;
   end;
 
-  tipoEndereco.atualizarLog(codigoLog, imprimirResposta(Res.Status, resposta));
+  tipoEndereco.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;
@@ -461,7 +461,7 @@ begin
     end;
   end;
 
-  tipoEndereco.atualizarLog(codigoLog, imprimirResposta(Res.Status, resposta));
+  tipoEndereco.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;
@@ -560,7 +560,7 @@ begin
     end;
   end;
 
-  tipoEndereco.atualizarLog(codigoLog, imprimirResposta(Res.Status, resposta));
+  tipoEndereco.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;

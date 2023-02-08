@@ -221,7 +221,7 @@ begin
     end;
   end;
 
-  pais.atualizarLog(codigoLog, imprimirResposta(Res.Status, resposta));
+  pais.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;
@@ -342,7 +342,7 @@ begin
     end;
   end;
 
-  pais.atualizarLog(codigoLog, imprimirResposta(Res.Status, resposta));
+  pais.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;
@@ -484,7 +484,7 @@ begin
     end;
   end;
 
-  pais.atualizarLog(codigoLog, imprimirResposta(Res.Status, resposta));
+  pais.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;
@@ -583,7 +583,7 @@ begin
     end;
   end;
 
-  pais.atualizarLog(codigoLog, imprimirResposta(Res.Status, resposta));
+  pais.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;

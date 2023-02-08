@@ -224,7 +224,7 @@ begin
     end;
   end;
 
-  tipoDocumento.atualizarLog(codigoLog, imprimirResposta(Res.Status, resposta));
+  tipoDocumento.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;
@@ -355,7 +355,7 @@ begin
     end;
   end;
 
-  tipoDocumento.atualizarLog(codigoLog, imprimirResposta(Res.Status, resposta));
+  tipoDocumento.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;
@@ -507,7 +507,7 @@ begin
     end;
   end;
 
-  tipoDocumento.atualizarLog(codigoLog, imprimirResposta(Res.Status, resposta));
+  tipoDocumento.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;
@@ -606,7 +606,7 @@ begin
     end;
   end;
 
-  tipoDocumento.atualizarLog(codigoLog, imprimirResposta(Res.Status, resposta));
+  tipoDocumento.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;
