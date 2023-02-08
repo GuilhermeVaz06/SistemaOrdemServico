@@ -46,7 +46,7 @@ var
 implementation
 
 uses Horse, Horse.Jhonson, Controller.Pais, Controller.Estado, Controller.Cidade,
-     Controller.TipoDocumento;
+     Controller.TipoDocumento, Controller.TipoEndereco;
 
 {$R *.dfm}
 
@@ -83,6 +83,7 @@ begin
     Controller.Estado.Registry;
     Controller.Cidade.Registry;
     Controller.TipoDocumento.Registry;
+    Controller.TipoEndereco.Registry;
 
     if (Trim(UpperCase(EIP.Text)) = 'LOCALHOST') then
     begin
@@ -125,6 +126,7 @@ begin
     Controller.Estado.destruirConexao;
     Controller.Cidade.destruirConexao;
     Controller.TipoDocumento.destruirConexao;
+    Controller.TipoEndereco.destruirConexao;
 
     PStatus.Caption := 'Status: Parado';
     PStatus.Font.Color := clRed;

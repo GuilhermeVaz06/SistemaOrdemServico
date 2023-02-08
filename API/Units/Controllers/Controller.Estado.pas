@@ -159,7 +159,8 @@ begin
     if (estado.nome <> '') or
        (estado.codigoIbge <> '') or
        (estado.pais.nome <> '') or
-       (estado.pais.id > 0) then
+       (estado.pais.id > 0) or
+       (estado.id > 0) then
     begin
       filtrado := True;
     end

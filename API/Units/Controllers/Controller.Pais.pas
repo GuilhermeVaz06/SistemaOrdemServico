@@ -152,7 +152,9 @@ begin
 
   if (continuar) and (verificarToken(res)) then
   try
-    if (pais.nome <> '') or (pais.codigoIbge <> '') then
+    if (pais.nome <> '') or
+       (pais.codigoIbge <> '') or
+       (pais.id > 0) then
     begin
       filtrado := True;
     end

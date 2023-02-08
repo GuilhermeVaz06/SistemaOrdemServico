@@ -87,8 +87,8 @@ begin
   codigo := FConexao.ultimoRegistro('tipo_endereco', 'CODIGO_TIPO_ENDERECO');
 
   sql := TStringList.Create;
-  sql.Add('INSERT INTO `tipo_documento` (`CODIGO_TIPO_ENDERECO`, `DESCRICAO`');
-  sql.Add('`CODIGO_SESSAO_CADASTRO`, `CODIGO_SESSAO_ALTERACAO`) VALUES (');
+  sql.Add('INSERT INTO `tipo_endereco` (`CODIGO_TIPO_ENDERECO`, `DESCRICAO`');
+  sql.Add(',`CODIGO_SESSAO_CADASTRO`, `CODIGO_SESSAO_ALTERACAO`) VALUES (');
   sql.Add(' ' + IntToStrSenaoZero(codigo));                                     //CODIGO_TIPO_ENDERECO
   sql.Add(',' + QuotedStr(FDescricao));                                         //DESCRICAO
   sql.Add(',' + IntToStrSenaoZero(FConexao.codigoSessao));                      //CODIGO_SESSAO_CADASTRO

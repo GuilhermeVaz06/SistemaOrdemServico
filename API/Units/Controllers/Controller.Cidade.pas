@@ -165,7 +165,8 @@ begin
        (cidade.estado.nome <> '') or
        (cidade.estado.id > 0) or
        (cidade.estado.pais.nome <> '') or
-       (cidade.estado.pais.id > 0) then
+       (cidade.estado.pais.id > 0) or
+       (cidade.id > 0) then
     begin
       filtrado := True;
     end

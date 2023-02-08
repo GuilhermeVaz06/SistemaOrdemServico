@@ -18,7 +18,8 @@ uses
   UFuncao in '..\Units\UFuncao.pas',
   Controller.Estado in '..\Units\Controllers\Controller.Estado.pas',
   Controller.Cidade in '..\Units\Controllers\Controller.Cidade.pas',
-  Controller.TipoDocumento in '..\Units\Controllers\Controller.TipoDocumento.pas';
+  Controller.TipoDocumento in '..\Units\Controllers\Controller.TipoDocumento.pas',
+  Controller.TipoEndereco in '..\Units\Controllers\Controller.TipoEndereco.pas';
 
 {$R *.res}
 
