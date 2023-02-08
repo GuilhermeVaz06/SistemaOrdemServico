@@ -1,8 +1,8 @@
-object FTipoDocumento: TFTipoDocumento
+object FTipoEndereco: TFTipoEndereco
   Left = 0
   Top = 0
   BorderStyle = bsSingle
-  Caption = 'Cadastro de Tipo de Documentos'
+  Caption = 'Cadastro de Tipo de Endere'#231'o'
   ClientHeight = 531
   ClientWidth = 1363
   Color = clBtnFace
@@ -117,7 +117,7 @@ object FTipoDocumento: TFTipoDocumento
       Top = 1
       Width = 147
       Height = 27
-      DataSource = FDMTipoDocumento.DTipoDocumento
+      DataSource = FDMTipoEndereco.DTipoEndereco
       VisibleButtons = [nbFirst, nbPrior, nbNext, nbLast]
       Align = alLeft
       TabOrder = 0
@@ -145,29 +145,6 @@ object FTipoDocumento: TFTipoDocumento
       Height = 16
       Caption = 'Descri'#231#227'o'
     end
-    object Label3: TLabel
-      Left = 9
-      Top = 45
-      Width = 48
-      Height = 16
-      Caption = 'Mascara'
-    end
-    object Estado: TLabel
-      Left = 170
-      Top = 45
-      Width = 93
-      Height = 16
-      Caption = 'Qtde Caracteres'
-    end
-    object EMascara: TDBEdit
-      Left = 9
-      Top = 62
-      Width = 155
-      Height = 24
-      DataField = 'mascara'
-      DataSource = FDMTipoDocumento.DTipoDocumento
-      TabOrder = 2
-    end
     object ECodigo: TDBEdit
       Left = 9
       Top = 20
@@ -176,7 +153,7 @@ object FTipoDocumento: TFTipoDocumento
       TabStop = False
       Color = clBtnFace
       DataField = 'codigo'
-      DataSource = FDMTipoDocumento.DTipoDocumento
+      DataSource = FDMTipoEndereco.DTipoEndereco
       ReadOnly = True
       TabOrder = 0
     end
@@ -186,7 +163,7 @@ object FTipoDocumento: TFTipoDocumento
       Width = 184
       Height = 24
       DataField = 'descricao'
-      DataSource = FDMTipoDocumento.DTipoDocumento
+      DataSource = FDMTipoEndereco.DTipoEndereco
       TabOrder = 1
     end
     object CBAtivo: TDBCheckBox
@@ -198,7 +175,7 @@ object FTipoDocumento: TFTipoDocumento
       Caption = 'Ativo'
       DataField = 'status'
       DataSource = FDMTipoDocumento.DTipoDocumento
-      TabOrder = 5
+      TabOrder = 3
       ValueChecked = 'A'
       ValueUnchecked = 'I'
     end
@@ -209,7 +186,7 @@ object FTipoDocumento: TFTipoDocumento
       Height = 103
       Align = alBottom
       BevelOuter = bvNone
-      TabOrder = 4
+      TabOrder = 2
       object Label4: TLabel
         Left = 9
         Top = 3
@@ -246,7 +223,7 @@ object FTipoDocumento: TFTipoDocumento
         TabStop = False
         Color = clBtnFace
         DataField = 'cadastradoPor'
-        DataSource = FDMTipoDocumento.DTipoDocumento
+        DataSource = FDMTipoEndereco.DTipoEndereco
         ReadOnly = True
         TabOrder = 0
       end
@@ -258,7 +235,7 @@ object FTipoDocumento: TFTipoDocumento
         TabStop = False
         Color = clBtnFace
         DataField = 'alteradoPor'
-        DataSource = FDMTipoDocumento.DTipoDocumento
+        DataSource = FDMTipoEndereco.DTipoEndereco
         ReadOnly = True
         TabOrder = 1
       end
@@ -270,7 +247,7 @@ object FTipoDocumento: TFTipoDocumento
         TabStop = False
         Color = clBtnFace
         DataField = 'dataCadastro'
-        DataSource = FDMTipoDocumento.DTipoDocumento
+        DataSource = FDMTipoEndereco.DTipoEndereco
         ReadOnly = True
         TabOrder = 2
       end
@@ -282,19 +259,10 @@ object FTipoDocumento: TFTipoDocumento
         TabStop = False
         Color = clBtnFace
         DataField = 'dataAlteracao'
-        DataSource = FDMTipoDocumento.DTipoDocumento
+        DataSource = FDMTipoEndereco.DTipoEndereco
         ReadOnly = True
         TabOrder = 3
       end
-    end
-    object DBQtdeCaracteres: TDBEdit
-      Left = 170
-      Top = 62
-      Width = 105
-      Height = 24
-      DataField = 'qtdeCaracteres'
-      DataSource = FDMTipoDocumento.DTipoDocumento
-      TabOrder = 3
     end
   end
   object PGrid: TPanel
@@ -359,7 +327,7 @@ object FTipoDocumento: TFTipoDocumento
       Width = 1078
       Height = 418
       Align = alClient
-      DataSource = FDMTipoDocumento.DTipoDocumento
+      DataSource = FDMTipoEndereco.DTipoEndereco
       Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
       ReadOnly = True
       TabOrder = 1
@@ -386,22 +354,6 @@ object FTipoDocumento: TFTipoDocumento
           Title.Alignment = taCenter
           Title.Caption = 'Descri'#231#227'o'
           Width = 154
-          Visible = True
-        end
-        item
-          Expanded = False
-          FieldName = 'mascara'
-          Title.Alignment = taCenter
-          Title.Caption = 'Mascara'
-          Width = 155
-          Visible = True
-        end
-        item
-          Expanded = False
-          FieldName = 'qtdeCaracteres'
-          Title.Alignment = taCenter
-          Title.Caption = 'Qtde Caracteres'
-          Width = 127
           Visible = True
         end
         item

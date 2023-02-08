@@ -1,4 +1,4 @@
-unit TipoDocumento;
+unit TipoEndereco;
 
 interface
 
@@ -7,7 +7,7 @@ uses Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.StdCtrls, Vcl.DBCtrls, Vcl.Mask,
   Vcl.Forms, Winapi.Windows;
 
 type
-  TFTipoDocumento = class(TForm)
+  TFTipoEndereco = class(TForm)
     Panel1: TPanel;
     PDados: TPanel;
     BFechar: TSpeedButton;
@@ -18,8 +18,6 @@ type
     BCadastrar: TSpeedButton;
     Label1: TLabel;
     Label2: TLabel;
-    EMascara: TDBEdit;
-    Label3: TLabel;
     ECodigo: TDBEdit;
     EDescricao: TDBEdit;
     DBNavigator1: TDBNavigator;
@@ -41,8 +39,6 @@ type
     EDataAlteracao: TDBEdit;
     ELocalizarDescricao: TEdit;
     Label10: TLabel;
-    Estado: TLabel;
-    DBQtdeCaracteres: TDBEdit;
     procedure BFecharClick(Sender: TObject);
     procedure BCadastrarClick(Sender: TObject);
     procedure BAlterarClick(Sender: TObject);
@@ -67,34 +63,34 @@ type
   end;
 
 var
-  FTipoDocumento: TFTipoDocumento;
+  FTipoEndereco: TFTipoEndereco;
 
 implementation
 
-uses UFuncao, DMTipoDocumento;
+uses UFuncao, DMTipoEndereco;
 
 {$R *.dfm}
 
-procedure TFTipoDocumento.BAlterarClick(Sender: TObject);
+procedure TFTipoEndereco.BAlterarClick(Sender: TObject);
 begin
   UFuncao.desativaBotoes(self);
-  FDMTipoDocumento.TTipoDocumento.Edit;
+  FDMTipoEndereco.TTipoEndereco.Edit;
 end;
 
-procedure TFTipoDocumento.BCadastrarClick(Sender: TObject);
+procedure TFTipoEndereco.BCadastrarClick(Sender: TObject);
 begin
   UFuncao.desativaBotoes(self);
-  FDMTipoDocumento.TTipoDocumento.Append;
+  FDMTipoEndereco.TTipoEndereco.Append;
 end;
 
-procedure TFTipoDocumento.BCancelarClick(Sender: TObject);
+procedure TFTipoEndereco.BCancelarClick(Sender: TObject);
 begin
   PDados.SetFocus;
-  FDMTipoDocumento.TTipoDocumento.Cancel;
+  FDMTipoEndereco.TTipoEndereco.Cancel;
   UFuncao.desativaBotoes(self);
 end;
 
-procedure TFTipoDocumento.BConfirmarClick(Sender: TObject);
+procedure TFTipoEndereco.BConfirmarClick(Sender: TObject);
 var
   resposta: Boolean;
 begin
@@ -103,52 +99,52 @@ begin
 
   if (validarCampos) then
   begin
-    if (FDMTipoDocumento.TTipoDocumento.State = dsInsert) then
+    if (FDMTipoEndereco.TTipoEndereco.State = dsInsert) then
     begin
-      resposta := FDMTipoDocumento.cadastrarTipoDocumento;
+      resposta := FDMTipoEndereco.cadastrarTipoEndereco;
     end
-    else if (FDMTipoDocumento.TTipoDocumento.State = dsEdit) then
+    else if (FDMTipoEndereco.TTipoEndereco.State = dsEdit) then
     begin
-      resposta := FDMTipoDocumento.alterarTipoDocumento;
+      resposta := FDMTipoEndereco.alterarTipoEndereco;
     end;
 
     if (resposta) then
     begin
-      FDMTipoDocumento.TTipoDocumento.Post;
+      FDMTipoEndereco.TTipoEndereco.Post;
       UFuncao.desativaBotoes(self);
     end;
   end;
 end;
 
-procedure TFTipoDocumento.BConsultarClick(Sender: TObject);
+procedure TFTipoEndereco.BConsultarClick(Sender: TObject);
 begin
   BConsultar.Enabled := False;
 
   try
-    FDMTipoDocumento.consultarDados(0);
+    FDMTipoEndereco.consultarDados(0);
   finally
     BConsultar.Enabled := True;
   end;
 end;
 
-procedure TFTipoDocumento.BFecharClick(Sender: TObject);
+procedure TFTipoEndereco.BFecharClick(Sender: TObject);
 begin
   close;
 end;
 
-procedure TFTipoDocumento.BInativarClick(Sender: TObject);
+procedure TFTipoEndereco.BInativarClick(Sender: TObject);
 var
   codigo: integer;
 begin
   if (UsuarioAdmnistrador) and
-     (confirmar('Realmente deseja inativar o registro: ' + FDMTipoDocumento.TTipoDocumentodescricao.Value + '?')) then
+     (confirmar('Realmente deseja inativar o registro: ' + FDMTipoEndereco.TTipoEnderecodescricao.Value + '?')) then
   begin
-    codigo := FDMTipoDocumento.TTipoDocumentocodigo.Value;
+    codigo := FDMTipoEndereco.TTipoEnderecocodigo.Value;
 
-    if (FDMTipoDocumento.inativarTipoDocumento) then
+    if (FDMTipoEndereco.inativarTipoEndereco) then
     begin
-      FDMTipoDocumento.consultarDados(0);
-      FDMTipoDocumento.TTipoDocumento.Locate('codigo', codigo, [loCaseInsensitive]);
+      FDMTipoEndereco.consultarDados(0);
+      FDMTipoEndereco.TTipoEndereco.Locate('codigo', codigo, [loCaseInsensitive]);
     end;
   end
   else if not (UsuarioAdmnistrador) then
@@ -157,12 +153,12 @@ begin
   end;
 end;
 
-procedure TFTipoDocumento.CBMostrarInativoClick(Sender: TObject);
+procedure TFTipoEndereco.CBMostrarInativoClick(Sender: TObject);
 begin
   BConsultarClick(nil);
 end;
 
-procedure TFTipoDocumento.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TFTipoEndereco.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   if BConfirmar.Enabled then
   begin
@@ -170,17 +166,17 @@ begin
   end;
 end;
 
-procedure TFTipoDocumento.FormCreate(Sender: TObject);
+procedure TFTipoEndereco.FormCreate(Sender: TObject);
 begin
   consulta := False;
 end;
 
-procedure TFTipoDocumento.FormShow(Sender: TObject);
+procedure TFTipoEndereco.FormShow(Sender: TObject);
 begin
   BConsultarClick(nil);
 end;
 
-procedure TFTipoDocumento.GDadosDblClick(Sender: TObject);
+procedure TFTipoEndereco.GDadosDblClick(Sender: TObject);
 begin
   if (consulta) then
   begin
@@ -188,53 +184,36 @@ begin
   end;
 end;
 
-procedure TFTipoDocumento.GDadosDrawColumnCell(Sender: TObject; const Rect: TRect;
+procedure TFTipoEndereco.GDadosDrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
 begin
   colorirGrid(Sender, Rect, DataCol, Column, State);
 end;
 
-procedure TFTipoDocumento.GDadosTitleClick(Column: TColumn);
+procedure TFTipoEndereco.GDadosTitleClick(Column: TColumn);
 begin
   OrdenarGrid(Column);
 end;
 
-function TFTipoDocumento.validarCampos: boolean;
+function TFTipoEndereco.validarCampos: boolean;
 var
   mensagem: TStringList;
 begin
   mensagem := TStringList.Create;
 
-  if (FDMTipoDocumento.TTipoDocumentodescricao.Value = '') then
+  if (FDMTipoEndereco.TTipoEnderecodescricao.Value = '') then
   begin
     mensagem.Add('A descrição deve ser informada!');
   end
-  else if (Length(Trim(FDMTipoDocumento.TTipoDocumentodescricao.Value)) <= 1) then
+  else if (Length(Trim(FDMTipoEndereco.TTipoEnderecodescricao.Value)) <= 2) then
   begin
-    mensagem.Add('A descrição deve conter no minimo 2 caracteres validos!');
+    mensagem.Add('A descrição deve conter no minimo 3 caracteres validos!');
   end
-  else if (Length(Trim(FDMTipoDocumento.TTipoDocumentodescricao.Value)) > 10) then
+  else if (Length(Trim(FDMTipoEndereco.TTipoEnderecodescricao.Value)) > 150) then
   begin
-    mensagem.Add('A descrição deve conter no maximo 10 caracteres validos!');
+    mensagem.Add('A descrição deve conter no maximo 150 caracteres validos!');
   end;
 
-  if (Trim(FDMTipoDocumento.TTipoDocumentomascara.Value) = '') then
-  begin
-    mensagem.Add('A mascara deve ser informada!');
-  end
-  else if (Length(Trim(FDMTipoDocumento.TTipoDocumentomascara.Value)) <= 2) then
-  begin
-    mensagem.Add('A mascara deve conter no minimo 3 caracteres numericos validos!');
-  end
-  else if (Length(Trim(soNumeros(FDMTipoDocumento.TTipoDocumentomascara.Value))) > 30) then
-  begin
-    mensagem.Add('A mascara deve conter no maximo 30 caracteres numericos validos!');
-  end;
-
-  if not (FDMTipoDocumento.TTipoDocumentoqtdeCaracteres.Value > 0) then
-  begin
-    mensagem.Add('A Quantidade de caracteres deve ser informado!');
-  end;
   if (mensagem.Text <> '') then
   begin
     informar(mensagem.Text);

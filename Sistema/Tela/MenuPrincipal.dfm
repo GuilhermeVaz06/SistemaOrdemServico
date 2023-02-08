@@ -86,6 +86,7 @@ object FMenuPrincipal: TFMenuPrincipal
       end
       object tipoEndereco1: TMenuItem
         Caption = 'Tipo de Endere'#231'o'
+        OnClick = tipoEndereco1Click
       end
     end
     object sair1: TMenuItem
