@@ -100,8 +100,8 @@ begin
   sql := TStringList.Create;
   sql.Add('SELECT CODIGO_CIDADE, NOME');
   sql.Add('  FROM cidade');
-  sql.Add(' WHERE (CODIGO_IBGE = ' + QuotedStr(FCodigoIbge));
-  sql.Add('    OR  NOME = ' + QuotedStr(FNome) + ')');
+  sql.Add(' WHERE CODIGO_IBGE = ' + QuotedStr(FCodigoIbge));
+  sql.Add('   AND NOME = ' + QuotedStr(FNome));
 
   if (FCodigo > 0) then
   begin

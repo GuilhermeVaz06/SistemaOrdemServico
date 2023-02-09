@@ -56,17 +56,17 @@ type TPessoa = class
     property limite: Integer read FLimite write FLimite;
     property registrosAfetados: Integer read FRegistrosAfetados write FRegistrosAfetados;
 
-//    procedure limpar;
-//    procedure atualizarLog(codigo, status: Integer; resposta: string);
-//
-//    function consultar: TArray<TPessoa>;
-//    function consultarChave: TPessoa;
-//    function existeRegistro: TPessoa;
-//    function cadastrarPessoa: TPessoa;
-//    function alterarPessoa: TPessoa;
-//    function inativarPessoa: TPessoa;
-//    function verificarToken(token: string): Boolean;
-//    function GerarLog(classe, procedimento, requisicao: string): integer;
+    procedure limpar;
+    procedure atualizarLog(codigo, status: Integer; resposta: string);
+
+    function consultar: TArray<TPessoa>;
+    function consultarChave: TPessoa;
+    function existeRegistro: TPessoa;
+    function cadastrarPessoa: TPessoa;
+    function alterarPessoa: TPessoa;
+    function inativarPessoa: TPessoa;
+    function verificarToken(token: string): Boolean;
+    function GerarLog(classe, procedimento, requisicao: string): integer;
 end;
 
 implementation
@@ -75,6 +75,225 @@ uses Principal, UFuncao;
 
 { TPessoa }
 
+function TPessoa.alterarPessoa: TPessoa;
+var
+  sql: TStringList;
+begin
+  sql := TStringList.Create;
+  sql.Add('UPDATE `pessoa`');
+  sql.Add('   SET CODIGO_TIPO_DOCUMENTO = ' + IntToStrSenaoZero(FTipoDocumento.id));
+  sql.Add('     , DOCUMENTO = ' + QuotedStr(FDocumento));
+  sql.Add('     , RAZAO_SOCIAL = ' + QuotedStr(FRazaoSocial));
+  sql.Add('     , NOME_FANTASIA = ' + QuotedStr(FNomeFantasia));
+  sql.Add('     , TELEFONE = ' + QuotedStr(FTelefone));
+  sql.Add('     , EMAIL = ' + QuotedStr(FEmail));
+  sql.Add('     , SENHA = ' + QuotedStr(FSenha));
+  sql.Add('     , OBSERVACAO = ' + QuotedStr(FObservacao));
+  sql.Add('     , CODIGO_SESSAO_ALTERACAO = ' + IntToStrSenaoZero(FConexao.codigoSessao));
+  sql.Add(' WHERE CODIGO_PESSOA = ' + IntToStrSenaoZero(FCodigo));
+
+  FConexao.executarComandoDML(sql.Text);
+  FreeAndNil(sql);
+  Result := consultarCodigo(FCodigo);
+end;
+
+procedure TPessoa.atualizarLog(codigo, status: Integer; resposta: string);
+begin
+  FConexao.atualizarLog(codigo, status, resposta);
+end;
+
+function TPessoa.cadastrarPessoa: TPessoa;
+var
+  sql: TStringList;
+  codigo: Integer;
+begin
+  codigo := FConexao.ultimoRegistro('pessoa', 'CODIGO_PESSOA');
+
+  sql := TStringList.Create;
+  sql.Add('INSERT INTO `pessoa` (CODIGO_PESSOA, CODIGO_TIPO_PESSOA, CODIGO_TIPO_DOCUMENTO');
+  sql.Add(', DOCUMENTO, RAZAO_SOCIAL, NOME_FANTASIA, TELEFONE, EMAIL, SENHA, OBSERVACAO');
+  sql.Add(', CODIGO_SESSAO_CADASTRO, CODIGO_SESSAO_ALTERACAO) VALUES (');
+  sql.Add(' ' + IntToStrSenaoZero(codigo));                                     //CODIGO_PESSOA
+  sql.Add(',' + IntToStrSenaoZero(FTipoCadastro.id));                           //CODIGO_TIPO_PESSOA
+  sql.Add(',' + IntToStrSenaoZero(FTipoDocumento.id));                          //CODIGO_TIPO_DOCUMENTO
+  sql.Add(',' + QuotedStr(FDocumento));                                         //DOCUMENTO
+  sql.Add(',' + QuotedStr(FRazaoSocial));                                       //RAZAO_SOCIAL
+  sql.Add(',' + QuotedStr(FNomeFantasia));                                      //NOME_FANTASIA
+  sql.Add(',' + QuotedStr(FTelefone));                                          //TELEFONE
+  sql.Add(',' + QuotedStr(FEmail));                                             //EMAIL
+  sql.Add(',' + QuotedStr(FSenha));                                             //SENHA
+  sql.Add(',' + QuotedStr(FObservacao));                                        //OBSERVACAO
+  sql.Add(',' + IntToStrSenaoZero(FConexao.codigoSessao));                      //CODIGO_SESSAO_CADASTRO
+  sql.Add(',' + IntToStrSenaoZero(FConexao.codigoSessao));                      //CODIGO_SESSAO_ALTERACAO
+  sql.Add(')');
+
+  FConexao.executarComandoDML(sql.Text);
+  FreeAndNil(sql);
+  Result := consultarCodigo(codigo);
+end;
+
+function TPessoa.consultar: TArray<TPessoa>;
+var
+  query: TZQuery;
+  pessoas: TArray<TPessoa>;
+  contador: Integer;
+  sql: TStringList;
+  restante: Integer;
+begin
+  try
+    if (FLimite = 0) or(FLimite > 500) then
+    begin
+      FLimite := 500;
+    end;
+
+    restante := contar() - FLimite - FOffset;
+
+    if (restante > 0) then
+    begin
+      FMaisRegistro := True;
+    end
+    else
+    begin
+      FMaisRegistro := False;
+    end;
+
+    sql := TStringList.Create;
+    sql.Add('SELECT pessoa.CODIGO_PESSOA, pessoa.CODIGO_TIPO_PESSOA, pessoa.CODIGO_TIPO_DOCUMENTO, pessoa.DOCUMENTO');
+    sql.Add(', pessoa.RAZAO_SOCIAL, pessoa.NOME_FANTASIA, pessoa.TELEFONE, pessoa.EMAIL, pessoa.SENHA, pessoa.OBSERVACAO');
+    sql.Add(', pessoa.CODIGO_SESSAO_CADASTRO, pessoa.CODIGO_SESSAO_ALTERACAO, pessoa.DATA_CADASTRO, pessoa.DATA_ULTIMA_ALTERACAO');
+    sql.Add(', pessoa.`STATUS`, tipo_documento.DESCRICAO, tipo_documento.QTDE_CARACTERES, tipo_documento.MASCARA_CARACTERES');
+    sql.Add('');
+    sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
+    sql.Add('     FROM pessoa, sessao ');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
+    sql.Add('      AND sessao.CODIGO_SESSAO = pessoa.CODIGO_SESSAO_CADASTRO) usuarioCadastro');
+    sql.Add('');
+    sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
+    sql.Add('     FROM pessoa, sessao ');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
+    sql.Add('      AND sessao.CODIGO_SESSAO = pessoa.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
+    sql.Add('');
+    sql.Add('  FROM pessoa, tipo_documento');
+    sql.Add(' WHERE pessoa.TIPO_DOCUMENTO = tipo_documento.CODIGO_TIPO_DOCUMENTO');
+    sql.Add('   AND pessoa.`STATUS` = ' + QuotedStr(FStatus));
+
+    if  (FTipoCadastro.id > 0) then
+    begin
+      sql.Add('   AND pessoa.CODIGO_TIPO_PESSOA = ' + IntToStrSenaoZero(FTipoCadastro.id));
+    end;
+
+    if  (FTipoDocumento.id > 0) then
+    begin
+      sql.Add('   AND pessoa.TIPO_DOCUMENTO = ' + IntToStrSenaoZero(FTipoDocumento.id));
+    end;
+
+    if  (FTipoDocumento.descricao <> '') then
+    begin
+      sql.Add('   AND tipo_documento.NOME LIKE ' + QuotedStr('%' + FTipoDocumento.descricao + '%'));
+    end;
+
+    if  (FDocumento <> '') then
+    begin
+      sql.Add('   AND pessoa.DOCUMENTO LIKE ' + QuotedStr('%' + FDocumento + '%'));
+    end;
+
+    if  (FRazaoSocial <> '') then
+    begin
+      sql.Add('   AND pessoa.RAZAO_SOCIAL LIKE ' + QuotedStr('%' + FRazaoSocial + '%'));
+    end;
+
+    if  (FNomeFantasia <> '') then
+    begin
+      sql.Add('   AND pessoa.NOME_FANTASIA LIKE ' + QuotedStr('%' + FNomeFantasia + '%'));
+    end;
+
+    if  (FTelefone <> '') then
+    begin
+      sql.Add('   AND pessoa.TELEFONE LIKE ' + QuotedStr('%' + FTelefone + '%'));
+    end;
+
+    if  (FEmail <> '') then
+    begin
+      sql.Add('   AND pessoa.EMAIL LIKE ' + QuotedStr('%' + FEmail + '%'));
+    end;
+
+    if  (FObservacao <> '') then
+    begin
+      sql.Add('   AND pessoa.OBSERVACAO LIKE ' + QuotedStr('%' + FObservacao + '%'));
+    end;
+
+    query := FConexao.executarComandoDQL(sql.Text);
+
+    if not Assigned(query)
+    or (query = nil)
+    or (query.RecordCount = 0) then
+    begin
+      Result := [];
+    end
+    else
+    begin
+      query.First;
+      FRegistrosAfetados := FConexao.registrosAfetados;
+      SetLength(pessoas, query.RecordCount);
+      contador := 0;
+
+      while not query.Eof do
+      begin
+        pessoas[contador] := montarPessoa(query);
+        query.Next;
+        inc(contador);
+      end;
+
+      Result := pessoas;
+    end;
+
+    FreeAndNil(sql);
+  except
+    on E: Exception do
+    begin
+      raise Exception.Create(e.Message);
+      Result := nil;
+      FreeAndNil(sql);
+    end;
+  end;
+end;
+
+function TPessoa.consultarChave: TPessoa;
+var
+  query: TZQuery;
+  pessoaConsultado: TPessoa;
+  sql: TStringList;
+begin
+  pessoaConsultado := TPessoa.Create;
+  sql := TStringList.Create;
+  sql.Add('SELECT CODIGO_PESSOA, NOME_FANTASIA');
+  sql.Add('  FROM pessoa');
+  sql.Add(' WHERE CODIGO_PESSOA = ' + IntToStrSenaoZero(FCodigo));
+  sql.Add(' LIMIT 1');
+
+  query := FConexao.executarComandoDQL(sql.Text);
+
+  if not Assigned(query)
+  or (query = nil)
+  or (query.RecordCount = 0) then
+  begin
+    pessoaConsultado.Destroy;
+    pessoaConsultado := nil;
+  end
+  else
+  begin
+    query.First;
+    FRegistrosAfetados := FConexao.registrosAfetados;
+
+    pessoaConsultado.FCodigo := query.FieldByName('CODIGO_PESSOA').Value;
+    pessoaConsultado.FNomeFantasia := query.FieldByName('NOME_FANTASIA').Value;
+  end;
+
+  Result := pessoaConsultado;
+
+  FreeAndNil(sql);
+end;
+
 function TPessoa.consultarCodigo(codigo: integer): TPessoa;
 var
   query: TZQuery;
@@ -82,7 +301,7 @@ var
   pessoaConsultado: TPessoa;
 begin
   sql := TStringList.Create;
-  sql.Add('pessoa.CODIGO_PESSOA, pessoa.CODIGO_TIPO_PESSOA, pessoa.CODIGO_TIPO_DOCUMENTO, pessoa.DOCUMENTO');
+  sql.Add('SELECT pessoa.CODIGO_PESSOA, pessoa.CODIGO_TIPO_PESSOA, pessoa.CODIGO_TIPO_DOCUMENTO, pessoa.DOCUMENTO');
   sql.Add(', pessoa.RAZAO_SOCIAL, pessoa.NOME_FANTASIA, pessoa.TELEFONE, pessoa.EMAIL, pessoa.SENHA, pessoa.OBSERVACAO');
   sql.Add(', pessoa.CODIGO_SESSAO_CADASTRO, pessoa.CODIGO_SESSAO_ALTERACAO, pessoa.DATA_CADASTRO, pessoa.DATA_ULTIMA_ALTERACAO');
   sql.Add(', pessoa.`STATUS`, tipo_documento.DESCRICAO, tipo_documento.QTDE_CARACTERES, tipo_documento.MASCARA_CARACTERES');
@@ -229,6 +448,95 @@ begin
   inherited;
 end;
 
+function TPessoa.existeRegistro: TPessoa;
+var
+  query: TZQuery;
+  pessoaConsultado: TPessoa;
+  sql: TStringList;
+begin
+  pessoaConsultado := TPessoa.Create;
+  sql := TStringList.Create;
+  sql.Add('SELECT CODIGO_PESSOA, NOME_FANTASIA');
+  sql.Add('  FROM pais');
+  sql.Add(' WHERE (RAZAO_SOCIAL = ' + QuotedStr(FRazaoSocial));
+  sql.Add('    OR  NOME_FANTASIA = ' + QuotedStr(FNomeFantasia) + ')');
+  sql.Add('   AND CODIGO_TIPO_PESSOA = ' + IntToStrSenaoZero(FTipoCadastro.id));
+  sql.Add('   AND CODIGO_TIPO_DOCUMENTO = ' + IntToStrSenaoZero(FTipoDocumento.id));
+  sql.Add('   AND DOCUMENTO = ' + QuotedStr(FDocumento));
+
+  if (FCodigo > 0) then
+  begin
+    sql.Add('   AND CODIGO_PESSOA <> ' + IntToStrSenaoZero(FCodigo));
+  end;
+
+  sql.Add(' LIMIT 1');
+
+  query := FConexao.executarComandoDQL(sql.Text);
+
+  if not Assigned(query)
+  or (query = nil)
+  or (query.RecordCount = 0) then
+  begin
+    pessoaConsultado.Destroy;
+    pessoaConsultado := nil;
+  end
+  else
+  begin
+    query.First;
+    FRegistrosAfetados := FConexao.registrosAfetados;
+
+    pessoaConsultado.FCodigo := query.FieldByName('CODIGO_PESSOA').Value;
+    pessoaConsultado.FNomeFantasia := query.FieldByName('NOME_FANTASIA').Value;
+  end;
+
+  Result := pessoaConsultado;
+
+  FreeAndNil(sql);
+end;
+
+function TPessoa.GerarLog(classe, procedimento, requisicao: string): integer;
+begin
+  Result := FConexao.GerarLog(classe, procedimento, requisicao);
+end;
+
+function TPessoa.inativarPessoa: TPessoa;
+var
+  sql: TStringList;
+begin
+  sql := TStringList.Create;
+  sql.Add('UPDATE `pessoa`');
+  sql.Add('   SET `STATUS` = ''I'' ');
+  sql.Add('     , CODIGO_SESSAO_ALTERACAO = ' + IntToStrSenaoZero(FConexao.codigoSessao));
+  sql.Add(' WHERE CODIGO_PESSOA = ' + IntToStrSenaoZero(FCodigo));
+
+  FConexao.executarComandoDML(sql.Text);
+  FreeAndNil(sql);
+  Result := consultarCodigo(FCodigo);
+end;
+
+procedure TPessoa.limpar;
+begin
+  FCodigo := 0;
+  FTipoCadastro.limpar;
+  FTipoDocumento.limpar;
+  FDocumento := '';
+  FRazaoSocial := '';
+  FNomeFantasia := '';
+  FTelefone := '';
+  FEmail := '';
+  FSenha := '';
+  FObservacao := '';
+  FCadastradoPor.limpar;
+  FAlteradoPor.limpar;
+  FDataCadastro := Now;
+  FUltimaAlteracao := Now;
+  FStatus := '';
+  FLimite := 0;
+  FOffset := 0;
+  FRegistrosAfetados := 0;
+  FMaisRegistro := False;
+end;
+
 function TPessoa.montarPessoa(query: TZQuery): TPessoa;
 var
   data: TPessoa;
@@ -263,6 +571,11 @@ begin
       Result := nil;
     end;
   end;
+end;
+
+function TPessoa.verificarToken(token: string): Boolean;
+begin
+  Result := FConexao.verificarToken(token);
 end;
 
 end.

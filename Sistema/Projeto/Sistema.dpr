@@ -12,7 +12,9 @@ uses
   DMCidade in '..\Data Module\DMCidade.pas' {FDMCidade: TDataModule},
   Cidade in '..\Tela\Cidade.pas' {FCidade},
   DMTipoDocumento in '..\Data Module\DMTipoDocumento.pas' {FDMTipoDocumento: TDataModule},
-  TipoDocumento in '..\Tela\TipoDocumento.pas' {FTipoDocumento};
+  TipoDocumento in '..\Tela\TipoDocumento.pas' {FTipoDocumento},
+  DMTipoEndereco in '..\Data Module\DMTipoEndereco.pas' {FDMTipoEndereco: TDataModule},
+  TipoEndereco in '..\Tela\TipoEndereco.pas' {FTipoEndereco};
 
 {$R *.res}
 
@@ -25,5 +27,7 @@ begin
   Application.CreateForm(TFDMPais, FDMPais);
   Application.CreateForm(TFDMCidade, FDMCidade);
   Application.CreateForm(TFDMTipoDocumento, FDMTipoDocumento);
+  Application.CreateForm(TFDMTipoEndereco, FDMTipoEndereco);
+  Application.CreateForm(TFTipoEndereco, FTipoEndereco);
   Application.Run;
 end.
