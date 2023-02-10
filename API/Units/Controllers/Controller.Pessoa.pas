@@ -9,6 +9,10 @@ var
   pessoa: TPessoa;
   token: string;
   continuar: Boolean;
+  const tipoCliente = 1;
+  const tipoFornecedor = 2;
+  const tipoFuncionario = 3;
+  const tipoUsuario = 4;
 
 procedure Registry;
 procedure destruirConexao;
@@ -42,7 +46,7 @@ begin
   resposta.AddPair('status', pessoaItem.status);
 end;
 
-function gerarLogPessoa(Req: THorseRequest; Res: THorseResponse; procedimento: string): Integer;
+function gerarLogPessoa(Req: THorseRequest; Res: THorseResponse; procedimento, classe: string): Integer;
 var
   resposta: TJSONObject;
   mensagem: string;
@@ -50,7 +54,7 @@ begin
   resposta := TJSONObject.Create;
 
   try
-    Result := pessoa.GerarLog('Pessoa',
+    Result := pessoa.GerarLog(classe,
                              procedimento,
                              imprimirRequisicao(req)
     );
@@ -121,7 +125,7 @@ begin
   FreeAndNil(resposta);
 end;
 
-procedure buscarPessoa(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+procedure buscarPessoa(Req: THorseRequest; Res: THorseResponse; Next: TProc; procedimento, classe: string; tipoPessoa: integer);
 var
   resposta, temporario: TJSONObject;
   quantidade, i: integer;
@@ -133,7 +137,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogPessoa(Req, Res, 'buscarPessoa');
+  codigoLog := gerarLogPessoa(Req, Res, procedimento, classe);
 
   if (continuar) then
   try
@@ -141,13 +145,27 @@ begin
     pessoa.id := strToIntZero(Req.Query['codigo']);
     pessoa.tipoDocumento.id := strToIntZero(Req.Query['codigoTipoDocumento']);
     pessoa.tipoDocumento.descricao := Req.Query['tipoDocumento'];
-    pessoa.tipoPessoa.id := 0; // fazer overload de cada funcao
+    pessoa.tipoPessoa.id := tipoPessoa;
     pessoa.documento := Req.Query['documento'];
-    pessoa.razaoSocial := Req.Query['razaoSocial'];
-    pessoa.nomeFantasia := Req.Query['nomeFantasia'];
+
+    if (tipoPessoa in[3, 4]) then
+    begin
+      pessoa.razaoSocial := Req.Query['nome'];
+      pessoa.nomeFantasia := Req.Query['nome'];
+    end
+    else
+    begin
+      pessoa.razaoSocial := Req.Query['razaoSocial'];
+      pessoa.nomeFantasia := Req.Query['nomeFantasia'];
+    end;
+
+    if (tipoPessoa = 4) then
+    begin
+      pessoa.senha := Req.Query['senha'];
+    end;
+
     pessoa.telefone := Req.Query['telefone'];
     pessoa.email := Req.Query['email'];
-    pessoa.senha := Req.Query['senha'];
     pessoa.observacao := Req.Query['observacao'];
     pessoa.status := Req.Query['status'];
     pessoa.limite := strToIntZero(Req.Query['limite']);
@@ -190,7 +208,7 @@ begin
     pessoas := pessoa.consultar();
     quantidade := Length(pessoas);
 
-    resposta.AddPair('tipo', 'consulta Pessoas');
+    resposta.AddPair('tipo', 'consulta ' + classe);
     resposta.AddPair('filtrado', TJSONBool.Create(filtrado));
     resposta.AddPair('maisRegistros', TJSONBool.Create(pessoa.maisRegistro));
     resposta.AddPair('qtdeRegistros', TJSONNumber.Create(quantidade));
@@ -206,7 +224,7 @@ begin
       end
       else
       begin
-        mensagem := 'Erro ao consultar as Pessoas!';
+        mensagem := 'Erro ao consultar ' + classe + '!';
         resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('PESSOA002', mensagem))));
         Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
       end;
@@ -239,7 +257,7 @@ begin
         arrayResposta := TJSONArray.Create;
       end;
 
-      arrayResposta.Add(UFuncao.JsonErro('PESSOA003', 'Erro não tratado ao listar todas as Pessoas!'));
+      arrayResposta.Add(UFuncao.JsonErro('PESSOA003', 'Erro não tratado ao listar ' + classe + '!'));
       resposta.AddPair(TJSONPair.Create('Erros', arrayResposta));
       Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
     end;
@@ -263,7 +281,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogPessoa(Req, Res, 'cadastrarPessoa');
+  codigoLog := gerarLogPessoa(Req, Res, 'cadastrarPessoa', 'Pessoa');
 
   if (continuar) then
   try
@@ -412,7 +430,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogPessoa(Req, Res, 'alterarPessoa');
+  codigoLog := gerarLogPessoa(Req, Res, 'alterarPessoa', 'Pessoa');
 
   if (continuar) then
   try
@@ -575,7 +593,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogPessoa(Req, Res, 'inativarPessoa');
+  codigoLog := gerarLogPessoa(Req, Res, 'inativarPessoa', 'Pessoa');
 
   if (continuar) then
   try
@@ -662,10 +680,15 @@ begin
   FreeAndNil(resposta);
 end;
 
+procedure buscarCliente(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+begin
+  buscarPessoa(Req, Res, Next, 'buscarCliente', 'Cliente', tipoCliente);
+end;
+
 procedure Registry;
 begin
   criarConexao;
-  THorse.Get('/pessoa', buscarPessoa);
+  THorse.Get('/cliente', buscarCliente);
   THorse.Post('/pessoa', cadastrarPessoa);
   THorse.Put('/pessoa/:id', alterarPessoa);
   THorse.Delete('/pessoa/:id', inativarPessoa);
