@@ -272,11 +272,7 @@ begin
     end;
   end;
 
-  if FConexao.codigoSessao > 0 then
-  begin
-    pessoa.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
-  end;
-
+  pessoa.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;
@@ -445,11 +441,7 @@ begin
     end;
   end;
 
-  if FConexao.codigoSessao > 0 then
-  begin
-    pessoa.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
-  end;
-
+  pessoa.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;
@@ -613,11 +605,7 @@ begin
     end;
   end;
 
-  if FConexao.codigoSessao > 0 then
-  begin
-    pessoa.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
-  end;
-
+  pessoa.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;
@@ -716,11 +704,7 @@ begin
     end;
   end;
 
-  if FConexao.codigoSessao > 0 then
-  begin
-    pessoa.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
-  end;
-
+  pessoa.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
   FreeAndNil(resposta);
 end;

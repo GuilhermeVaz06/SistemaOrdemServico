@@ -86,6 +86,11 @@ end;
 
 procedure TConexao.atualizarLog(codigo, status: Integer; resposta: string);
 begin
+  if not (FCodigoSessao > 0) then
+  begin
+    FCodigoSessao := 1;
+  end;
+
   executarComandoDML('UPDATE `log_requisicao`'
              +#13#10+'   SET log_requisicao.RESPOSTA = ' + QuotedStr(resposta)
              +#13#10+'     , log_requisicao.CODIGO_SESSAO = ' + IntToStrSenaoZero(FCodigoSessao)
