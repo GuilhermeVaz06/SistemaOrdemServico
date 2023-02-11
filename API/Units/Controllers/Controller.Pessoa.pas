@@ -9,10 +9,10 @@ var
   pessoa: TPessoa;
   token: string;
   continuar: Boolean;
-  const tipoCliente = 1;
-  const tipoFornecedor = 2;
-  const tipoFuncionario = 3;
-  const tipoUsuario = 4;
+  const tpCliente = 1;
+  const tpFornecedor = 2;
+  const tpFuncionario = 3;
+  const tpUsuario = 4;
 
 procedure Registry;
 procedure destruirConexao;
@@ -148,9 +148,9 @@ begin
 
     if verificarToken(res) then
     begin
-      if (tipoPessoa in[3, 4]) then
+      if (tipoPessoa in[tpFuncionario, tpUsuario]) then
       begin
-        pessoa.tipoDocumento.id := pessoa.tipoDocumento.buscarRegistroCadastrar('CPFX', '999.999.999-99', 11);
+        pessoa.tipoDocumento.id := pessoa.tipoDocumento.buscarRegistroCadastrar('CPF', '999.999.999-99', 11);
         pessoa.tipoDocumento.descricao := Req.Query['tipoDocumento'];
         pessoa.razaoSocial := Req.Query['nome'];
         pessoa.nomeFantasia := Req.Query['nome'];
@@ -163,7 +163,7 @@ begin
         pessoa.nomeFantasia := Req.Query['nomeFantasia'];
       end;
 
-      if (tipoPessoa = 4) then
+      if (tipoPessoa = tpUsuario) then
       begin
         pessoa.senha := Req.Query['senha'];
       end;
@@ -297,30 +297,30 @@ begin
     body := TJSONObject.ParseJSONValue(TEncoding.UTF8.GetBytes(req.Body), 0) as TJSONValue;
 
     token := Req.Headers['token'];
-    pessoa.tipoPessoa.id := 0;
+    pessoa.tipoPessoa.id := tipoPessoa;
 
-    if (tipoPessoa in[3, 4]) then
+    if (tipoPessoa in[tpFuncionario, tpUsuario]) then
     begin
-      pessoa.tipoDocumento.id := pessoa.tipoDocumento.buscarRegistroCadastrar('CPFX', '999.999.999-99', 11);
+      pessoa.tipoDocumento.id := pessoa.tipoDocumento.buscarRegistroCadastrar('CPF', '999.999.999-99', 11);
       pessoa.documento := body.GetValue<string>('documento', '');
       pessoa.razaoSocial := body.GetValue<string>('nome');
       pessoa.nomeFantasia := body.GetValue<string>('nome');
+
+      if (tipoPessoa = tpUsuario) then
+      begin
+        pessoa.senha := body.GetValue<string>('senha', '');
+      end
+      else
+      begin
+        pessoa.senha := '';
+      end;
     end
     else
     begin
       pessoa.tipoDocumento.id := body.GetValue<integer>('codigoTipoDocumento', 0);
       pessoa.documento := body.GetValue<string>('documento', '');
-      pessoa.razaoSocial := body.GetValue<string>('razaoSocial');
-      pessoa.nomeFantasia := body.GetValue<string>('nomeFantasia');
-    end;
-
-    if (tipoPessoa = 4) then
-    begin
-      pessoa.senha := body.GetValue<string>('senha', '');
-    end
-    else
-    begin
-      pessoa.senha := '';
+      pessoa.razaoSocial := body.GetValue<string>('razaoSocial', '');
+      pessoa.nomeFantasia := body.GetValue<string>('nomeFantasia', '');
     end;
 
     pessoa.telefone := body.GetValue<string>('telefone', '');
@@ -331,7 +331,7 @@ begin
     on E: Exception do
     begin
       mensagem := 'Erro ao recuperar dados da requisição: ' + e.Message + '!';
-      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('PESSOA005', mensagem))));
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro(UpperCase(classe) + '005', mensagem))));
       Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
       continuar := False;
     end;
@@ -344,30 +344,48 @@ begin
     erros := TStringList.Create;
     arrayResposta := TJSONArray.Create;
 
-    if (pessoa.razaoSocial = '') then
+    if (tipoPessoa in[tpCliente, tpFornecedor]) then
     begin
-      erros.Add('A Razão Social deve ser informada!');
-    end
-    else if (Length(Trim(pessoa.razaoSocial)) <= 2) then
-    begin
-      erros.Add('A Razão Social deve conter no minimo 2 caracteres validos!');
-    end
-    else if (Length(Trim(pessoa.razaoSocial)) > 150) then
-    begin
-      erros.Add('A Razão Social deve conter no maximo 150 caracteres validos!');
-    end;
+      if (pessoa.razaoSocial = '') then
+      begin
+        erros.Add('A Razão Social deve ser informada!');
+      end
+      else if (Length(Trim(pessoa.razaoSocial)) <= 2) then
+      begin
+        erros.Add('A Razão Social deve conter no minimo 2 caracteres validos!');
+      end
+      else if (Length(Trim(pessoa.razaoSocial)) > 150) then
+      begin
+        erros.Add('A Razão Social deve conter no maximo 150 caracteres validos!');
+      end;
 
-    if (pessoa.nomeFantasia = '') then
-    begin
-      erros.Add('O Nome fantasia deve ser informado!');
+      if (pessoa.nomeFantasia = '') then
+      begin
+        erros.Add('O Nome fantasia deve ser informado!');
+      end
+      else if (Length(Trim(pessoa.nomeFantasia)) <= 2) then
+      begin
+        erros.Add('O Nome fantasia deve conter no minimo 2 caracteres validos!');
+      end
+      else if (Length(Trim(pessoa.nomeFantasia)) > 150) then
+      begin
+        erros.Add('O Nome fantasia deve conter no maximo 150 caracteres validos!');
+      end;
     end
-    else if (Length(Trim(pessoa.nomeFantasia)) <= 2) then
+    else
     begin
-      erros.Add('O Nome fantasia deve conter no minimo 2 caracteres validos!');
-    end
-    else if (Length(Trim(pessoa.nomeFantasia)) > 150) then
-    begin
-      erros.Add('O Nome fantasia deve conter no maximo 150 caracteres validos!');
+      if (pessoa.razaoSocial = '') then
+      begin
+        erros.Add('O nome deve ser informado!');
+      end
+      else if (Length(Trim(pessoa.razaoSocial)) <= 2) then
+      begin
+        erros.Add('O nome deve conter no minimo 2 caracteres validos!');
+      end
+      else if (Length(Trim(pessoa.razaoSocial)) > 150) then
+      begin
+        erros.Add('O nome deve conter no maximo 150 caracteres validos!');
+      end;
     end;
 
     if (erros.Text = '') then
@@ -376,8 +394,9 @@ begin
 
       if (Assigned(pessoaConsultado)) then
       begin
-        erros.Add('Já existe um Pessoa [' + IntToStrSenaoZero(pessoaConsultado.id) +
-                  ' - ' + pessoaConsultado.razaoSocial + '], cadastrado com esse nome fantasia e com esse documento!');
+        erros.Add('Já existe um ' + classe + ' [' + IntToStrSenaoZero(pessoaConsultado.id) +
+                  ' - ' + pessoaConsultado.nomeFantasia + '], cadastrado com esse nome e com esse documento!');
+
         pessoaConsultado.Destroy;
       end
       else
@@ -403,7 +422,7 @@ begin
     begin
       for i := 0 to erros.Count - 1 do
       begin
-        arrayResposta.Add(UFuncao.JsonErro('PESSOA006',  erros[i]));
+        arrayResposta.Add(UFuncao.JsonErro(UpperCase(classe) + '006',  erros[i]));
       end;
 
       resposta.AddPair(TJSONPair.Create('Erros', arrayResposta));
@@ -416,7 +435,7 @@ begin
 
       if Assigned(pessoaConsultado) then
       begin
-        resposta.AddPair('tipo', 'Cadastro de Pessoa');
+        resposta.AddPair('tipo', 'Cadastro de ' + classe);
         resposta.AddPair('registrosAfetados', TJSONNumber.Create(pessoa.registrosAfetados));
         montarPessoa(pessoaConsultado, resposta);
         Res.Send<TJSONAncestor>(resposta.Clone).Status(200);
@@ -425,8 +444,8 @@ begin
       end
       else
       begin
-        mensagem := 'Erro não tratado ao cadastrar uma Pessoa!';
-        resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('PESSOA007', mensagem))));
+        mensagem := 'Erro não tratado ao cadastrar um ' + classe + '!';
+        resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro(UpperCase(classe) + '007', mensagem))));
         Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
       end;
     end;
@@ -435,8 +454,8 @@ begin
   except
     on E: Exception do
     begin
-      mensagem := 'Erro não tratado ao cadastrar uma Pessoa!';
-      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('PESSOA007', mensagem))));
+      mensagem := 'Erro não tratado ao cadastrar um ' + classe + '!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro(UpperCase(classe) + '007', mensagem))));
       Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
     end;
   end;
@@ -711,12 +730,12 @@ end;
 
 procedure buscarCliente(Req: THorseRequest; Res: THorseResponse; Next: TProc);
 begin
-  buscarPessoa(Req, Res, Next, 'buscarCliente', 'Cliente', tipoCliente);
+  buscarPessoa(Req, Res, Next, 'buscarCliente', 'Cliente', tpCliente);
 end;
 
 procedure cadastrarCliente(Req: THorseRequest; Res: THorseResponse; Next: TProc);
 begin
-  cadastrarPessoa(Req, Res, Next, 'cadastrarCliente', 'Cliente', tipoCliente);
+  cadastrarPessoa(Req, Res, Next, 'cadastrarCliente', 'Cliente', tpCliente);
 end;
 
 procedure Registry;

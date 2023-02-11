@@ -467,7 +467,7 @@ begin
   pessoaConsultado := TPessoa.Create;
   sql := TStringList.Create;
   sql.Add('SELECT CODIGO_PESSOA, NOME_FANTASIA');
-  sql.Add('  FROM pais');
+  sql.Add('  FROM pessoa');
   sql.Add(' WHERE (RAZAO_SOCIAL = ' + QuotedStr(FRazaoSocial));
   sql.Add('    OR  NOME_FANTASIA = ' + QuotedStr(FNomeFantasia) + ')');
   sql.Add('   AND CODIGO_TIPO_PESSOA = ' + IntToStrSenaoZero(FTipoCadastro.id));

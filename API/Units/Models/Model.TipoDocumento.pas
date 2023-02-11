@@ -241,7 +241,7 @@ var
 begin
   tipoDocumentoConsultado := TTipoDocumento.Create;
   sql := TStringList.Create;
-  sql.Add('SELECT CODIGO_TIPO_DOCUMENTO, DESCRICAO');
+  sql.Add('SELECT CODIGO_TIPO_DOCUMENTO, DESCRICAO, QTDE_CARACTERES');
   sql.Add('  FROM tipo_documento');
   sql.Add(' WHERE CODIGO_TIPO_DOCUMENTO = ' + IntToStrSenaoZero(FCodigo));
   sql.Add(' LIMIT 1');
@@ -262,6 +262,7 @@ begin
 
     tipoDocumentoConsultado.FCodigo := query.FieldByName('CODIGO_TIPO_DOCUMENTO').Value;
     tipoDocumentoConsultado.FDescricao := query.FieldByName('DESCRICAO').Value;
+    tipoDocumentoConsultado.FQtdeCaracteres := query.FieldByName('QTDE_CARACTERES').Value;
   end;
 
   Result := tipoDocumentoConsultado;

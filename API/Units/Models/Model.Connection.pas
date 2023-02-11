@@ -96,8 +96,8 @@ begin
              +#13#10+'     , log_requisicao.CODIGO_SESSAO = ' + IntToStrSenaoZero(FCodigoSessao)
              +#13#10+'     , log_requisicao.CODIGO_STATUS = ' + IntToStrSenaoZero(status)
              +#13#10+'     , log_requisicao.DATA_ULTIMA_ALTERACAO = CURRENT_TIMESTAMP '
-             +#13#10+'     , log_requisicao.TEMPO_RESPOSTA = TIME(log_requisicao.DATA_ULTIMA_ALTERACAO) - ' 
-             +#13#10+'                                       TIME(log_requisicao.DATA_CADASTRO) '
+             +#13#10+'     , log_requisicao.TEMPO_RESPOSTA = TIMEDIFF(log_requisicao.DATA_ULTIMA_ALTERACAO, '
+             +#13#10+'                                                log_requisicao.DATA_CADASTRO) '
              +#13#10+' WHERE log_requisicao.CODIGO_LOG = ' + IntToStrSenaoZero(codigo) 
              );
 end;
