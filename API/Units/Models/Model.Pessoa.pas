@@ -174,8 +174,13 @@ begin
     sql.Add('      AND sessao.CODIGO_SESSAO = pessoa.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
     sql.Add('');
     sql.Add('  FROM pessoa, tipo_documento');
-    sql.Add(' WHERE pessoa.TIPO_DOCUMENTO = tipo_documento.CODIGO_TIPO_DOCUMENTO');
+    sql.Add(' WHERE pessoa.CODIGO_TIPO_DOCUMENTO = tipo_documento.CODIGO_TIPO_DOCUMENTO');
     sql.Add('   AND pessoa.`STATUS` = ' + QuotedStr(FStatus));
+
+    if  (FCodigo > 0) then
+    begin
+      sql.Add('   AND pessoa.CODIGO_PESSOA = ' + IntToStrSenaoZero(FCodigo));
+    end;
 
     if  (FTipoCadastro.id > 0) then
     begin
@@ -184,12 +189,12 @@ begin
 
     if  (FTipoDocumento.id > 0) then
     begin
-      sql.Add('   AND pessoa.TIPO_DOCUMENTO = ' + IntToStrSenaoZero(FTipoDocumento.id));
+      sql.Add('   AND pessoa.CODIGO_TIPO_DOCUMENTO = ' + IntToStrSenaoZero(FTipoDocumento.id));
     end;
 
     if  (FTipoDocumento.descricao <> '') then
     begin
-      sql.Add('   AND tipo_documento.NOME LIKE ' + QuotedStr('%' + FTipoDocumento.descricao + '%'));
+      sql.Add('   AND tipo_documento.DESCRICAO LIKE ' + QuotedStr('%' + FTipoDocumento.descricao + '%'));
     end;
 
     if  (FDocumento <> '') then
@@ -317,7 +322,7 @@ begin
   sql.Add('      AND sessao.CODIGO_SESSAO = pessoa.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
   sql.Add('');
   sql.Add('  FROM pessoa, tipo_documento');
-  sql.Add(' WHERE pessoa.TIPO_DOCUMENTO = tipo_documento.CODIGO_TIPO_DOCUMENTO');
+  sql.Add(' WHERE pessoa.CODIGO_TIPO_DOCUMENTO = tipo_documento.CODIGO_TIPO_DOCUMENTO');
   sql.Add('   AND pessoa.CODIGO_PESSOA = ' + IntToStrSenaoZero(codigo));
 
   query := FConexao.executarComandoDQL(sql.Text);
@@ -347,7 +352,12 @@ begin
   sql := TStringList.Create;
   sql.Add('SELECT COUNT(pessoa.CODIGO_PESSOA) TOTAL');
   sql.Add('  FROM pessoa, tipo_documento');
-  sql.Add(' WHERE pessoa.TIPO_DOCUMENTO = tipo_documento.CODIGO_TIPO_DOCUMENTO ');
+  sql.Add(' WHERE pessoa.CODIGO_TIPO_DOCUMENTO = tipo_documento.CODIGO_TIPO_DOCUMENTO ');
+
+  if  (FCodigo > 0) then
+  begin
+    sql.Add('   AND pessoa.CODIGO_PESSOA = ' + IntToStrSenaoZero(FCodigo));
+  end;
 
   if  (FTipoCadastro.id > 0) then
   begin
@@ -356,12 +366,12 @@ begin
 
   if  (FTipoDocumento.id > 0) then
   begin
-    sql.Add('   AND pessoa.TIPO_DOCUMENTO = ' + IntToStrSenaoZero(FTipoDocumento.id));
+    sql.Add('   AND pessoa.CODIGO_TIPO_DOCUMENTO = ' + IntToStrSenaoZero(FTipoDocumento.id));
   end;
 
   if  (FTipoDocumento.descricao <> '') then
   begin
-    sql.Add('   AND tipo_documento.NOME LIKE ' + QuotedStr('%' + FTipoDocumento.descricao + '%'));
+    sql.Add('   AND tipo_documento.DESCRICAO LIKE ' + QuotedStr('%' + FTipoDocumento.descricao + '%'));
   end;
 
   if  (FDocumento <> '') then
@@ -394,7 +404,7 @@ begin
     sql.Add('   AND pessoa.OBSERVACAO LIKE ' + QuotedStr('%' + FObservacao + '%'));
   end;
 
-  sql.Add('   AND cidade.`STATUS` = ' + QuotedStr(FStatus));
+  sql.Add('   AND pessoa.`STATUS` = ' + QuotedStr(FStatus));
 
   query := FConexao.executarComandoDQL(sql.Text);
 
@@ -556,7 +566,7 @@ begin
     data.FTelefone := query.FieldByName('TELEFONE').Value;
     data.FEmail := query.FieldByName('EMAIL').Value;
     data.FSenha := query.FieldByName('SENHA').Value;
-    data.FObservacao := query.FieldByName('OBSERVACAO').Value;
+    data.FObservacao := query.FieldByName('OBSERVACAO').AsString;
     data.FCadastradoPor.usuario := query.FieldByName('usuarioCadastro').Value;
     data.FAlteradoPor.usuario := query.FieldByName('usuarioAlteracao').Value;
     data.FDataCadastro := query.FieldByName('DATA_CADASTRO').Value;
@@ -567,7 +577,7 @@ begin
   except
     on E: Exception do
     begin
-      raise Exception.Create('Erro ao montar Cidade ' + e.Message);
+      raise Exception.Create('Erro ao montar Pessoa ' + e.Message);
       Result := nil;
     end;
   end;

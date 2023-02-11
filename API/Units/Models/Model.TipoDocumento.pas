@@ -46,6 +46,7 @@ type
 
     procedure limpar;
     procedure atualizarLog(codigo, status: Integer; resposta: string);
+    function buscarRegistroCadastrar(descricao, mascara: string; caracteres: integer): integer;
 
     function consultar: TArray<TTipoDocumento>;
     function consultarChave: TTipoDocumento;
@@ -84,6 +85,28 @@ end;
 procedure TTipoDocumento.atualizarLog(codigo, status: Integer; resposta: string);
 begin
   FConexao.atualizarLog(codigo, status, resposta);
+end;
+
+function TTipoDocumento.buscarRegistroCadastrar(descricao, mascara: string; caracteres: integer): integer;
+var
+  tipoDocumentoConsultado: TTipoDocumento;
+begin
+  FDescricao := descricao;
+  tipoDocumentoConsultado := existeRegistro;
+
+  if Assigned(tipoDocumentoConsultado) then
+  begin
+    Result := tipoDocumentoConsultado.id;
+    tipoDocumentoConsultado.Destroy;
+  end
+  else
+  begin
+    FMascara := mascara;
+    FQtdeCaracteres := caracteres;
+    tipoDocumentoConsultado := cadastrarTipoDocumento;
+    Result := tipoDocumentoConsultado.id;
+    tipoDocumentoConsultado.Destroy;
+  end;
 end;
 
 function TTipoDocumento.cadastrarTipoDocumento: TTipoDocumento;

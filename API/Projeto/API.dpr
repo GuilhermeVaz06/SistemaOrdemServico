@@ -19,7 +19,8 @@ uses
   Controller.Estado in '..\Units\Controllers\Controller.Estado.pas',
   Controller.Cidade in '..\Units\Controllers\Controller.Cidade.pas',
   Controller.TipoDocumento in '..\Units\Controllers\Controller.TipoDocumento.pas',
-  Controller.TipoEndereco in '..\Units\Controllers\Controller.TipoEndereco.pas';
+  Controller.TipoEndereco in '..\Units\Controllers\Controller.TipoEndereco.pas',
+  Controller.Pessoa in '..\Units\Controllers\Controller.Pessoa.pas';
 
 {$R *.res}
 

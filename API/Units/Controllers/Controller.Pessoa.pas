@@ -143,38 +143,47 @@ begin
   try
     token := Req.Headers['token'];
     pessoa.id := strToIntZero(Req.Query['codigo']);
-    pessoa.tipoDocumento.id := strToIntZero(Req.Query['codigoTipoDocumento']);
-    pessoa.tipoDocumento.descricao := Req.Query['tipoDocumento'];
     pessoa.tipoPessoa.id := tipoPessoa;
     pessoa.documento := Req.Query['documento'];
 
-    if (tipoPessoa in[3, 4]) then
+    if verificarToken(res) then
     begin
-      pessoa.razaoSocial := Req.Query['nome'];
-      pessoa.nomeFantasia := Req.Query['nome'];
+      if (tipoPessoa in[3, 4]) then
+      begin
+        pessoa.tipoDocumento.id := pessoa.tipoDocumento.buscarRegistroCadastrar('CPFX', '999.999.999-99', 11);
+        pessoa.tipoDocumento.descricao := Req.Query['tipoDocumento'];
+        pessoa.razaoSocial := Req.Query['nome'];
+        pessoa.nomeFantasia := Req.Query['nome'];
+      end
+      else
+      begin
+        pessoa.tipoDocumento.id := strToIntZero(Req.Query['codigoTipoDocumento']);
+        pessoa.tipoDocumento.descricao := Req.Query['tipoDocumento'];
+        pessoa.razaoSocial := Req.Query['razaoSocial'];
+        pessoa.nomeFantasia := Req.Query['nomeFantasia'];
+      end;
+
+      if (tipoPessoa = 4) then
+      begin
+        pessoa.senha := Req.Query['senha'];
+      end;
+
+      pessoa.telefone := Req.Query['telefone'];
+      pessoa.email := Req.Query['email'];
+      pessoa.observacao := Req.Query['observacao'];
+      pessoa.status := Req.Query['status'];
+      pessoa.limite := strToIntZero(Req.Query['limite']);
+      pessoa.offset := strToIntZero(Req.Query['offset']);
     end
     else
     begin
-      pessoa.razaoSocial := Req.Query['razaoSocial'];
-      pessoa.nomeFantasia := Req.Query['nomeFantasia'];
+      continuar := False;
     end;
-
-    if (tipoPessoa = 4) then
-    begin
-      pessoa.senha := Req.Query['senha'];
-    end;
-
-    pessoa.telefone := Req.Query['telefone'];
-    pessoa.email := Req.Query['email'];
-    pessoa.observacao := Req.Query['observacao'];
-    pessoa.status := Req.Query['status'];
-    pessoa.limite := strToIntZero(Req.Query['limite']);
-    pessoa.offset := strToIntZero(Req.Query['offset']);
   except
     on E: Exception do
     begin
       mensagem := 'Erro não tratado ao recuperar informações da requisição!';
-      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('PESSOA010', mensagem))));
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro(UpperCase(classe) + '010', mensagem))));
       Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
       continuar := False;
     end;
@@ -185,7 +194,7 @@ begin
     pessoa.status := 'A';
   end;
 
-  if (continuar) and (verificarToken(res)) then
+  if (continuar) then
   try
     if (pessoa.id > 0) or
        (pessoa.tipoDocumento.descricao <> '') or
@@ -225,7 +234,7 @@ begin
       else
       begin
         mensagem := 'Erro ao consultar ' + classe + '!';
-        resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('PESSOA002', mensagem))));
+        resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro(UpperCase(classe) + '002', mensagem))));
         Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
       end;
     end
@@ -257,18 +266,22 @@ begin
         arrayResposta := TJSONArray.Create;
       end;
 
-      arrayResposta.Add(UFuncao.JsonErro('PESSOA003', 'Erro não tratado ao listar ' + classe + '!'));
+      arrayResposta.Add(UFuncao.JsonErro(UpperCase(classe) + '003', 'Erro não tratado ao listar ' + classe + '!'));
       resposta.AddPair(TJSONPair.Create('Erros', arrayResposta));
       Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
     end;
   end;
 
-  pessoa.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
+  if FConexao.codigoSessao > 0 then
+  begin
+    pessoa.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
+  end;
+
   limparVariaveis;
   FreeAndNil(resposta);
 end;
 
-procedure cadastrarPessoa(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+procedure cadastrarPessoa(Req: THorseRequest; Res: THorseResponse; Next: TProc; procedimento, classe: string; tipoPessoa: integer);
 var
   erros: TStringList;
   resposta: TJSONObject;
@@ -281,7 +294,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogPessoa(Req, Res, 'cadastrarPessoa', 'Pessoa');
+  codigoLog := gerarLogPessoa(Req, Res, procedimento, classe);
 
   if (continuar) then
   try
@@ -289,13 +302,33 @@ begin
 
     token := Req.Headers['token'];
     pessoa.tipoPessoa.id := 0;
-    pessoa.tipoDocumento.id := body.GetValue<integer>('codigoTipoDocumento', 0);
-    pessoa.documento := body.GetValue<string>('documento', '');
-    pessoa.razaoSocial := body.GetValue<string>('razaoSocial', '');
-    pessoa.nomeFantasia := body.GetValue<string>('nomeFantasia', '');
+
+    if (tipoPessoa in[3, 4]) then
+    begin
+      pessoa.tipoDocumento.id := pessoa.tipoDocumento.buscarRegistroCadastrar('CPFX', '999.999.999-99', 11);
+      pessoa.documento := body.GetValue<string>('documento', '');
+      pessoa.razaoSocial := body.GetValue<string>('nome');
+      pessoa.nomeFantasia := body.GetValue<string>('nome');
+    end
+    else
+    begin
+      pessoa.tipoDocumento.id := body.GetValue<integer>('codigoTipoDocumento', 0);
+      pessoa.documento := body.GetValue<string>('documento', '');
+      pessoa.razaoSocial := body.GetValue<string>('razaoSocial');
+      pessoa.nomeFantasia := body.GetValue<string>('nomeFantasia');
+    end;
+
+    if (tipoPessoa = 4) then
+    begin
+      pessoa.senha := body.GetValue<string>('senha', '');
+    end
+    else
+    begin
+      pessoa.senha := '';
+    end;
+
     pessoa.telefone := body.GetValue<string>('telefone', '');
     pessoa.email := body.GetValue<string>('email', '');
-    pessoa.senha := body.GetValue<string>('senha', '');
     pessoa.observacao := body.GetValue<string>('observacao', '');
     pessoa.id := 0;
   except
@@ -412,7 +445,11 @@ begin
     end;
   end;
 
-  pessoa.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
+  if FConexao.codigoSessao > 0 then
+  begin
+    pessoa.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
+  end;
+
   limparVariaveis;
   FreeAndNil(resposta);
 end;
@@ -576,7 +613,11 @@ begin
     end;
   end;
 
-  pessoa.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
+  if FConexao.codigoSessao > 0 then
+  begin
+    pessoa.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
+  end;
+
   limparVariaveis;
   FreeAndNil(resposta);
 end;
@@ -675,7 +716,11 @@ begin
     end;
   end;
 
-  pessoa.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
+  if FConexao.codigoSessao > 0 then
+  begin
+    pessoa.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
+  end;
+
   limparVariaveis;
   FreeAndNil(resposta);
 end;
@@ -685,13 +730,18 @@ begin
   buscarPessoa(Req, Res, Next, 'buscarCliente', 'Cliente', tipoCliente);
 end;
 
+procedure cadastrarCliente(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+begin
+  cadastrarPessoa(Req, Res, Next, 'cadastrarCliente', 'Cliente', tipoCliente);
+end;
+
 procedure Registry;
 begin
   criarConexao;
   THorse.Get('/cliente', buscarCliente);
-  THorse.Post('/pessoa', cadastrarPessoa);
-  THorse.Put('/pessoa/:id', alterarPessoa);
-  THorse.Delete('/pessoa/:id', inativarPessoa);
+  THorse.Post('/cliente', cadastrarCliente);
+//  THorse.Put('/pessoa/:id', alterarPessoa);
+//  THorse.Delete('/pessoa/:id', inativarPessoa);
 end;
 
 end.

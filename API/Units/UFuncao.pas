@@ -8,6 +8,7 @@ uses Vcl.Forms, Vcl.Grids, Winapi.Windows, FireDAC.Comp.Client, REST.Client,
      Vcl.Graphics, System.IniFiles, Horse, System.Classes, System.Generics.Collections,
      Web.HTTPApp;
 
+function validarIP(ip: string): boolean;
 function JsonErro(codigo, descricao: string): TJSONObject;
 function soNumeros(Valor: string): string;
 function strToDoubleZero(valor: string): Double;
@@ -368,6 +369,103 @@ begin
   temporario.AddPair('Codigo', codigo);
   temporario.AddPair('mensagem',descricao);
   Result := temporario;
+end;
+
+function validarIP(ip: string): boolean;
+var
+  z:integer;
+  i: byte;
+  st: array[1..3] of byte;
+  const
+  ziff = ['0'..'9'];
+begin
+  st[1] := 0;
+  st[2] := 0;
+  st[3] := 0;
+  z := 0;
+
+  Result := true;
+  for i := 1 to Length(ip) do
+  begin
+    if ip[i] in ziff then
+    begin
+//
+    end
+    else
+    begin
+      if ip[i] = '.' then
+      begin
+        Inc(z);
+        if z < 4 then
+        begin
+          st[z] := i;
+        end
+        else
+        begin
+          Result := False;
+          Exit;
+        end;
+      end
+      else
+      begin
+        Result := False;
+        Exit;
+      end;
+    end;
+  end;
+
+
+  if (z <> 3)
+  or (st[1] < 2)
+  or (st[3] = Length(ip))
+  or (st[1] + 2 > st[2])
+  or (st[2] + 2 > st[3])
+  or (st[1] > 4)
+  or (st[2] > st[1] + 4)
+  or (st[3] > st[2] + 4) then
+  begin
+    Result := False;
+    Exit;
+  end;
+
+  z := StrToInt(Copy(ip, 1, st[1] - 1));
+
+  if (z > 255)
+  or (ip[1] = '0') then
+  begin
+    Result := False;
+    Exit;
+  end;
+
+  z := StrToInt(Copy(ip, st[1] + 1, st[2] - st[1] - 1));
+
+  if (z > 255)
+  or ((z <> 0)
+  and (ip[st[1] + 1] = '0')) then
+  begin
+    Result := False;
+    Exit;
+  end;
+
+  z := StrToInt(Copy(ip, st[2] + 1, st[3] - st[2] - 1));
+
+  if (z > 255)
+  or ((z <> 0)
+  and (ip[st[2] + 1] = '0')) then
+  begin
+    Result := False;
+    Exit;
+  end;
+
+  z := StrToInt(Copy(ip, st[3] + 1, Length(ip) - st[3]));
+
+  if (z > 255)
+  or ((z <> 0)
+  and (ip[st[3] + 1] = '0')) then
+  begin
+    Result := False;
+    Exit;
+  end;
 end;
 
 end.
