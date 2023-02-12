@@ -46,30 +46,25 @@ begin
   resposta.AddPair('status', pessoaItem.status);
 end;
 
-function gerarLogPessoa(Req: THorseRequest; Res: THorseResponse; procedimento, classe: string): Integer;
+function gerarLogPessoa(Req: THorseRequest; Res: THorseResponse; procedimento, classe: string; out resposta: TJSONObject): Integer;
 var
-  resposta: TJSONObject;
   mensagem: string;
 begin
-  resposta := TJSONObject.Create;
-
   try
     Result := pessoa.GerarLog(classe,
-                             procedimento,
-                             imprimirRequisicao(req)
+                              procedimento,
+                              imprimirRequisicao(req)
     );
   except
     on E: Exception do
     begin
       mensagem := 'Erro não tratado ao Gerar Log!';
-      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('PESSOA018', mensagem))));
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro(UpperCase(classe) + '018', mensagem))));
       Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
       continuar := False;
       Result := 0;
     end;
   end;
-
-  FreeAndNil(resposta);
 end;
 
 procedure destruirConexao;
@@ -96,19 +91,17 @@ begin
   end;
 end;
 
-function verificarToken(Res: THorseResponse): Boolean;
+function verificarToken(Res: THorseResponse; classe: string; out resposta: TJSONObject): Boolean;
 var
-  resposta: TJSONObject;
   mensagem: string;
 begin
   Result := True;
-  resposta := TJSONObject.Create;
 
   try
     if not (pessoa.verificarToken(token)) then
     begin
       mensagem := 'O token informado é invalido!';
-      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('PESSOA008', mensagem))));
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro(UpperCase(classe) + '008', mensagem))));
       Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
       Result := False;
     end;
@@ -116,13 +109,11 @@ begin
     on E: Exception do
     begin
       mensagem := 'Erro não tratado ao verificar o token!';
-      resposta.Create(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('PESSOA011', mensagem))));
+      resposta.Create(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro(UpperCase(classe) + '011', mensagem))));
       Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
       Result := False;
     end;
   end;
-
-  FreeAndNil(resposta);
 end;
 
 procedure buscarPessoa(Req: THorseRequest; Res: THorseResponse; Next: TProc; procedimento, classe: string; tipoPessoa: integer);
@@ -137,7 +128,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogPessoa(Req, Res, procedimento, classe);
+  codigoLog := gerarLogPessoa(Req, Res, procedimento, classe, resposta);
 
   if (continuar) then
   try
@@ -146,7 +137,7 @@ begin
     pessoa.tipoPessoa.id := tipoPessoa;
     pessoa.documento := Req.Query['documento'];
 
-    if verificarToken(res) then
+    if verificarToken(res, classe, resposta) then
     begin
       if (tipoPessoa in[tpFuncionario, tpUsuario]) then
       begin
@@ -290,7 +281,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogPessoa(Req, Res, procedimento, classe);
+  codigoLog := gerarLogPessoa(Req, Res, procedimento, classe, resposta);
 
   if (continuar) then
   try
@@ -299,34 +290,41 @@ begin
     token := Req.Headers['token'];
     pessoa.tipoPessoa.id := tipoPessoa;
 
-    if (tipoPessoa in[tpFuncionario, tpUsuario]) then
+    if verificarToken(res, classe, resposta) then
     begin
-      pessoa.tipoDocumento.id := pessoa.tipoDocumento.buscarRegistroCadastrar('CPF', '999.999.999-99', 11);
-      pessoa.documento := body.GetValue<string>('documento', '');
-      pessoa.razaoSocial := body.GetValue<string>('nome');
-      pessoa.nomeFantasia := body.GetValue<string>('nome');
-
-      if (tipoPessoa = tpUsuario) then
+      if (tipoPessoa in[tpFuncionario, tpUsuario]) then
       begin
-        pessoa.senha := body.GetValue<string>('senha', '');
+        pessoa.tipoDocumento.id := pessoa.tipoDocumento.buscarRegistroCadastrar('CPF', '999.999.999-99', 11);
+        pessoa.documento := body.GetValue<string>('documento', '');
+        pessoa.razaoSocial := body.GetValue<string>('nome');
+        pessoa.nomeFantasia := body.GetValue<string>('nome');
+
+        if (tipoPessoa = tpUsuario) then
+        begin
+          pessoa.senha := body.GetValue<string>('senha', '');
+        end
+        else
+        begin
+          pessoa.senha := '';
+        end;
       end
       else
       begin
-        pessoa.senha := '';
+        pessoa.tipoDocumento.id := body.GetValue<integer>('codigoTipoDocumento', 0);
+        pessoa.documento := body.GetValue<string>('documento', '');
+        pessoa.razaoSocial := body.GetValue<string>('razaoSocial', '');
+        pessoa.nomeFantasia := body.GetValue<string>('nomeFantasia', '');
       end;
+
+      pessoa.telefone := body.GetValue<string>('telefone', '');
+      pessoa.email := body.GetValue<string>('email', '');
+      pessoa.observacao := body.GetValue<string>('observacao', '');
+      pessoa.id := 0;
     end
     else
     begin
-      pessoa.tipoDocumento.id := body.GetValue<integer>('codigoTipoDocumento', 0);
-      pessoa.documento := body.GetValue<string>('documento', '');
-      pessoa.razaoSocial := body.GetValue<string>('razaoSocial', '');
-      pessoa.nomeFantasia := body.GetValue<string>('nomeFantasia', '');
+      continuar := False;
     end;
-
-    pessoa.telefone := body.GetValue<string>('telefone', '');
-    pessoa.email := body.GetValue<string>('email', '');
-    pessoa.observacao := body.GetValue<string>('observacao', '');
-    pessoa.id := 0;
   except
     on E: Exception do
     begin
@@ -339,7 +337,7 @@ begin
 
   FreeAndNil(body);
 
-  if (continuar) and (verificarToken(res)) then
+  if (continuar) then
   try
     erros := TStringList.Create;
     arrayResposta := TJSONArray.Create;
@@ -465,7 +463,7 @@ begin
   FreeAndNil(resposta);
 end;
 
-procedure alterarPessoa(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+procedure alterarPessoa(Req: THorseRequest; Res: THorseResponse; Next: TProc; procedimento, classe: string; tipoPessoa: integer);
 var
   erros: TStringList;
   resposta: TJSONObject;
@@ -478,28 +476,55 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogPessoa(Req, Res, 'alterarPessoa', 'Pessoa');
+  codigoLog := gerarLogPessoa(Req, Res, procedimento, classe, resposta);
 
   if (continuar) then
   try
     body := TJSONObject.ParseJSONValue(TEncoding.UTF8.GetBytes(req.Body), 0) as TJSONValue;
 
     token := Req.Headers['token'];
-    pessoa.tipoPessoa.id := 0;
-    pessoa.tipoDocumento.id := body.GetValue<integer>('codigoTipoDocumento', 0);
-    pessoa.documento := body.GetValue<string>('documento', '');
-    pessoa.razaoSocial := body.GetValue<string>('razaoSocial', '');
-    pessoa.nomeFantasia := body.GetValue<string>('nomeFantasia', '');
-    pessoa.telefone := body.GetValue<string>('telefone', '');
-    pessoa.email := body.GetValue<string>('email', '');
-    pessoa.senha := body.GetValue<string>('senha', '');
-    pessoa.observacao := body.GetValue<string>('observacao', '');
-    pessoa.id := strToIntZero(Req.Params['id']);
+    pessoa.tipoPessoa.id := tipoPessoa;
+
+    if verificarToken(res, classe, resposta) then
+    begin
+      if (tipoPessoa in[tpFuncionario, tpUsuario]) then
+      begin
+        pessoa.tipoDocumento.id := pessoa.tipoDocumento.buscarRegistroCadastrar('CPF', '999.999.999-99', 11);
+        pessoa.documento := body.GetValue<string>('documento', '');
+        pessoa.razaoSocial := body.GetValue<string>('nome');
+        pessoa.nomeFantasia := body.GetValue<string>('nome');
+
+        if (tipoPessoa = tpUsuario) then
+        begin
+          pessoa.senha := body.GetValue<string>('senha', '');
+        end
+        else
+        begin
+          pessoa.senha := '';
+        end;
+      end
+      else
+      begin
+        pessoa.tipoDocumento.id := body.GetValue<integer>('codigoTipoDocumento', 0);
+        pessoa.documento := body.GetValue<string>('documento', '');
+        pessoa.razaoSocial := body.GetValue<string>('razaoSocial', '');
+        pessoa.nomeFantasia := body.GetValue<string>('nomeFantasia', '');
+      end;
+
+      pessoa.telefone := body.GetValue<string>('telefone', '');
+      pessoa.email := body.GetValue<string>('email', '');
+      pessoa.observacao := body.GetValue<string>('observacao', '');
+      pessoa.id := strToIntZero(Req.Params['id']);
+    end
+    else
+    begin
+      continuar := False;
+    end;
   except
     on E: Exception do
     begin
       mensagem := 'Erro ao recuperar dados da requisição: ' + e.Message + '!';
-      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('PESSOA012', mensagem))));
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro(UpperCase(classe) + '012', mensagem))));
       Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
       continuar := False;
     end;
@@ -507,7 +532,7 @@ begin
 
   FreeAndNil(body);
 
-  if (continuar) and (verificarToken(res)) then
+  if (continuar) then
   try
     erros := TStringList.Create;
     arrayResposta := TJSONArray.Create;
@@ -517,30 +542,48 @@ begin
       erros.Add('O Codigo da Pessoa deve ser informado, ou deve ser um numero inteiro valido!');
     end;
 
-    if (pessoa.razaoSocial = '') then
+    if (tipoPessoa in[tpCliente, tpFornecedor]) then
     begin
-      erros.Add('A Razão Social deve ser informada!');
-    end
-    else if (Length(Trim(pessoa.razaoSocial)) <= 2) then
-    begin
-      erros.Add('A Razão Social deve conter no minimo 2 caracteres validos!');
-    end
-    else if (Length(Trim(pessoa.razaoSocial)) > 150) then
-    begin
-      erros.Add('A Razão Social deve conter no maximo 150 caracteres validos!');
-    end;
+      if (pessoa.razaoSocial = '') then
+      begin
+        erros.Add('A Razão Social deve ser informada!');
+      end
+      else if (Length(Trim(pessoa.razaoSocial)) <= 2) then
+      begin
+        erros.Add('A Razão Social deve conter no minimo 2 caracteres validos!');
+      end
+      else if (Length(Trim(pessoa.razaoSocial)) > 150) then
+      begin
+        erros.Add('A Razão Social deve conter no maximo 150 caracteres validos!');
+      end;
 
-    if (pessoa.nomeFantasia = '') then
-    begin
-      erros.Add('O Nome fantasia deve ser informado!');
+      if (pessoa.nomeFantasia = '') then
+      begin
+        erros.Add('O Nome fantasia deve ser informado!');
+      end
+      else if (Length(Trim(pessoa.nomeFantasia)) <= 2) then
+      begin
+        erros.Add('O Nome fantasia deve conter no minimo 2 caracteres validos!');
+      end
+      else if (Length(Trim(pessoa.nomeFantasia)) > 150) then
+      begin
+        erros.Add('O Nome fantasia deve conter no maximo 150 caracteres validos!');
+      end;
     end
-    else if (Length(Trim(pessoa.nomeFantasia)) <= 2) then
+    else
     begin
-      erros.Add('O Nome fantasia deve conter no minimo 2 caracteres validos!');
-    end
-    else if (Length(Trim(pessoa.nomeFantasia)) > 150) then
-    begin
-      erros.Add('O Nome fantasia deve conter no maximo 150 caracteres validos!');
+      if (pessoa.razaoSocial = '') then
+      begin
+        erros.Add('O nome deve ser informado!');
+      end
+      else if (Length(Trim(pessoa.razaoSocial)) <= 2) then
+      begin
+        erros.Add('O nome deve conter no minimo 2 caracteres validos!');
+      end
+      else if (Length(Trim(pessoa.razaoSocial)) > 150) then
+      begin
+        erros.Add('O nome deve conter no maximo 150 caracteres validos!');
+      end;
     end;
 
     if (erros.Text = '') then
@@ -549,7 +592,7 @@ begin
 
       if not (Assigned(pessoaConsultado)) then
       begin
-        erros.Add('Nenhuma Pessoa encontrado com o codigo [' + IntToStrSenaoZero(pessoa.id) + ']!');
+        erros.Add('Nenhuma ' + classe + ' encontrado com o codigo [' + IntToStrSenaoZero(pessoa.id) + ']!');
       end
       else
       begin
@@ -558,8 +601,8 @@ begin
 
         if (Assigned(pessoaConsultado)) then
         begin
-          erros.Add('Já existe um Pessoa [' + IntToStrSenaoZero(pessoaConsultado.id) +
-                    ' - ' + pessoaConsultado.razaoSocial + '], cadastrado com esse nome fantasia e com esse documento!');
+          erros.Add('Já existe um ' + classe + ' [' + IntToStrSenaoZero(pessoaConsultado.id) +
+                    ' - ' + pessoaConsultado.razaoSocial + '], cadastrado com esse nome e com esse documento!');
           pessoaConsultado.Destroy;
         end
         else
@@ -586,7 +629,7 @@ begin
     begin
       for i := 0 to erros.Count - 1 do
       begin
-        arrayResposta.Add(UFuncao.JsonErro('PESSOA013',  erros[i]));
+        arrayResposta.Add(UFuncao.JsonErro(UpperCase(classe) + '013',  erros[i]));
       end;
 
       resposta.AddPair(TJSONPair.Create('Erros', arrayResposta));
@@ -599,7 +642,7 @@ begin
 
       if Assigned(pessoaConsultado) then
       begin
-        resposta.AddPair('tipo', 'Alteração de Pessoa');
+        resposta.AddPair('tipo', 'Alteração de ' + classe);
         resposta.AddPair('registrosAfetados', TJSONNumber.Create(pessoa.registrosAfetados));
         montarPessoa(pessoaConsultado, resposta);
         Res.Send<TJSONAncestor>(resposta.Clone).Status(200);
@@ -608,8 +651,8 @@ begin
       end
       else
       begin
-        mensagem := 'Erro não tratado ao alterar uma Pessoa!';
-        resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('PESSOA014', mensagem))));
+        mensagem := 'Erro não tratado ao alterar um ' + classe + '!';
+        resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro(UpperCase(classe) + '014', mensagem))));
         Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
       end;
     end;
@@ -618,8 +661,8 @@ begin
   except
     on E: Exception do
     begin
-      mensagem := 'Erro não tratado ao alterar uma Pessoa!';
-      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('PESSOA014', mensagem))));
+      mensagem := 'Erro não tratado ao alterar um ' + classe + '!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro(UpperCase(classe) + '014', mensagem))));
       Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
     end;
   end;
@@ -629,7 +672,7 @@ begin
   FreeAndNil(resposta);
 end;
 
-procedure inativarPessoa(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+procedure inativarPessoa(Req: THorseRequest; Res: THorseResponse; Next: TProc; procedimento, classe: string; tipoPessoa: integer);
 var
   erros: TStringList;
   resposta: TJSONObject;
@@ -641,7 +684,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogPessoa(Req, Res, 'inativarPessoa', 'Pessoa');
+  codigoLog := gerarLogPessoa(Req, Res, 'inativarPessoa', 'Pessoa', resposta);
 
   if (continuar) then
   try
@@ -657,7 +700,7 @@ begin
     end;
   end;
 
-  if (continuar) and (verificarToken(res)) then
+  if (continuar) and (verificarToken(res, classe, resposta)) then
   try
     erros := TStringList.Create;
     arrayResposta := TJSONArray.Create;
@@ -738,12 +781,17 @@ begin
   cadastrarPessoa(Req, Res, Next, 'cadastrarCliente', 'Cliente', tpCliente);
 end;
 
+procedure alterarCliente(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+begin
+  alterarPessoa(Req, Res, Next, 'alterarCliente', 'Cliente', tpCliente);
+end;
+
 procedure Registry;
 begin
   criarConexao;
   THorse.Get('/cliente', buscarCliente);
   THorse.Post('/cliente', cadastrarCliente);
-//  THorse.Put('/pessoa/:id', alterarPessoa);
+  THorse.Put('/cliente/:id', alterarCliente);
 //  THorse.Delete('/pessoa/:id', inativarPessoa);
 end;
 
