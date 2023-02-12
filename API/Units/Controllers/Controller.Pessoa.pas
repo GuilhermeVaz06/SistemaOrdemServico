@@ -33,11 +33,25 @@ begin
   resposta.AddPair('qtdeCaracteres', TJSONNumber.Create(pessoaItem.tipoDocumento.qtdeCaracteres));
   resposta.AddPair('mascaraCaracteres', pessoaItem.tipoDocumento.mascara);
   resposta.AddPair('documento', pessoaItem.documento);
-  resposta.AddPair('razaoSocial', pessoaItem.razaoSocial);
-  resposta.AddPair('nomeFantasia', pessoaItem.nomeFantasia);
+
+  if pessoaItem.tipoPessoa.id in [tpCliente, tpFornecedor] then
+  begin
+    resposta.AddPair('razaoSocial', pessoaItem.razaoSocial);
+    resposta.AddPair('nomeFantasia', pessoaItem.nomeFantasia);
+  end
+  else
+  begin
+    resposta.AddPair('nome', pessoaItem.razaoSocial);
+  end;
+
   resposta.AddPair('telefone', pessoaItem.telefone);
   resposta.AddPair('email', pessoaItem.email);
-  resposta.AddPair('senha', pessoaItem.senha);
+
+  if pessoaItem.tipoPessoa.id = tpUsuario then
+  begin
+    resposta.AddPair('senha', pessoaItem.senha);
+  end;
+
   resposta.AddPair('observacao', pessoaItem.observacao);
   resposta.AddPair('cadastradoPor', pessoaItem.cadastradoPor.usuario);
   resposta.AddPair('alteradoPor', pessoaItem.alteradoPor.usuario);
@@ -539,7 +553,7 @@ begin
 
     if not (pessoa.id > 0) then
     begin
-      erros.Add('O Codigo da Pessoa deve ser informado, ou deve ser um numero inteiro valido!');
+      erros.Add('O Codigo do ' + classe  + ' deve ser informado, ou deve ser um numero inteiro valido!');
     end;
 
     if (tipoPessoa in[tpCliente, tpFornecedor]) then
