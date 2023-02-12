@@ -698,7 +698,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogPessoa(Req, Res, 'inativarPessoa', 'Pessoa', resposta);
+  codigoLog := gerarLogPessoa(Req, Res, procedimento, classe, resposta);
 
   if (continuar) then
   try
@@ -708,7 +708,7 @@ begin
     on E: Exception do
     begin
       mensagem := 'Erro ao recuperar dados da requisição: ' + e.Message + '!';
-      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(JsonErro('PESSOA015', mensagem))));
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(JsonErro(UpperCase(classe) + '015', mensagem))));
       Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
       continuar := False;
     end;
@@ -721,7 +721,7 @@ begin
 
     if not (pessoa.id > 0) then
     begin
-      erros.Add('O Codigo da Pessoa deve ser informado, ou deve ser um numero inteiro valido!');
+      erros.Add('O Codigo do ' + classe + ' deve ser informado, ou deve ser um numero inteiro valido!');
     end;
 
     if (erros.Text = '') then
@@ -730,7 +730,7 @@ begin
 
       if not (Assigned(pessoaConsultado)) then
       begin
-        erros.Add('Nenhuma Pessoa encontrado com o codigo [' + IntToStrSenaoZero(pessoa.id) + ']!');
+        erros.Add('Nenhum ' + classe + ' encontrado com o codigo [' + IntToStrSenaoZero(pessoa.id) + ']!');
       end
       else
       begin
@@ -742,7 +742,7 @@ begin
     begin
       for i := 0 to erros.Count - 1 do
       begin
-        arrayResposta.Add(UFuncao.JsonErro('PESSOA016',  erros[i]));
+        arrayResposta.Add(UFuncao.JsonErro(UpperCase(classe) + '016',  erros[i]));
       end;
 
       resposta.AddPair(TJSONPair.Create('Erros', arrayResposta));
@@ -755,7 +755,7 @@ begin
 
       if Assigned(pessoaConsultado) then
       begin
-        resposta.AddPair('tipo', 'Exclusão de Pessoa');
+        resposta.AddPair('tipo', 'Exclusão de ' + classe);
         resposta.AddPair('registrosAfetados', TJSONNumber.Create(pessoa.registrosAfetados));
         montarPessoa(pessoaConsultado, resposta);
         Res.Send<TJSONAncestor>(resposta.Clone).Status(200);
@@ -764,8 +764,8 @@ begin
       end
       else
       begin
-        mensagem := 'Erro não tratado ao inativar uma Pessoa!';
-        resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('PESSOA017', mensagem))));
+        mensagem := 'Erro não tratado ao inativar um' + classe + '!';
+        resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro(UpperCase(classe) + '017', mensagem))));
         Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
       end;
     end;
@@ -774,8 +774,8 @@ begin
   except
     on E: Exception do
     begin
-      mensagem := 'Erro não tratado ao inativar uma Pessoa!';
-      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('PESSOA017', mensagem))));
+      mensagem := 'Erro não tratado ao inativar um' + classe + '!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro(UpperCase(classe) + '017', mensagem))));
       Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
     end;
   end;
@@ -800,13 +800,18 @@ begin
   alterarPessoa(Req, Res, Next, 'alterarCliente', 'Cliente', tpCliente);
 end;
 
+procedure inativarCliente(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+begin
+  inativarPessoa(Req, Res, Next, 'inativarCliente', 'Cliente', tpCliente);
+end;
+
 procedure Registry;
 begin
   criarConexao;
   THorse.Get('/cliente', buscarCliente);
   THorse.Post('/cliente', cadastrarCliente);
   THorse.Put('/cliente/:id', alterarCliente);
-//  THorse.Delete('/pessoa/:id', inativarPessoa);
+  THorse.Delete('/cliente/:id', inativarCliente);
 end;
 
 end.

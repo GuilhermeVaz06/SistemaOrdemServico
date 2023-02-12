@@ -82,10 +82,10 @@ begin
   sql := TStringList.Create;
   sql.Add('UPDATE `pessoa`');
   sql.Add('   SET CODIGO_TIPO_DOCUMENTO = ' + IntToStrSenaoZero(FTipoDocumento.id));
-  sql.Add('     , DOCUMENTO = ' + QuotedStr(FDocumento));
+  sql.Add('     , DOCUMENTO = ' + QuotedStr(trim(soNumeros(FDocumento))));
   sql.Add('     , RAZAO_SOCIAL = ' + QuotedStr(FRazaoSocial));
   sql.Add('     , NOME_FANTASIA = ' + QuotedStr(FNomeFantasia));
-  sql.Add('     , TELEFONE = ' + QuotedStr(FTelefone));
+  sql.Add('     , TELEFONE = ' + QuotedStr(trim(soNumeros(FTelefone))));
   sql.Add('     , EMAIL = ' + QuotedStr(FEmail));
   sql.Add('     , SENHA = ' + QuotedStr(FSenha));
   sql.Add('     , OBSERVACAO = ' + QuotedStr(FObservacao));
@@ -116,10 +116,10 @@ begin
   sql.Add(' ' + IntToStrSenaoZero(codigo));                                     //CODIGO_PESSOA
   sql.Add(',' + IntToStrSenaoZero(FTipoCadastro.id));                           //CODIGO_TIPO_PESSOA
   sql.Add(',' + IntToStrSenaoZero(FTipoDocumento.id));                          //CODIGO_TIPO_DOCUMENTO
-  sql.Add(',' + QuotedStr(FDocumento));                                         //DOCUMENTO
+  sql.Add(',' + QuotedStr(trim(soNumeros(FDocumento))));                        //DOCUMENTO
   sql.Add(',' + QuotedStr(FRazaoSocial));                                       //RAZAO_SOCIAL
   sql.Add(',' + QuotedStr(FNomeFantasia));                                      //NOME_FANTASIA
-  sql.Add(',' + QuotedStr(FTelefone));                                          //TELEFONE
+  sql.Add(',' + QuotedStr(trim(soNumeros(FTelefone))));                         //TELEFONE
   sql.Add(',' + QuotedStr(FEmail));                                             //EMAIL
   sql.Add(',' + QuotedStr(FSenha));                                             //SENHA
   sql.Add(',' + QuotedStr(FObservacao));                                        //OBSERVACAO
