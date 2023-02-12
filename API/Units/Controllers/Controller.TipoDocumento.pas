@@ -34,13 +34,10 @@ begin
   resposta.AddPair('status',tipoDocumentoItem.status);
 end;
 
-function gerarLogTipoDocumento(Req: THorseRequest; Res: THorseResponse; procedimento: string): Integer;
+function gerarLogTipoDocumento(Req: THorseRequest; Res: THorseResponse; procedimento: string; out resposta: TJSONObject): Integer;
 var
-  resposta: TJSONObject;
   mensagem: string;
 begin
-  resposta := TJSONObject.Create;
-
   try
     Result := tipoDocumento.GerarLog('TipoDocumento',
                               procedimento,
@@ -56,8 +53,6 @@ begin
       Result := 0;
     end;
   end;
-
-  FreeAndNil(resposta);
 end;
 
 procedure criarConexao;
@@ -84,13 +79,11 @@ begin
   end;
 end;
 
-function verificarToken(Res: THorseResponse): Boolean;
+function verificarToken(Res: THorseResponse; out resposta: TJSONObject): Boolean;
 var
-  resposta: TJSONObject;
   mensagem: string;
 begin
   Result := True;
-  resposta := TJSONObject.Create;
 
   try
     if not (tipoDocumento.verificarToken(token)) then
@@ -109,8 +102,6 @@ begin
       Result := False;
     end;
   end;
-
-  FreeAndNil(resposta);
 end;
 
 procedure buscarTipoDocumento(Req: THorseRequest; Res: THorseResponse; Next: TProc);
@@ -125,7 +116,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogTipoDocumento(Req, Res, 'buscarTipoDocumento');
+  codigoLog := gerarLogTipoDocumento(Req, Res, 'buscarTipoDocumento', resposta);
 
   if (continuar) then
   try
@@ -152,7 +143,7 @@ begin
     tipoDocumento.status := 'A';
   end;
 
-  if (continuar) and (verificarToken(res)) then
+  if (continuar) and (verificarToken(res, resposta)) then
   try
     if (tipoDocumento.descricao <> '') or
        (tipoDocumento.qtdeCaracteres > 0) or
@@ -242,7 +233,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogTipoDocumento(Req, Res, 'cadastrarTipoDocumento');
+  codigoLog := gerarLogTipoDocumento(Req, Res, 'cadastrarTipoDocumento', resposta);
 
   if (continuar) then
   try
@@ -265,7 +256,7 @@ begin
 
   FreeAndNil(body);
 
-  if (continuar) and (verificarToken(res)) then
+  if (continuar) and (verificarToken(res, resposta)) then
   try
     erros := TStringList.Create;
     arrayResposta := TJSONArray.Create;
@@ -373,7 +364,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogTipoDocumento(Req, Res, 'alterarTipoDocumento');
+  codigoLog := gerarLogTipoDocumento(Req, Res, 'alterarTipoDocumento', resposta);
 
   if (continuar) then
   try
@@ -397,7 +388,7 @@ begin
 
   FreeAndNil(body);
 
-  if (continuar) and (verificarToken(res)) then
+  if (continuar) and (verificarToken(res, resposta)) then
   try
     erros := TStringList.Create;
     arrayResposta := TJSONArray.Create;
@@ -524,7 +515,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogTipoDocumento(Req, Res, 'inativarTipoDocumento');
+  codigoLog := gerarLogTipoDocumento(Req, Res, 'inativarTipoDocumento', resposta);
 
   if (continuar) then
   try
@@ -540,7 +531,7 @@ begin
     end;
   end;
 
-  if (continuar) and (verificarToken(res)) then
+  if (continuar) and (verificarToken(res, resposta)) then
   try
     erros := TStringList.Create;
     arrayResposta := TJSONArray.Create;

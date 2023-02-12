@@ -35,13 +35,10 @@ begin
   resposta.AddPair('status',estadoItem.status);
 end;
 
-function gerarLogEstado(Req: THorseRequest; Res: THorseResponse; procedimento: string): Integer;
+function gerarLogEstado(Req: THorseRequest; Res: THorseResponse; procedimento: string; out resposta: TJSONObject): Integer;
 var
-  resposta: TJSONObject;
   mensagem: string;
 begin
-  resposta := TJSONObject.Create;
-
   try
     Result := estado.GerarLog('Estado',
                               procedimento,
@@ -57,8 +54,6 @@ begin
       Result := 0;
     end;
   end;
-
-  FreeAndNil(resposta);
 end;
 
 procedure criarConexao;
@@ -85,13 +80,11 @@ begin
   end;
 end;
 
-function verificarToken(Res: THorseResponse): Boolean;
+function verificarToken(Res: THorseResponse; out resposta: TJSONObject): Boolean;
 var
-  resposta: TJSONObject;
   mensagem: string;
 begin
   Result := True;
-  resposta := TJSONObject.Create;
 
   try
     if not (estado.verificarToken(token)) then
@@ -110,8 +103,6 @@ begin
       Result := False;
     end;
   end;
-
-  FreeAndNil(resposta);
 end;
 
 procedure buscarEstados(Req: THorseRequest; Res: THorseResponse; Next: TProc);
@@ -126,7 +117,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogEstado(Req, Res, 'buscarEstados');
+  codigoLog := gerarLogEstado(Req, Res, 'buscarEstados', resposta);
 
   if (continuar) then
   try
@@ -154,7 +145,7 @@ begin
     estado.status := 'A';
   end;
 
-  if (continuar) and (verificarToken(res)) then
+  if (continuar) and (verificarToken(res, resposta)) then
   try
     if (estado.nome <> '') or
        (estado.codigoIbge <> '') or
@@ -245,7 +236,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogEstado(Req, Res, 'cadastrarEstado');
+  codigoLog := gerarLogEstado(Req, Res, 'cadastrarEstado', resposta);
 
   if (continuar) then
   try
@@ -268,7 +259,7 @@ begin
 
   FreeAndNil(body);
 
-  if (continuar) and (verificarToken(res)) then
+  if (continuar) and (verificarToken(res, resposta)) then
   try
     erros := TStringList.Create;
     arrayResposta := TJSONArray.Create;
@@ -385,7 +376,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogEstado(Req, Res, 'alterarEstado');
+  codigoLog := gerarLogEstado(Req, Res, 'alterarEstado', resposta);
 
   if (continuar) then
   try
@@ -409,7 +400,7 @@ begin
 
   FreeAndNil(body);
 
-  if (continuar) and (verificarToken(res)) then
+  if (continuar) and (verificarToken(res, resposta)) then
   try
     erros := TStringList.Create;
     arrayResposta := TJSONArray.Create;
@@ -543,7 +534,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogEstado(Req, Res, 'inativarEstado');
+  codigoLog := gerarLogEstado(Req, Res, 'inativarEstado', resposta);
 
   if (continuar) then
   try
@@ -559,7 +550,7 @@ begin
     end;
   end;
 
-  if (continuar) and (verificarToken(res)) then
+  if (continuar) and (verificarToken(res, resposta)) then
   try
     erros := TStringList.Create;
     arrayResposta := TJSONArray.Create;

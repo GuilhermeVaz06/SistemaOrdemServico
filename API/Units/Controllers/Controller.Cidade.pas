@@ -37,9 +37,8 @@ begin
   resposta.AddPair('status',cidadeItem.status);
 end;
 
-function gerarLogCidade(Req: THorseRequest; Res: THorseResponse; procedimento: string): Integer;
+function gerarLogCidade(Req: THorseRequest; Res: THorseResponse; procedimento: string; out resposta: TJSONObject): Integer;
 var
-  resposta: TJSONObject;
   mensagem: string;
 begin
   resposta := TJSONObject.Create;
@@ -59,8 +58,6 @@ begin
       Result := 0;
     end;
   end;
-
-  FreeAndNil(resposta);
 end;
 
 procedure criarConexao;
@@ -87,13 +84,11 @@ begin
   end;
 end;
 
-function verificarToken(Res: THorseResponse): Boolean;
+function verificarToken(Res: THorseResponse; out resposta: TJSONObject): Boolean;
 var
-  resposta: TJSONObject;
   mensagem: string;
 begin
   Result := True;
-  resposta := TJSONObject.Create;
 
   try
     if not (cidade.verificarToken(token)) then
@@ -112,8 +107,6 @@ begin
       Result := False;
     end;
   end;
-
-  FreeAndNil(resposta);
 end;
 
 procedure buscarCidades(Req: THorseRequest; Res: THorseResponse; Next: TProc);
@@ -128,7 +121,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogCidade(Req, Res, 'buscarCidades');
+  codigoLog := gerarLogCidade(Req, Res, 'buscarCidades', resposta);
 
   if (continuar) then
   try
@@ -158,7 +151,7 @@ begin
     cidade.status := 'A';
   end;
 
-  if (continuar) and (verificarToken(res)) then
+  if (continuar) and (verificarToken(res, resposta)) then
   try
     if (cidade.nome <> '') or
        (cidade.codigoIbge <> '') or
@@ -251,7 +244,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogCidade(Req, Res, 'cadastrarCidade');
+  codigoLog := gerarLogCidade(Req, Res, 'cadastrarCidade', resposta);
 
   if (continuar) then
   try
@@ -274,7 +267,7 @@ begin
 
   FreeAndNil(body);
 
-  if (continuar) and (verificarToken(res)) then
+  if (continuar) and (verificarToken(res, resposta)) then
   try
     erros := TStringList.Create;
     arrayResposta := TJSONArray.Create;
@@ -391,7 +384,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogCidade(Req, Res, 'alterarCidade');
+  codigoLog := gerarLogCidade(Req, Res, 'alterarCidade', resposta);
 
   if (continuar) then
   try
@@ -415,7 +408,7 @@ begin
 
   FreeAndNil(body);
 
-  if (continuar) and (verificarToken(res)) then
+  if (continuar) and (verificarToken(res, resposta)) then
   try
     erros := TStringList.Create;
     arrayResposta := TJSONArray.Create;
@@ -549,7 +542,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogCidade(Req, Res, 'inativarCidade');
+  codigoLog := gerarLogCidade(Req, Res, 'inativarCidade', resposta);
 
   if (continuar) then
   try
@@ -565,7 +558,7 @@ begin
     end;
   end;
 
-  if (continuar) and (verificarToken(res)) then
+  if (continuar) and (verificarToken(res, resposta)) then
   try
     erros := TStringList.Create;
     arrayResposta := TJSONArray.Create;

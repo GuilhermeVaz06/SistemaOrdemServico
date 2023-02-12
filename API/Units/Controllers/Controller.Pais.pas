@@ -33,13 +33,10 @@ begin
   resposta.AddPair('status',paisItem.status);
 end;
 
-function gerarLogPais(Req: THorseRequest; Res: THorseResponse; procedimento: string): Integer;
+function gerarLogPais(Req: THorseRequest; Res: THorseResponse; procedimento: string; out resposta: TJSONObject): Integer;
 var
-  resposta: TJSONObject;
   mensagem: string;
 begin
-  resposta := TJSONObject.Create;
-
   try
     Result := pais.GerarLog('Pais',
                              procedimento,
@@ -55,8 +52,6 @@ begin
       Result := 0;
     end;
   end;
-
-  FreeAndNil(resposta);
 end;
 
 procedure destruirConexao;
@@ -83,13 +78,11 @@ begin
   end;
 end;
 
-function verificarToken(Res: THorseResponse): Boolean;
+function verificarToken(Res: THorseResponse; out resposta: TJSONObject): Boolean;
 var
-  resposta: TJSONObject;
   mensagem: string;
 begin
   Result := True;
-  resposta := TJSONObject.Create;
 
   try
     if not (pais.verificarToken(token)) then
@@ -108,8 +101,6 @@ begin
       Result := False;
     end;
   end;
-
-  FreeAndNil(resposta);
 end;
 
 procedure buscarPaises(Req: THorseRequest; Res: THorseResponse; Next: TProc);
@@ -124,7 +115,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogPais(Req, Res, 'buscarPaises');
+  codigoLog := gerarLogPais(Req, Res, 'buscarPaises', resposta);
 
   if (continuar) then
   try
@@ -150,7 +141,7 @@ begin
     pais.status := 'A';
   end;
 
-  if (continuar) and (verificarToken(res)) then
+  if (continuar) and (verificarToken(res, resposta)) then
   try
     if (pais.nome <> '') or
        (pais.codigoIbge <> '') or
@@ -239,7 +230,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogPais(Req, Res, 'cadastrarPais');
+  codigoLog := gerarLogPais(Req, Res, 'cadastrarPais', resposta);
 
   if (continuar) then
   try
@@ -261,7 +252,7 @@ begin
 
   FreeAndNil(body);
 
-  if (continuar) and (verificarToken(res)) then
+  if (continuar) and (verificarToken(res, resposta)) then
   try
     erros := TStringList.Create;
     arrayResposta := TJSONArray.Create;
@@ -360,7 +351,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogPais(Req, Res, 'alterarPais');
+  codigoLog := gerarLogPais(Req, Res, 'alterarPais', resposta);
 
   if (continuar) then
   try
@@ -383,7 +374,7 @@ begin
 
   FreeAndNil(body);
 
-  if (continuar) and (verificarToken(res)) then
+  if (continuar) and (verificarToken(res, resposta)) then
   try
     erros := TStringList.Create;
     arrayResposta := TJSONArray.Create;
@@ -501,7 +492,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogPais(Req, Res, 'inativarPais');
+  codigoLog := gerarLogPais(Req, Res, 'inativarPais', resposta);
 
   if (continuar) then
   try
@@ -517,7 +508,7 @@ begin
     end;
   end;
 
-  if (continuar) and (verificarToken(res)) then
+  if (continuar) and (verificarToken(res, resposta)) then
   try
     erros := TStringList.Create;
     arrayResposta := TJSONArray.Create;

@@ -32,13 +32,10 @@ begin
   resposta.AddPair('status',tipoEnderecoItem.status);
 end;
 
-function gerarLogTipoEndereco(Req: THorseRequest; Res: THorseResponse; procedimento: string): Integer;
+function gerarLogTipoEndereco(Req: THorseRequest; Res: THorseResponse; procedimento: string; out resposta: TJSONObject): Integer;
 var
-  resposta: TJSONObject;
   mensagem: string;
 begin
-  resposta := TJSONObject.Create;
-
   try
     Result := tipoEndereco.GerarLog('TipoEndereco',
                               procedimento,
@@ -54,8 +51,6 @@ begin
       Result := 0;
     end;
   end;
-
-  FreeAndNil(resposta);
 end;
 
 procedure criarConexao;
@@ -82,14 +77,11 @@ begin
   end;
 end;
 
-function verificarToken(Res: THorseResponse): Boolean;
+function verificarToken(Res: THorseResponse; out resposta: TJSONObject): Boolean;
 var
-  resposta: TJSONObject;
   mensagem: string;
 begin
   Result := True;
-  resposta := TJSONObject.Create;
-
   try
     if not (tipoEndereco.verificarToken(token)) then
     begin
@@ -107,8 +99,6 @@ begin
       Result := False;
     end;
   end;
-
-  FreeAndNil(resposta);
 end;
 
 procedure buscarTipoEndereco(Req: THorseRequest; Res: THorseResponse; Next: TProc);
@@ -123,7 +113,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogTipoEndereco(Req, Res, 'buscarTipoEndereco');
+  codigoLog := gerarLogTipoEndereco(Req, Res, 'buscarTipoEndereco', resposta);
 
   if (continuar) then
   try
@@ -148,7 +138,7 @@ begin
     tipoEndereco.status := 'A';
   end;
 
-  if (continuar) and (verificarToken(res)) then
+  if (continuar) and (verificarToken(res, resposta)) then
   try
     if (tipoEndereco.descricao <> '') or
        (tipoEndereco.id > 0) then
@@ -236,7 +226,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogTipoEndereco(Req, Res, 'cadastrarTipoEndereco');
+  codigoLog := gerarLogTipoEndereco(Req, Res, 'cadastrarTipoEndereco', resposta);
 
   if (continuar) then
   try
@@ -257,7 +247,7 @@ begin
 
   FreeAndNil(body);
 
-  if (continuar) and (verificarToken(res)) then
+  if (continuar) and (verificarToken(res, resposta)) then
   try
     erros := TStringList.Create;
     arrayResposta := TJSONArray.Create;
@@ -347,7 +337,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogTipoEndereco(Req, Res, 'alterarTipoEndereco');
+  codigoLog := gerarLogTipoEndereco(Req, Res, 'alterarTipoEndereco', resposta);
 
   if (continuar) then
   try
@@ -369,7 +359,7 @@ begin
 
   FreeAndNil(body);
 
-  if (continuar) and (verificarToken(res)) then
+  if (continuar) and (verificarToken(res, resposta)) then
   try
     erros := TStringList.Create;
     arrayResposta := TJSONArray.Create;
@@ -478,7 +468,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogTipoEndereco(Req, Res, 'inativarTipoEndereco');
+  codigoLog := gerarLogTipoEndereco(Req, Res, 'inativarTipoEndereco', resposta);
 
   if (continuar) then
   try
@@ -494,7 +484,7 @@ begin
     end;
   end;
 
-  if (continuar) and (verificarToken(res)) then
+  if (continuar) and (verificarToken(res, resposta)) then
   try
     erros := TStringList.Create;
     arrayResposta := TJSONArray.Create;
