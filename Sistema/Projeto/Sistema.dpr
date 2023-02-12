@@ -14,7 +14,9 @@ uses
   DMTipoDocumento in '..\Data Module\DMTipoDocumento.pas' {FDMTipoDocumento: TDataModule},
   TipoDocumento in '..\Tela\TipoDocumento.pas' {FTipoDocumento},
   DMTipoEndereco in '..\Data Module\DMTipoEndereco.pas' {FDMTipoEndereco: TDataModule},
-  TipoEndereco in '..\Tela\TipoEndereco.pas' {FTipoEndereco};
+  TipoEndereco in '..\Tela\TipoEndereco.pas' {FTipoEndereco},
+  DMCliente in '..\Data Module\DMCliente.pas' {FDMCliente: TDataModule},
+  Cliente in '..\Tela\Cliente.pas' {FCliente};
 
 {$R *.res}
 
@@ -28,6 +30,6 @@ begin
   Application.CreateForm(TFDMCidade, FDMCidade);
   Application.CreateForm(TFDMTipoDocumento, FDMTipoDocumento);
   Application.CreateForm(TFDMTipoEndereco, FDMTipoEndereco);
-  Application.CreateForm(TFTipoEndereco, FTipoEndereco);
+  Application.CreateForm(TFDMCliente, FDMCliente);
   Application.Run;
 end.

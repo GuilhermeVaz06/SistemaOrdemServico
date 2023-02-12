@@ -339,6 +339,9 @@ begin
     begin
       continuar := False;
     end;
+
+    pessoa.documento := trim(soNumeros(pessoa.documento));
+    pessoa.telefone := trim(soNumeros(pessoa.telefone));
   except
     on E: Exception do
     begin
@@ -407,7 +410,7 @@ begin
       if (Assigned(pessoaConsultado)) then
       begin
         erros.Add('Já existe um ' + classe + ' [' + IntToStrSenaoZero(pessoaConsultado.id) +
-                  ' - ' + pessoaConsultado.nomeFantasia + '], cadastrado com esse nome e com esse documento!');
+                  ' - ' + pessoaConsultado.nomeFantasia + '], cadastrado com esse documento!');
 
         pessoaConsultado.Destroy;
       end
@@ -529,11 +532,15 @@ begin
       pessoa.email := body.GetValue<string>('email', '');
       pessoa.observacao := body.GetValue<string>('observacao', '');
       pessoa.id := strToIntZero(Req.Params['id']);
+      pessoa.status := body.GetValue<string>('status', '');
     end
     else
     begin
       continuar := False;
     end;
+
+    pessoa.documento := trim(soNumeros(pessoa.documento));
+    pessoa.telefone := trim(soNumeros(pessoa.telefone));
   except
     on E: Exception do
     begin
@@ -600,6 +607,11 @@ begin
       end;
     end;
 
+    if (pessoa.status <> 'A') and (pessoa.status <> 'I') then
+    begin
+      erros.Add('O Status do ' + classe + ' informado é invalido!');
+    end;
+
     if (erros.Text = '') then
     begin
       pessoaConsultado := pessoa.consultarChave();
@@ -616,7 +628,7 @@ begin
         if (Assigned(pessoaConsultado)) then
         begin
           erros.Add('Já existe um ' + classe + ' [' + IntToStrSenaoZero(pessoaConsultado.id) +
-                    ' - ' + pessoaConsultado.razaoSocial + '], cadastrado com esse nome e com esse documento!');
+                    ' - ' + pessoaConsultado.razaoSocial + '], cadastrado com esse documento!');
           pessoaConsultado.Destroy;
         end
         else

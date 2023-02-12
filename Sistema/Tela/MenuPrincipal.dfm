@@ -61,6 +61,7 @@ object FMenuPrincipal: TFMenuPrincipal
       Caption = 'Cadastro'
       object cliente1: TMenuItem
         Caption = 'Cliente'
+        OnClick = cliente1Click
       end
       object fornecedor1: TMenuItem
         Caption = 'Fornecedor'

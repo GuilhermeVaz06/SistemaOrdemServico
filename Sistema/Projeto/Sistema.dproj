@@ -149,6 +149,15 @@
             <Form>FTipoEndereco</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="..\Data Module\DMCliente.pas">
+            <Form>FDMCliente</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TDataModule</DesignClass>
+        </DCCReference>
+        <DCCReference Include="..\Tela\Cliente.pas">
+            <Form>FCliente</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

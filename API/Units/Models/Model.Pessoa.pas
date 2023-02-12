@@ -468,11 +468,9 @@ begin
   sql := TStringList.Create;
   sql.Add('SELECT CODIGO_PESSOA, NOME_FANTASIA');
   sql.Add('  FROM pessoa');
-  sql.Add(' WHERE (RAZAO_SOCIAL = ' + QuotedStr(FRazaoSocial));
-  sql.Add('    OR  NOME_FANTASIA = ' + QuotedStr(FNomeFantasia) + ')');
+  sql.Add(' WHERE DOCUMENTO = ' + QuotedStr(trim(soNumeros(FDocumento))));
   sql.Add('   AND CODIGO_TIPO_PESSOA = ' + IntToStrSenaoZero(FTipoCadastro.id));
   sql.Add('   AND CODIGO_TIPO_DOCUMENTO = ' + IntToStrSenaoZero(FTipoDocumento.id));
-  sql.Add('   AND DOCUMENTO = ' + QuotedStr(FDocumento));
 
   if (FCodigo > 0) then
   begin

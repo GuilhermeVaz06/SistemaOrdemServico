@@ -29,6 +29,7 @@ type
     procedure cidade1Click(Sender: TObject);
     procedure tipoDocumento1Click(Sender: TObject);
     procedure tipoEndereco1Click(Sender: TObject);
+    procedure cliente1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -40,7 +41,7 @@ var
 
 implementation
 
-uses UFuncao, Pais, Estado, Cidade, TipoDocumento, TipoEndereco;
+uses UFuncao, Pais, Estado, Cidade, TipoDocumento, TipoEndereco, cliente;
 
 {$R *.dfm}
 
@@ -51,6 +52,16 @@ begin
     FCidade.ShowModal;
   finally
     FreeAndNil(FCidade);
+  end;
+end;
+
+procedure TFMenuPrincipal.cliente1Click(Sender: TObject);
+begin
+  try
+    Application.CreateForm(TFCliente, FCliente);
+    FCliente.ShowModal;
+  finally
+    FreeAndNil(FCliente);
   end;
 end;
 
