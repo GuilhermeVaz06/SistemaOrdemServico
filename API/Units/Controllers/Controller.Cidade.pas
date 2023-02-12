@@ -41,8 +41,6 @@ function gerarLogCidade(Req: THorseRequest; Res: THorseResponse; procedimento: s
 var
   mensagem: string;
 begin
-  resposta := TJSONObject.Create;
-
   try
     Result := cidade.GerarLog('Cidade',
                               procedimento,
