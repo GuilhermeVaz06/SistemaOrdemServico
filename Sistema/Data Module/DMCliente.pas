@@ -59,7 +59,7 @@ var
 
 implementation
 
-uses UFuncao, UConexao, TipoEndereco;
+uses UFuncao, UConexao, Cliente;
 
 {$R *.dfm}
 
@@ -168,14 +168,14 @@ var
 begin
   Conexao := TConexao.Create;
 
-  if (Assigned(FTipoEndereco)) then
+  if (Assigned(FCliente)) then
   begin
-    if (FTipoEndereco.ELocalizarDescricao.Text <> '') then
+    if (FCliente.ELocalizarDescricao.Text <> '') then
     begin
-      Conexao.AtribuirParametro('nomeFantasia', FTipoEndereco.ELocalizarDescricao.Text);
+      Conexao.AtribuirParametro('nomeFantasia', FCliente.ELocalizarDescricao.Text);
     end;
 
-    if FTipoEndereco.CBMostrarInativo.Checked then
+    if FCliente.CBMostrarInativo.Checked then
     begin
       Conexao.AtribuirParametro('status', 'I');
     end

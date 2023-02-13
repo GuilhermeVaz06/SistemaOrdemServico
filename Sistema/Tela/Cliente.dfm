@@ -26,7 +26,6 @@ object FCliente: TFCliente
     Height = 29
     Align = alTop
     TabOrder = 0
-    ExplicitWidth = 1363
     object BFechar: TSpeedButton
       Left = 628
       Top = 1
@@ -132,9 +131,6 @@ object FCliente: TFCliente
     Align = alLeft
     Enabled = False
     TabOrder = 1
-    ExplicitLeft = -2
-    ExplicitTop = 34
-    ExplicitHeight = 534
     object CBAtivo: TDBCheckBox
       Left = 1
       Top = 567
@@ -147,8 +143,6 @@ object FCliente: TFCliente
       TabOrder = 3
       ValueChecked = 'A'
       ValueUnchecked = 'I'
-      ExplicitTop = 484
-      ExplicitWidth = 281
     end
     object Panel4: TPanel
       Left = 1
@@ -158,8 +152,6 @@ object FCliente: TFCliente
       Align = alBottom
       BevelOuter = bvNone
       TabOrder = 2
-      ExplicitLeft = -3
-      ExplicitTop = 419
       object Label4: TLabel
         Left = 9
         Top = 3
@@ -321,6 +313,7 @@ object FCliente: TFCliente
         DataField = 'documento'
         DataSource = FDMCliente.DCliente
         TabOrder = 2
+        OnExit = DBDocumentoExit
       end
       object DBLookupComboBox1: TDBLookupComboBox
         Left = 90
@@ -383,7 +376,7 @@ object FCliente: TFCliente
         TabOrder = 7
       end
     end
-    object PageControl1: TPageControl
+    object PCDados: TPageControl
       Left = 1
       Top = 238
       Width = 388
@@ -391,6 +384,8 @@ object FCliente: TFCliente
       ActivePage = TBOutrosDocumentos
       Align = alClient
       TabOrder = 1
+      ExplicitLeft = -3
+      ExplicitTop = 239
       object TBOutrosDocumentos: TTabSheet
         Caption = 'Outros Documentos'
       end
@@ -411,9 +406,6 @@ object FCliente: TFCliente
     Height = 585
     Align = alClient
     TabOrder = 2
-    ExplicitLeft = 283
-    ExplicitWidth = 1080
-    ExplicitHeight = 502
     object Panel2: TPanel
       Left = 1
       Top = 554
@@ -421,8 +413,6 @@ object FCliente: TFCliente
       Height = 30
       Align = alBottom
       TabOrder = 2
-      ExplicitTop = 471
-      ExplicitWidth = 1078
       object CBMostrarInativo: TCheckBox
         Left = 9
         Top = 6
@@ -440,7 +430,6 @@ object FCliente: TFCliente
       Height = 52
       Align = alTop
       TabOrder = 0
-      ExplicitWidth = 1078
       object BConsultar: TSpeedButton
         Left = 413
         Top = 14
@@ -491,6 +480,62 @@ object FCliente: TFCliente
           Title.Alignment = taCenter
           Title.Caption = 'Codigo'
           Width = 65
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'tipoDocumento'
+          Title.Alignment = taCenter
+          Title.Caption = 'Documento'
+          Width = 78
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'documento'
+          Title.Alignment = taCenter
+          Title.Caption = 'N'#186' Documento'
+          Width = 114
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'razaoSocial'
+          Title.Alignment = taCenter
+          Title.Caption = 'Raz'#227'o Social'
+          Width = 126
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'nomeFantasia'
+          Title.Alignment = taCenter
+          Title.Caption = 'Nome Fantasia'
+          Width = 117
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'telefone'
+          Title.Alignment = taCenter
+          Title.Caption = 'Telefone'
+          Width = 114
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'email'
+          Title.Alignment = taCenter
+          Title.Caption = 'Email'
+          Width = 100
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'observacao'
+          Title.Alignment = taCenter
+          Title.Caption = 'Observa'#231#227'o'
+          Width = 135
           Visible = True
         end
         item

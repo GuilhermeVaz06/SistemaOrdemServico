@@ -90,6 +90,7 @@ begin
   sql.Add('     , SENHA = ' + QuotedStr(FSenha));
   sql.Add('     , OBSERVACAO = ' + QuotedStr(FObservacao));
   sql.Add('     , CODIGO_SESSAO_ALTERACAO = ' + IntToStrSenaoZero(FConexao.codigoSessao));
+  sql.Add('     , STATUS = ' + QuotedStr(FStatus));
   sql.Add(' WHERE CODIGO_PESSOA = ' + IntToStrSenaoZero(FCodigo));
 
   FConexao.executarComandoDML(sql.Text);
@@ -163,14 +164,14 @@ begin
     sql.Add(', pessoa.CODIGO_SESSAO_CADASTRO, pessoa.CODIGO_SESSAO_ALTERACAO, pessoa.DATA_CADASTRO, pessoa.DATA_ULTIMA_ALTERACAO');
     sql.Add(', pessoa.`STATUS`, tipo_documento.DESCRICAO, tipo_documento.QTDE_CARACTERES, tipo_documento.MASCARA_CARACTERES');
     sql.Add('');
-    sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
-    sql.Add('     FROM pessoa, sessao ');
-    sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
+    sql.Add(', (SELECT p2.RAZAO_SOCIAL');
+    sql.Add('     FROM pessoa p2, sessao ');
+    sql.Add('    WHERE p2.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
     sql.Add('      AND sessao.CODIGO_SESSAO = pessoa.CODIGO_SESSAO_CADASTRO) usuarioCadastro');
     sql.Add('');
-    sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
-    sql.Add('     FROM pessoa, sessao ');
-    sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
+    sql.Add(', (SELECT p2.RAZAO_SOCIAL');
+    sql.Add('     FROM pessoa p2, sessao ');
+    sql.Add('    WHERE p2.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
     sql.Add('      AND sessao.CODIGO_SESSAO = pessoa.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
     sql.Add('');
     sql.Add('  FROM pessoa, tipo_documento');
@@ -311,14 +312,14 @@ begin
   sql.Add(', pessoa.CODIGO_SESSAO_CADASTRO, pessoa.CODIGO_SESSAO_ALTERACAO, pessoa.DATA_CADASTRO, pessoa.DATA_ULTIMA_ALTERACAO');
   sql.Add(', pessoa.`STATUS`, tipo_documento.DESCRICAO, tipo_documento.QTDE_CARACTERES, tipo_documento.MASCARA_CARACTERES');
   sql.Add('');
-  sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
-  sql.Add('     FROM pessoa, sessao ');
-  sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
+  sql.Add(', (SELECT p2.RAZAO_SOCIAL');
+  sql.Add('     FROM pessoa p2, sessao ');
+  sql.Add('    WHERE p2.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
   sql.Add('      AND sessao.CODIGO_SESSAO = pessoa.CODIGO_SESSAO_CADASTRO) usuarioCadastro');
   sql.Add('');
-  sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
-  sql.Add('     FROM pessoa, sessao ');
-  sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
+  sql.Add(', (SELECT p2.RAZAO_SOCIAL');
+  sql.Add('     FROM pessoa p2, sessao ');
+  sql.Add('    WHERE p2.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
   sql.Add('      AND sessao.CODIGO_SESSAO = pessoa.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
   sql.Add('');
   sql.Add('  FROM pessoa, tipo_documento');
@@ -432,8 +433,6 @@ begin
 end;
 
 destructor TPessoa.Destroy;
-var
-  i: integer;
 begin
   if Assigned(FTipoCadastro) then
   begin

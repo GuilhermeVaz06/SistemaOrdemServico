@@ -52,7 +52,7 @@ type
     Label12: TLabel;
     DBMemo1: TDBMemo;
     Label13: TLabel;
-    PageControl1: TPageControl;
+    PCDados: TPageControl;
     TBOutrosDocumentos: TTabSheet;
     TBEndereco: TTabSheet;
     TBContato: TTabSheet;
@@ -73,6 +73,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure DBLookupComboBox1Click(Sender: TObject);
     procedure DBLookupComboBox1Exit(Sender: TObject);
+    procedure DBDocumentoExit(Sender: TObject);
   private
     { Private declarations }
     function validarCampos: boolean;
@@ -94,12 +95,14 @@ procedure TFCliente.BAlterarClick(Sender: TObject);
 begin
   UFuncao.desativaBotoes(self);
   FDMCliente.TCliente.Edit;
+  PCDados.ActivePage := TBOutrosDocumentos;
 end;
 
 procedure TFCliente.BCadastrarClick(Sender: TObject);
 begin
   UFuncao.desativaBotoes(self);
   FDMCliente.TCliente.Append;
+  PCDados.ActivePage := TBOutrosDocumentos;
 end;
 
 procedure TFCliente.BCancelarClick(Sender: TObject);
@@ -175,6 +178,11 @@ end;
 procedure TFCliente.CBMostrarInativoClick(Sender: TObject);
 begin
   BConsultarClick(nil);
+end;
+
+procedure TFCliente.DBDocumentoExit(Sender: TObject);
+begin
+  FDMCliente.TClientedocumento.Value := Trim(soNumeros(FDMCliente.TClientedocumento.Value));
 end;
 
 procedure TFCliente.DBLookupComboBox1Click(Sender: TObject);
@@ -264,17 +272,14 @@ begin
   begin
     mensagem.Add('O Documento deve ser selecionado!');
   end
-  else if  (True) {(validarCPF(FDMCliente.TClientetipoDocumento.Value))} then
-  begin
-    mensagem.Add('O Nº do documento informado é invalido!');
-  end
   else if (Trim(soNumeros(FDMCliente.TClientedocumento.Value)) = '') then
   begin
     mensagem.Add('O Nº do Documento deve ser informado!');
   end
   else if (Length(Trim(soNumeros(FDMCliente.TClientedocumento.Value))) <> FDMCliente.TClienteqtdeCaracteres.Value) then
   begin
-    mensagem.Add('O Nº do Documento deve conter 2 caracteres validos!');
+    mensagem.Add('O Nº do Documento deve conter ' + IntToStrSenaoZero(FDMCliente.TClienteqtdeCaracteres.Value) +
+                 ' caracteres validos!');
   end;
 
   if (mensagem.Text <> '') then
