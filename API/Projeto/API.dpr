@@ -4,8 +4,6 @@ uses
   Vcl.Forms,
   Model.Cidade in '..\Units\Models\Model.Cidade.pas',
   Model.Connection in '..\Units\Models\Model.Connection.pas',
-  Model.Contato in '..\Units\Models\Model.Contato.pas',
-  Model.Endereco in '..\Units\Models\Model.Endereco.pas',
   Model.Estado in '..\Units\Models\Model.Estado.pas',
   Model.Pais in '..\Units\Models\Model.Pais.pas',
   Model.Pessoa in '..\Units\Models\Model.Pessoa.pas',
@@ -20,7 +18,11 @@ uses
   Controller.Cidade in '..\Units\Controllers\Controller.Cidade.pas',
   Controller.TipoDocumento in '..\Units\Controllers\Controller.TipoDocumento.pas',
   Controller.TipoEndereco in '..\Units\Controllers\Controller.TipoEndereco.pas',
-  Controller.Pessoa in '..\Units\Controllers\Controller.Pessoa.pas';
+  Controller.Pessoa in '..\Units\Controllers\Controller.Pessoa.pas',
+  Model.Pessoa.Contato in '..\Units\Models\Model.Pessoa.Contato.pas',
+  Model.Pessoa.Endereco in '..\Units\Models\Model.Pessoa.Endereco.pas',
+  Model.Pessoa.OutroDocumento in '..\Units\Models\Model.Pessoa.OutroDocumento.pas',
+  Controller.Pessoa.OutroDocumento in '..\Units\Controllers\Controller.Pessoa.OutroDocumento.pas';
 
 {$R *.res}
 
