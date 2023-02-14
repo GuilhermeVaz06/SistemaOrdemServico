@@ -30,10 +30,41 @@ function removerCasaDecimal(valor: Double): Double;
 function imprimirRequisicao(requisicao: THorseRequest): string;
 function imprimirResposta(status: Integer; resposta: TJSONObject): string;
 function metodoString(metodo: TMethodType): string;
+function DataBD(data: tdate): string; overload;
+function DataBD(data: string): string; overload;
 procedure desativaBotoes(form: TForm);
 procedure colorirGrid(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
 
 implementation
+
+function DataBD(data: tdate): string; overload;
+begin
+  Try
+    data := DateOf(data);
+
+    Result := QuotedStr(FormatDateTime('yyyy-mm-dd', data));
+
+  except on E: exception do
+    begin
+      informar('Erro ao converter data: ' +  #13 + DateToStr(data) + #13 + e.Message);
+    end;
+  end;
+
+end;
+
+function DataBD(data: string): string; overload;
+var
+  dataConvertida : Tdate;
+begin
+  Try
+    dataConvertida := StrToDate(data);
+    Result := DataBD(dataConvertida);
+  except on E: exception do
+    begin
+      informar('Erro ao converter data: ' +QuotedStr(data)+  #13 + e.Message);
+    end;
+  end;
+end;
 
 function metodoString(metodo: TMethodType): string;
 begin

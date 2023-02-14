@@ -1,4 +1,4 @@
-unit Model.Endereco;
+unit Model.Pessoa.Endereco;
 
 interface
 
