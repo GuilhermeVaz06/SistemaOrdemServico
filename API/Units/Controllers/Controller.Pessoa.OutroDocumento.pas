@@ -26,6 +26,7 @@ begin
   resposta.AddPair('codigo',TJSONNumber.Create(outroDocumentoItem.id));
   resposta.AddPair('codigoPessoa',TJSONNumber.Create(outroDocumentoItem.pessoa.id));
   resposta.AddPair('codigoTipoDocumento',TJSONNumber.Create(outroDocumentoItem.tipoDocumento.id));
+  resposta.AddPair('TipoDocumento',outroDocumentoItem.tipoDocumento.descricao);
   resposta.AddPair('documento',outroDocumentoItem.documento);
   resposta.AddPair('dataEmissao',DateToStr(outroDocumentoItem.dataEmissao));
   resposta.AddPair('dataVencimento',DateToStr(outroDocumentoItem.dataVencimento));
@@ -125,10 +126,10 @@ begin
   try
     token := Req.Headers['token'];
     outroDocumento.id := strToIntZero(Req.Query['codigo']);
-    outroDocumento.pessoa.id := strToIntZero(Req.Query['codigoPessoa']);
     outroDocumento.status := Req.Query['status'];
     outroDocumento.limite := strToIntZero(Req.Query['limite']);
     outroDocumento.offset := strToIntZero(Req.Query['offset']);
+    outroDocumento.pessoa.id := strToIntZero(Req.Params['pessoa']);
   except
     on E: Exception do
     begin
@@ -137,6 +138,14 @@ begin
       Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
       continuar := False;
     end;
+  end;
+
+  if not (outroDocumento.pessoa.id > 0) then
+  begin
+    mensagem := 'O codigo da pessoa deve ser informado!';
+    resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('OUTRODOCUMENTO019', mensagem))));
+    Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+    continuar := False;
   end;
 
   if (outroDocumento.status = '') then
@@ -606,7 +615,7 @@ end;
 procedure Registry;
 begin
   criarConexao;
-  THorse.Get('/outroDocumento', buscarOutrosDocumentos);
+  THorse.Get('/outroDocumento/:pessoa', buscarOutrosDocumentos);
   THorse.Post('/outroDocumento', cadastrarOutroDocumento);
   THorse.Put('/outroDocumento/:id', alterarOutroDocumento);
   THorse.Delete('/outroDocumento/:id', inativarOutroDocumento);

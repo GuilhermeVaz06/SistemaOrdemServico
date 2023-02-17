@@ -149,13 +149,17 @@
             <Form>FTipoEndereco</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="..\Data Module\DMCliente.pas">
-            <Form>FDMCliente</Form>
+        <DCCReference Include="..\Tela\OutroDocumento.pas">
+            <Form>FOutroDocumento</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="..\Data Module\DMClienteFornecedor.pas">
+            <Form>FDMClienteFornecedor</Form>
             <FormType>dfm</FormType>
             <DesignClass>TDataModule</DesignClass>
         </DCCReference>
-        <DCCReference Include="..\Tela\Cliente.pas">
-            <Form>FCliente</Form>
+        <DCCReference Include="..\Tela\ClienteFornecedor.pas">
+            <Form>FClienteFornecedor</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Release">

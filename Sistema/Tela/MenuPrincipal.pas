@@ -41,7 +41,7 @@ var
 
 implementation
 
-uses UFuncao, Pais, Estado, Cidade, TipoDocumento, TipoEndereco, cliente;
+uses UFuncao, Pais, Estado, Cidade, TipoDocumento, TipoEndereco;
 
 {$R *.dfm}
 
@@ -57,12 +57,7 @@ end;
 
 procedure TFMenuPrincipal.cliente1Click(Sender: TObject);
 begin
-  try
-    Application.CreateForm(TFCliente, FCliente);
-    FCliente.ShowModal;
-  finally
-    FreeAndNil(FCliente);
-  end;
+  abreTelaCliente;
 end;
 
 procedure TFMenuPrincipal.estado1Click(Sender: TObject);

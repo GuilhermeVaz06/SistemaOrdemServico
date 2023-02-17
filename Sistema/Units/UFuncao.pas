@@ -28,6 +28,7 @@ function converterJsonArrayRestResponse(json: TJSONArray): IRESTResponseJSON;
 function converterJsonTextoJsonValue(jsonText: string): TJSONValue;
 function converterJsonValueJsonArray(json: TJSONValue; nome: string): TJSONArray;
 procedure desativaBotoes(form: TForm);
+procedure abreTelaCliente;
 procedure ordenarGrid(Coluna: TColumn);
 procedure copiarItemJsonArray(arrayOrigem: TJSONArray; out arrayDestino : TJSONArray);
 procedure converterArrayJsonQuery(json: IRESTResponseJSON; out dataSet: TFDMemTable); overload;
@@ -42,6 +43,20 @@ var
   SessaoLogadoToken: string;
 
 implementation
+
+uses ClienteFornecedor, DMClienteFornecedor;
+
+procedure abreTelaCliente;
+begin
+  try
+    Application.CreateForm(TFClienteFornecedor, FClienteFornecedor);
+    FClienteFornecedor.Caption := 'Cadastro de Cliente';
+    FDMClienteFornecedor.tipoCadastro := 'cliente';
+    FClienteFornecedor.ShowModal;
+  finally
+    FreeAndNil(FClienteFornecedor);
+  end;
+end;
 
 procedure colorirGrid(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
@@ -250,10 +265,16 @@ begin
     end
     else if (form.Components[i] is TPanel) then
     begin
-      if (((form.Components[i] as TPanel).Name = 'PGrid') or ((form.Components[i] as TPanel).Name = 'PDados')) then
+      if ((form.Components[i] as TPanel).Name = 'PGrid') or
+         ((form.Components[i] as TPanel).Name = 'PDados') or
+         ((form.Components[i] as TPanel).Name = 'PInfo') then
       begin
         (form.Components[i] as TPanel).Enabled := not (form.Components[i] as TPanel).Enabled;
       end;
+    end
+    else if (form.Components[i] is TDBCheckBox) then
+    begin
+      (form.Components[i] as TDBCheckBox).Enabled := not (form.Components[i] as TDBCheckBox).Enabled;
     end
     else if (form.Components[i] is TDBNavigator) then
     begin

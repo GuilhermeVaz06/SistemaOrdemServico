@@ -182,6 +182,7 @@ begin
     data.FCodigo := query.FieldByName('CODIGO_OUTRO_DOCUMENTO').Value;
     data.FPessoa.id := query.FieldByName('CODIGO_PESSOA').Value;
     data.FTipoDocumento.id := query.FieldByName('CODIGO_TIPO_DOCUMENTO').Value;
+    data.FTipoDocumento.descricao := query.FieldByName('tipoDocumento').Value;
     data.FDocumento := query.FieldByName('DOCUMENTO').Value;
     data.FDataEmissao := query.FieldByName('DT_EMISSAO').Value;
     data.FDataVencimento := query.FieldByName('DT_VENCIMENTO').Value;
@@ -306,6 +307,7 @@ begin
     sql.Add(', pessoa_outro_documento.OBSERVACAO, pessoa_outro_documento.CODIGO_SESSAO_CADASTRO');
     sql.Add(', pessoa_outro_documento.CODIGO_SESSAO_ALTERACAO, pessoa_outro_documento.DATA_CADASTRO');
     sql.Add(', pessoa_outro_documento.DATA_ULTIMA_ALTERACAO, pessoa_outro_documento.`STATUS`');
+    sql.Add(', tipo_documento.DESCRICAO tipoDocumento');
     sql.Add('');
     sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
     sql.Add('     FROM pessoa, sessao ');
@@ -317,8 +319,9 @@ begin
     sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
     sql.Add('      AND sessao.CODIGO_SESSAO = pessoa_outro_documento.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
     sql.Add('');
-    sql.Add('  FROM pessoa_outro_documento, pessoa');
+    sql.Add('  FROM pessoa_outro_documento, pessoa, tipo_documento');
     sql.Add(' WHERE pessoa_outro_documento.CODIGO_PESSOA = pessoa.CODIGO_PESSOA');
+    sql.Add('   AND pessoa_outro_documento.CODIGO_TIPO_DOCUMENTO = tipo_documento.CODIGO_TIPO_DOCUMENTO');
 
     if (FPessoa.id > 0) then
     begin
@@ -418,6 +421,7 @@ begin
   sql.Add(', pessoa_outro_documento.OBSERVACAO, pessoa_outro_documento.CODIGO_SESSAO_CADASTRO');
   sql.Add(', pessoa_outro_documento.CODIGO_SESSAO_ALTERACAO, pessoa_outro_documento.DATA_CADASTRO');
   sql.Add(', pessoa_outro_documento.DATA_ULTIMA_ALTERACAO, pessoa_outro_documento.`STATUS`');
+  sql.Add(', tipo_documento.DESCRICAO tipoDocumento');
   sql.Add('');
   sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
   sql.Add('     FROM pessoa, sessao ');
@@ -429,8 +433,9 @@ begin
   sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
   sql.Add('      AND sessao.CODIGO_SESSAO = pessoa_outro_documento.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
   sql.Add('');
-  sql.Add('  FROM pessoa_outro_documento, pessoa');
+  sql.Add('  FROM pessoa_outro_documento, pessoa, tipo_documento');
   sql.Add(' WHERE pessoa_outro_documento.CODIGO_PESSOA = pessoa.CODIGO_PESSOA');
+  sql.Add('   AND pessoa_outro_documento.CODIGO_TIPO_DOCUMENTO = tipo_documento.CODIGO_TIPO_DOCUMENTO');
   sql.Add('   AND pessoa_outro_documento.CODIGO_OUTRO_DOCUMENTO = ' + IntToStrSenaoZero(codigo));
 
   query := FConexao.executarComandoDQL(sql.Text);
