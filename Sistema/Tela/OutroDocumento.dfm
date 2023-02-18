@@ -1,9 +1,10 @@
 object FOutroDocumento: TFOutroDocumento
   Left = 0
   Top = 0
+  BorderIcons = []
   BorderStyle = bsSingle
   Caption = 'Cadastro de Outros Documentos'
-  ClientHeight = 164
+  ClientHeight = 176
   ClientWidth = 550
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -13,17 +14,18 @@ object FOutroDocumento: TFOutroDocumento
   Font.Style = []
   OldCreateOrder = False
   Position = poMainFormCenter
+  OnClose = FormClose
+  OnShow = FormShow
   PixelsPerInch = 96
   TextHeight = 16
   object Panel1: TPanel
     Left = 0
     Top = 0
     Width = 550
-    Height = 127
+    Height = 142
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 0
-    ExplicitTop = -6
     object Label2: TLabel
       Left = 9
       Top = 2
@@ -85,7 +87,6 @@ object FOutroDocumento: TFOutroDocumento
       Top = 19
       Width = 111
       Height = 24
-      Date = 44972.000000000000000000
       Time = 0.918185462964174800
       TabOrder = 2
       OnChange = EDTEmissaoChange
@@ -95,7 +96,6 @@ object FOutroDocumento: TFOutroDocumento
       Top = 19
       Width = 111
       Height = 24
-      Date = 44972.000000000000000000
       Time = 0.918185462964174800
       TabOrder = 3
       OnChange = EDTVencimentoChange
@@ -105,19 +105,35 @@ object FOutroDocumento: TFOutroDocumento
       Top = 68
       Width = 525
       Height = 53
+      DataField = 'observacao'
       DataSource = FDMClienteFornecedor.DOutroDocumento
       TabOrder = 4
+    end
+    object CBAtivo: TDBCheckBox
+      Left = 0
+      Top = 125
+      Width = 550
+      Height = 17
+      Align = alBottom
+      Caption = 'Ativo'
+      DataField = 'status'
+      DataSource = FDMClienteFornecedor.DOutroDocumento
+      TabOrder = 5
+      ValueChecked = 'A'
+      ValueUnchecked = 'I'
+      ExplicitTop = 566
+      ExplicitWidth = 1355
     end
   end
   object Painel: TPanel
     Left = 0
-    Top = 127
+    Top = 142
     Width = 550
     Height = 34
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitWidth = 540
+    ExplicitTop = 128
     object BConfirmar: TSpeedButton
       Left = 454
       Top = 0
@@ -127,7 +143,6 @@ object FOutroDocumento: TFOutroDocumento
       Caption = 'Confirmar'
       ImageIndex = 5
       Images = FMenuPrincipal.ImageList1
-      Enabled = False
       OnClick = BConfirmarClick
       ExplicitLeft = 0
       ExplicitTop = -3
@@ -142,7 +157,7 @@ object FOutroDocumento: TFOutroDocumento
       Caption = 'Cancelar'
       ImageIndex = 4
       Images = FMenuPrincipal.ImageList1
-      Enabled = False
+      OnClick = BCancelarClick
       ExplicitLeft = 1
       ExplicitTop = -1
       ExplicitHeight = 39

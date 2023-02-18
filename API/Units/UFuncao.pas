@@ -135,7 +135,20 @@ begin
       respostaItem.AddPair(itens[i].Key, itens[i].Value);
     end;
 
-    resposta.AddPair('Params', respostaItem);
+    resposta.AddPair('QueryParms', respostaItem);
+  end;
+
+  if (requisicao.Params.Count > 0) then
+  begin
+    respostaItem :=  TJSONObject.Create;
+    itens := requisicao.Params.ToArray;
+
+    for i := 0 to Length(itens) - 1 do
+    begin
+      respostaItem.AddPair(itens[i].Key, itens[i].Value);
+    end;
+
+    resposta.AddPair('Parms', respostaItem);
   end;
 
 

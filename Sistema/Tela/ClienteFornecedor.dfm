@@ -27,8 +27,10 @@ object FClienteFornecedor: TFClienteFornecedor
     ActivePage = TBCadastro
     Align = alClient
     TabOrder = 0
+    ExplicitTop = 1
     object TBCadastro: TTabSheet
       Caption = 'Cadastro'
+      OnShow = TBCadastroShow
       object Painel: TPanel
         Left = 0
         Top = 0
@@ -244,7 +246,6 @@ object FClienteFornecedor: TFClienteFornecedor
         TabOrder = 2
         object TBOutrosDocumentos: TTabSheet
           Caption = 'Outros Documentos'
-          OnShow = TBOutrosDocumentosShow
           object Panel2: TPanel
             Left = 0
             Top = 0
@@ -287,9 +288,10 @@ object FClienteFornecedor: TFClienteFornecedor
             Left = 0
             Top = 29
             Width = 1347
-            Height = 281
+            Height = 264
             Align = alClient
             DataSource = FDMClienteFornecedor.DOutroDocumento
+            Enabled = False
             Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
             ReadOnly = True
             TabOrder = 1
@@ -299,6 +301,7 @@ object FClienteFornecedor: TFClienteFornecedor
             TitleFont.Name = 'Tahoma'
             TitleFont.Style = []
             OnDrawColumnCell = GDadosDrawColumnCell
+            OnDblClick = GDocumentoDblClick
             OnTitleClick = GDadosTitleClick
             Columns = <
               item
@@ -389,6 +392,19 @@ object FClienteFornecedor: TFClienteFornecedor
                 Width = 61
                 Visible = True
               end>
+          end
+          object CBInativoOutroDocumento: TCheckBox
+            Left = 0
+            Top = 293
+            Width = 1347
+            Height = 17
+            Align = alBottom
+            Caption = 'Mostrar Inativos'
+            Enabled = False
+            TabOrder = 2
+            OnClick = CBInativoOutroDocumentoClick
+            ExplicitTop = 566
+            ExplicitWidth = 1355
           end
         end
         object TBEndereco: TTabSheet
@@ -559,7 +575,6 @@ object FClienteFornecedor: TFClienteFornecedor
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitTop = -6
         object BConsultar: TSpeedButton
           Left = 383
           Top = 12

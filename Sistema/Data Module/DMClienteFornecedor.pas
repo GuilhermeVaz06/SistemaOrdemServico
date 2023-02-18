@@ -59,10 +59,12 @@ type
       DisplayText: Boolean);
     procedure TClienteFornecedortelefoneGetText(Sender: TField; var Text: string;
       DisplayText: Boolean);
+    procedure TClienteFornecedorAfterScroll(DataSet: TDataSet);
   private
 
   public
     tipoCadastro: string;
+    dadosPessoaConsultados: Integer;
     procedure consultarDados(codigo: integer);
     function cadastrarClienteFornecedor: Boolean;
     function alterarClienteFornecedor: Boolean;
@@ -111,12 +113,13 @@ begin
 
     if (Assigned(json)) then
     begin
-      TClienteFornecedorcodigo.Value := json.GetValue<Integer>('codigo', 0);
-      TClienteFornecedorcadastradoPor.Value := json.GetValue<string>('cadastradoPor', '');
-      TClienteFornecedoralteradoPor.Value := json.GetValue<string>('alteradoPor', '');
-      TClienteFornecedordataCadastro.Value := json.GetValue<string>('dataCadastro', '');
-      TClienteFornecedordataAlteracao.Value := json.GetValue<string>('dataAlteracao', '');
-      TClienteFornecedorstatus.Value := json.GetValue<string>('status', 'A');
+      TOutroDocumentocodigo.Value := json.GetValue<Integer>('codigo', 0);
+      TOutroDocumentoTipoDocumento.Value := json.GetValue<string>('TipoDocumento', '');
+      TOutroDocumentocadastradoPor.Value := json.GetValue<string>('cadastradoPor', '');
+      TOutroDocumentoalteradoPor.Value := json.GetValue<string>('alteradoPor', '');
+      TOutroDocumentodataCadastro.Value := json.GetValue<string>('dataCadastro', '');
+      TOutroDocumentodataAlteracao.Value := json.GetValue<string>('dataAlteracao', '');
+      TOutroDocumentostatus.Value := json.GetValue<string>('status', 'A');
 
       Result := True;
     end
@@ -204,12 +207,13 @@ begin
 
     if (Assigned(json)) then
     begin
-      TClienteFornecedorcodigo.Value := json.GetValue<Integer>('codigo', 0);
-      TClienteFornecedorcadastradoPor.Value := json.GetValue<string>('cadastradoPor', '');
-      TClienteFornecedoralteradoPor.Value := json.GetValue<string>('alteradoPor', '');
-      TClienteFornecedordataCadastro.Value := json.GetValue<string>('dataCadastro', '');
-      TClienteFornecedordataAlteracao.Value := json.GetValue<string>('dataAlteracao', '');
-      TClienteFornecedorstatus.Value := json.GetValue<string>('status', 'A');
+      TOutroDocumentocodigo.Value := json.GetValue<Integer>('codigo', 0);
+      TOutroDocumentoTipoDocumento.Value := json.GetValue<string>('TipoDocumento', '');
+      TOutroDocumentocadastradoPor.Value := json.GetValue<string>('cadastradoPor', '');
+      TOutroDocumentoalteradoPor.Value := json.GetValue<string>('alteradoPor', '');
+      TOutroDocumentodataCadastro.Value := json.GetValue<string>('dataCadastro', '');
+      TOutroDocumentodataAlteracao.Value := json.GetValue<string>('dataAlteracao', '');
+      TOutroDocumentostatus.Value := json.GetValue<string>('status', 'A');
 
       Result := True;
     end
@@ -355,67 +359,72 @@ var
   limite, offset: integer;
   continuar: Boolean;
 begin
-  Conexao := TConexao.Create;
-
-  if (Assigned(FClienteFornecedor)) then
+  if (TClienteFornecedorcodigo.Value > 0) then
   begin
-    if FClienteFornecedor.CBMostrarInativo.Checked then
+    Conexao := TConexao.Create;
+
+    if (Assigned(FClienteFornecedor)) then
     begin
-      Conexao.AtribuirParametro('status', 'I');
+      if FClienteFornecedor.CBInativoOutroDocumento.Checked then
+      begin
+        Conexao.AtribuirParametro('status', 'I');
+      end
+      else
+      begin
+        Conexao.AtribuirParametro('status', 'A');
+      end;
+    end;
+
+    if (codigo > 0) then
+    begin
+      Conexao.AtribuirParametro('codigo', IntToStrSenaoZero(codigo));
+    end;
+
+    dadosPessoaConsultados := TClienteFornecedorcodigo.Value;
+
+    Conexao.metodo := rmGET;
+    Conexao.url := 'outroDocumento/' + IntToStrSenaoZero(TClienteFornecedorcodigo.Value);
+    master := TJSONArray.Create;
+    limite := 500;
+    offset := 0;
+
+    repeat
+      Conexao.AtribuirParametro('limite', IntToStrSenaoZero(limite));
+      Conexao.AtribuirParametro('offset', IntToStrSenaoZero(offset));
+      Conexao.Enviar;
+      continuar := False;
+      offset := offset + limite;
+
+      if not (Conexao.status in[200..202]) and (mostrarErro) then
+      begin
+        informar(Conexao.erro);
+        Break;
+      end
+      else if (Conexao.status in[200..202]) then
+      begin
+        json := converterJsonTextoJsonValue(Conexao.resposta);
+        item := converterJsonValueJsonArray(json, 'dados');
+        continuar := json.GetValue<Boolean>('maisRegistros', False);
+        copiarItemJsonArray(item, master);
+      end
+      else if not (Conexao.status in[200..202]) and (mostrarErro = False) then
+      begin
+        Break;
+      end;
+    until not continuar;
+
+    if (Assigned(master)) and (master.Count > 0) then
+    begin
+      converterArrayJsonQuery(converterJsonArrayRestResponse(master), TOutroDocumento);
     end
     else
     begin
-      Conexao.AtribuirParametro('status', 'A');
+      TOutroDocumento.Close;
+      TOutroDocumento.Open;
     end;
+
+    Conexao.Destroy;
   end;
-
-  if (codigo > 0) then
-  begin
-    Conexao.AtribuirParametro('codigo', IntToStrSenaoZero(codigo));
-  end;
-
-  Conexao.metodo := rmGET;
-  Conexao.url := 'outroDocumento/' + IntToStrSenaoZero(TClienteFornecedorcodigo.Value);
-  master := TJSONArray.Create;
-  limite := 500;
-  offset := 0;
-
-  repeat
-    Conexao.AtribuirParametro('limite', IntToStrSenaoZero(limite));
-    Conexao.AtribuirParametro('offset', IntToStrSenaoZero(offset));
-    Conexao.Enviar;
-    continuar := False;
-    offset := offset + limite;
-
-    if not (Conexao.status in[200..202]) and (mostrarErro) then
-    begin
-      informar(Conexao.erro);
-      Break;
-    end
-    else if (Conexao.status in[200..202]) then
-    begin
-      json := converterJsonTextoJsonValue(Conexao.resposta);
-      item := converterJsonValueJsonArray(json, 'dados');
-      continuar := json.GetValue<Boolean>('maisRegistros', False);
-      copiarItemJsonArray(item, master);
-    end
-    else if not (Conexao.status in[200..202]) and (mostrarErro = False) then
-    begin
-      Break;
-    end;
-  until not continuar;
-
-  if (Assigned(master)) and (master.Count > 0) then
-  begin
-    converterArrayJsonQuery(converterJsonArrayRestResponse(master), TOutroDocumento);
-  end
-  else
-  begin
-    TOutroDocumento.Close;
-    TOutroDocumento.Open;
-  end;
-
-  Conexao.Destroy;
 end;
 
 function TFDMClienteFornecedor.inativarClienteFornecedor: Boolean;
@@ -488,6 +497,15 @@ procedure TFDMClienteFornecedor.MemoGetText(Sender: TField;
   var Text: string; DisplayText: Boolean);
 begin
   Text:= (Sender as TMemoField).Value;
+end;
+
+procedure TFDMClienteFornecedor.TClienteFornecedorAfterScroll(
+  DataSet: TDataSet);
+begin
+  if (FClienteFornecedor.PCTela.ActivePage = FClienteFornecedor.TBCadastro) then
+  begin
+    consultarDadosOutroDocumento(0, False);
+  end;
 end;
 
 procedure TFDMClienteFornecedor.TClienteFornecedordocumentoGetText(Sender: TField; var Text: string;

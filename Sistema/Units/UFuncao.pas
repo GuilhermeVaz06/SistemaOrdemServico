@@ -5,7 +5,8 @@ interface
 uses Vcl.Forms, Vcl.Grids, Winapi.Windows, FireDAC.Comp.Client, REST.Client,
      System.SysUtils, Vcl.Dialogs, System.DateUtils, Vcl.DBCtrls, Vcl.ExtCtrls,
      Vcl.Buttons, System.UITypes, System.JSON, DataSet.Serialize, Vcl.DBGrids,
-     Vcl.Graphics, System.IniFiles, REST.Response.Adapter, Data.DBJson;
+     Vcl.Graphics, System.IniFiles, REST.Response.Adapter, Data.DBJson,
+     Vcl.StdCtrls, Vcl.ComCtrls;
 
 function soNumeros(Valor: string): string;
 function strToDoubleZero(valor: string): Double;
@@ -263,6 +264,16 @@ begin
     begin
       (form.Components[i] as TSpeedButton).Enabled := not (form.Components[i] as TSpeedButton).Enabled;
     end
+    else if (form.Components[i] is TTabSheet) then
+    begin
+      if ((form.Components[i] as TTabSheet).Parent.Name = 'PCTela') then
+      begin
+        if ((form.Components[i] as TTabSheet).Name <> 'TBCadastro') then
+        begin
+          (form.Components[i] as TTabSheet).TabVisible := not (form.Components[i] as TTabSheet).TabVisible;
+        end;
+      end;
+    end
     else if (form.Components[i] is TPanel) then
     begin
       if ((form.Components[i] as TPanel).Name = 'PGrid') or
@@ -275,6 +286,14 @@ begin
     else if (form.Components[i] is TDBCheckBox) then
     begin
       (form.Components[i] as TDBCheckBox).Enabled := not (form.Components[i] as TDBCheckBox).Enabled;
+    end
+    else if (form.Components[i] is TCheckBox) then
+    begin
+      (form.Components[i] as TCheckBox).Enabled := not (form.Components[i] as TCheckBox).Enabled;
+    end
+    else if (form.Components[i] is TDBGrid) then
+    begin
+      (form.Components[i] as TDBGrid).Enabled := not (form.Components[i] as TDBGrid).Enabled;
     end
     else if (form.Components[i] is TDBNavigator) then
     begin

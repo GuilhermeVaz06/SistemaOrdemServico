@@ -8,6 +8,7 @@ object FDMClienteFornecedor: TFDMClienteFornecedor
     Top = 67
   end
   object TClienteFornecedor: TFDMemTable
+    AfterScroll = TClienteFornecedorAfterScroll
     FieldDefs = <>
     IndexDefs = <>
     FetchOptions.AssignedValues = [evMode]
@@ -187,7 +188,6 @@ object FDMClienteFornecedor: TFDMClienteFornecedor
     end
     object TOutroDocumentoalteradoPor: TStringField
       FieldName = 'alteradoPor'
-      OnGetText = MemoGetText
       Size = 150
     end
     object TOutroDocumentodataCadastro: TStringField

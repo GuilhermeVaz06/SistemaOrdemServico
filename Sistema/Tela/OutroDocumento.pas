@@ -23,9 +23,13 @@ type
     Painel: TPanel;
     BConfirmar: TSpeedButton;
     BCancelar: TSpeedButton;
+    CBAtivo: TDBCheckBox;
     procedure EDTEmissaoChange(Sender: TObject);
     procedure EDTVencimentoChange(Sender: TObject);
     procedure BConfirmarClick(Sender: TObject);
+    procedure BCancelarClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure FormShow(Sender: TObject);
   private
     { Private declarations }
     function validarCampos: boolean;
@@ -41,6 +45,11 @@ implementation
 uses DMClienteFornecedor, UFuncao;
 
 {$R *.dfm}
+
+procedure TFOutroDocumento.BCancelarClick(Sender: TObject);
+begin
+  Close;
+end;
 
 procedure TFOutroDocumento.BConfirmarClick(Sender: TObject);
 var
@@ -63,7 +72,12 @@ begin
     if (resposta) then
     begin
       FDMClienteFornecedor.TOutroDocumento.Post;
-
+      FDMClienteFornecedor.TOutroDocumento.Append;
+      FDMClienteFornecedor.TOutroDocumentocodigoPessoa.Value := FDMClienteFornecedor.TClienteFornecedorcodigo.Value;
+      FDMClienteFornecedor.TOutroDocumentodataEmissao.Value := Date;
+      FDMClienteFornecedor.TOutroDocumentodataVencimento.Value := Date;
+      FDMClienteFornecedor.TOutroDocumentodataEmissao.Value := Date;
+      FDMClienteFornecedor.TOutroDocumentodataVencimento.Value := Date;
     end;
   end;
 end;
@@ -78,24 +92,45 @@ begin
   FDMClienteFornecedor.TOutroDocumentodataVencimento.Value := EDTVencimento.Date;
 end;
 
+procedure TFOutroDocumento.FormClose(Sender: TObject; var Action: TCloseAction);
+begin
+  if FDMClienteFornecedor.TOutroDocumento.State in[dsInsert, dsEdit] then
+  begin
+    FDMClienteFornecedor.TOutroDocumento.Cancel;
+  end;
+end;
+
+procedure TFOutroDocumento.FormShow(Sender: TObject);
+begin
+  EDTEmissao.DateTime := FDMClienteFornecedor.TOutroDocumentodataEmissao.Value;
+  EDTVencimento.DateTime := FDMClienteFornecedor.TOutroDocumentodataVencimento.Value;
+  EDTEmissaoChange(nil);
+  EDTVencimentoChange(nil);
+end;
+
 function TFOutroDocumento.validarCampos: boolean;
 var
   mensagem: TStringList;
 begin
   mensagem := TStringList.Create;
 
-  if (FDMClienteFornecedor.TOutroDocumentoTipoDocumento.Value = '') then
+  with FDMClienteFornecedor do
   begin
-    mensagem.Add('O Documento deve ser selecionado!');
-  end
-  else if (Trim(soNumeros(FDMClienteFornecedor.TOutroDocumentoDocumento.Value)) = '') then
-  begin
-    mensagem.Add('O Nº do Documento deve ser informado!');
-  end
-  else if (Length(Trim(soNumeros(FDMClienteFornecedor.TOutroDocumentoDocumento.Value))) <> FDMClienteFornecedor.QTipoDocumentoqtdeCaracteres.Value) then
-  begin
-    mensagem.Add('O Nº do Documento deve conter ' + IntToStrSenaoZero(FDMClienteFornecedor.QTipoDocumentoqtdeCaracteres.Value) +
-                 ' caracteres validos!');
+    if not (TOutroDocumentocodigoTipoDocumento.Value > 0) then
+    begin
+      mensagem.Add('O Documento deve ser selecionado!');
+    end;
+
+    if (Trim(soNumeros(TOutroDocumentoDocumento.Value)) = '') then
+    begin
+      mensagem.Add('O Nº do Documento deve ser informado!');
+    end;
+
+    if (Length(Trim(soNumeros(TOutroDocumentoDocumento.Value))) <> QTipoDocumentoqtdeCaracteres.Value) then
+    begin
+      mensagem.Add('O Nº do Documento deve conter ' + IntToStrSenaoZero(QTipoDocumentoqtdeCaracteres.Value) +
+                   ' caracteres validos!');
+    end;
   end;
 
   if (mensagem.Text <> '') then

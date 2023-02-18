@@ -63,6 +63,7 @@ type
     DBEdit4: TDBEdit;
     DBMemo1: TDBMemo;
     SpeedButton1: TSpeedButton;
+    CBInativoOutroDocumento: TCheckBox;
     procedure BFecharClick(Sender: TObject);
     procedure BCadastrarClick(Sender: TObject);
     procedure BAlterarClick(Sender: TObject);
@@ -82,7 +83,9 @@ type
     procedure DBDocumentoExit(Sender: TObject);
     procedure BCadastrarDocumentoClick(Sender: TObject);
     procedure BRemoverDocumentoClick(Sender: TObject);
-    procedure TBOutrosDocumentosShow(Sender: TObject);
+    procedure TBCadastroShow(Sender: TObject);
+    procedure CBInativoOutroDocumentoClick(Sender: TObject);
+    procedure GDocumentoDblClick(Sender: TObject);
   private
     { Private declarations }
     function validarCampos: boolean;
@@ -102,9 +105,16 @@ uses UFuncao, DMClienteFornecedor, OutroDocumento;
 
 procedure TFClienteFornecedor.BAlterarClick(Sender: TObject);
 begin
-  UFuncao.desativaBotoes(self);
-  FDMClienteFornecedor.TClienteFornecedor.Edit;
-  PCDados.ActivePage := TBOutrosDocumentos;
+  if not (FDMClienteFornecedor.TClienteFornecedor.RecordCount > 0) then
+  begin
+    informar('Nenhum registro selecionado!');
+  end
+  else
+  begin
+    UFuncao.desativaBotoes(self);
+    FDMClienteFornecedor.TClienteFornecedor.Edit;
+    PCDados.ActivePage := TBOutrosDocumentos;
+  end;
 end;
 
 procedure TFClienteFornecedor.BCadastrarClick(Sender: TObject);
@@ -116,6 +126,7 @@ end;
 
 procedure TFClienteFornecedor.BCadastrarDocumentoClick(Sender: TObject);
 begin
+  if (FDMClienteFornecedor.TClienteFornecedorcodigo.Value > 0) then
   try
     Application.CreateForm(TFOutroDocumento, FOutroDocumento);
 
@@ -123,11 +134,17 @@ begin
     begin
       TOutroDocumento.Append;
       TOutroDocumentocodigoPessoa.Value := TClienteFornecedorcodigo.Value;
+      TOutroDocumentodataEmissao.Value := Date;
+      TOutroDocumentodataVencimento.Value := Date;
     end;
 
     FOutroDocumento.ShowModal;
   finally
     FreeAndNil(FOutroDocumento);
+  end
+  else
+  begin
+    informar('Antes de inserir um outro documento confirme o cadastro do ' + FDMClienteFornecedor.tipoCadastro);
   end;
 end;
 
@@ -186,7 +203,11 @@ var
 begin
   with FDMClienteFornecedor do
   begin
-    if (UsuarioAdmnistrador) and
+    if not (TClienteFornecedor.RecordCount > 0) then
+    begin
+      informar('Nenhum registro selecionado!');
+    end
+    else if (UsuarioAdmnistrador) and
        (confirmar('Realmente deseja inativar o ' + tipoCadastro + ': ' + TClienteFornecedornomeFantasia.Value + '?')) then
     begin
       codigo := TClienteFornecedorcodigo.Value;
@@ -210,17 +231,26 @@ var
 begin
   with FDMClienteFornecedor do
   begin
-    if (confirmar('Realmente deseja inativar o Outro Documento: ' + TOutroDocumentodocumento.Value + '?')) then
+    if not (TOutroDocumento.RecordCount > 0) then
+    begin
+      informar('Nenhum registro selecionado!');
+    end
+    else if (confirmar('Realmente deseja inativar o Outro Documento: ' + TOutroDocumentodocumento.Value + '?')) then
     begin
       codigo := TOutroDocumentocodigo.Value;
 
-      if (inativarClienteFornecedor) then
+      if (inativarOutroDocumento) then
       begin
         consultarDadosOutroDocumento(0, True);
         TOutroDocumento.Locate('codigo', codigo, [loCaseInsensitive]);
       end;
     end;
   end;
+end;
+
+procedure TFClienteFornecedor.CBInativoOutroDocumentoClick(Sender: TObject);
+begin
+  FDMClienteFornecedor.consultarDadosOutroDocumento(0, False);
 end;
 
 procedure TFClienteFornecedor.CBMostrarInativoClick(Sender: TObject);
@@ -293,9 +323,31 @@ begin
   OrdenarGrid(Column);
 end;
 
-procedure TFClienteFornecedor.TBOutrosDocumentosShow(Sender: TObject);
+procedure TFClienteFornecedor.GDocumentoDblClick(Sender: TObject);
 begin
-  FDMClienteFornecedor.consultarDadosOutroDocumento(0, False);
+  if (FDMClienteFornecedor.TOutroDocumento.RecordCount > 0) then
+  try
+    Application.CreateForm(TFOutroDocumento, FOutroDocumento);
+    FDMClienteFornecedor.TOutroDocumento.Edit;
+    FOutroDocumento.ShowModal;
+  finally
+    FreeAndNil(FOutroDocumento);
+  end
+  else
+  begin
+    informar('Nenhum registro selecionado!');
+  end;
+end;
+
+procedure TFClienteFornecedor.TBCadastroShow(Sender: TObject);
+begin
+  with FDMClienteFornecedor do
+  begin
+    if (dadosPessoaConsultados <> TClienteFornecedorcodigo.Value) then
+    begin
+      consultarDadosOutroDocumento(0, False);
+    end;
+  end;
 end;
 
 function TFClienteFornecedor.validarCampos: boolean;
