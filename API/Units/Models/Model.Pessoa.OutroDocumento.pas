@@ -111,7 +111,7 @@ var
 begin
   outroDocumentoConsultado := TOutroDocumento.Create;
   sql := TStringList.Create;
-  sql.Add('SELECT CODIGO_OUTRO_DOCUMENTO, DOCUMENTO');
+  sql.Add('SELECT CODIGO_OUTRO_DOCUMENTO, DOCUMENTO, `STATUS`');
   sql.Add('  FROM pessoa_outro_documento');
   sql.Add(' WHERE CODIGO_PESSOA = ' + IntToStrSenaoZero(FPessoa.id));
   sql.Add('   AND CODIGO_TIPO_DOCUMENTO = ' + IntToStrSenaoZero(FTipoDocumento.id));
@@ -140,6 +140,7 @@ begin
 
     outroDocumentoConsultado.FCodigo := query.FieldByName('CODIGO_OUTRO_DOCUMENTO').Value;
     outroDocumentoConsultado.FDocumento := query.FieldByName('DOCUMENTO').Value;
+    outroDocumentoConsultado.FStatus := query.FieldByName('STATUS').Value;
   end;
 
   Result := outroDocumentoConsultado;
@@ -183,6 +184,7 @@ begin
     data.FPessoa.id := query.FieldByName('CODIGO_PESSOA').Value;
     data.FTipoDocumento.id := query.FieldByName('CODIGO_TIPO_DOCUMENTO').Value;
     data.FTipoDocumento.descricao := query.FieldByName('tipoDocumento').Value;
+    data.FTipoDocumento.mascara := query.FieldByName('mascaraDocumento').Value;
     data.FDocumento := query.FieldByName('DOCUMENTO').Value;
     data.FDataEmissao := query.FieldByName('DT_EMISSAO').Value;
     data.FDataVencimento := query.FieldByName('DT_VENCIMENTO').Value;
@@ -307,7 +309,7 @@ begin
     sql.Add(', pessoa_outro_documento.OBSERVACAO, pessoa_outro_documento.CODIGO_SESSAO_CADASTRO');
     sql.Add(', pessoa_outro_documento.CODIGO_SESSAO_ALTERACAO, pessoa_outro_documento.DATA_CADASTRO');
     sql.Add(', pessoa_outro_documento.DATA_ULTIMA_ALTERACAO, pessoa_outro_documento.`STATUS`');
-    sql.Add(', tipo_documento.DESCRICAO tipoDocumento');
+    sql.Add(', tipo_documento.DESCRICAO tipoDocumento, tipo_documento.MASCARA_CARACTERES mascaraDocumento');
     sql.Add('');
     sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
     sql.Add('     FROM pessoa, sessao ');
@@ -421,7 +423,7 @@ begin
   sql.Add(', pessoa_outro_documento.OBSERVACAO, pessoa_outro_documento.CODIGO_SESSAO_CADASTRO');
   sql.Add(', pessoa_outro_documento.CODIGO_SESSAO_ALTERACAO, pessoa_outro_documento.DATA_CADASTRO');
   sql.Add(', pessoa_outro_documento.DATA_ULTIMA_ALTERACAO, pessoa_outro_documento.`STATUS`');
-  sql.Add(', tipo_documento.DESCRICAO tipoDocumento');
+  sql.Add(', tipo_documento.DESCRICAO tipoDocumento, tipo_documento.MASCARA_CARACTERES mascaraDocumento');
   sql.Add('');
   sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
   sql.Add('     FROM pessoa, sessao ');

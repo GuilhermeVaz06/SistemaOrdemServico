@@ -166,6 +166,11 @@ object FDMClienteFornecedor: TFDMClienteFornecedor
     end
     object TOutroDocumentodocumento: TStringField
       FieldName = 'documento'
+      OnGetText = TOutroDocumentodocumentoGetText
+    end
+    object TOutroDocumentomascaraCaracteres: TStringField
+      FieldName = 'mascaraCaracteres'
+      Size = 30
     end
     object TOutroDocumentodataEmissao: TDateField
       FieldName = 'dataEmissao'

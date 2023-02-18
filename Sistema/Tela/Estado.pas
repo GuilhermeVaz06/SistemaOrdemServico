@@ -82,8 +82,15 @@ uses UFuncao, DMEstado, DMPais, Pais;
 
 procedure TFEstado.BAlterarClick(Sender: TObject);
 begin
-  UFuncao.desativaBotoes(self);
-  FDMEstado.TEstado.Edit;
+  if not (FDMEstado.TEstado.RecordCount > 0) then
+  begin
+    informar('Nenhum registro selecionado!');
+  end
+  else
+  begin
+    UFuncao.desativaBotoes(self);
+    FDMEstado.TEstado.Edit;
+  end;
 end;
 
 procedure TFEstado.BCadastrarClick(Sender: TObject);
@@ -145,7 +152,11 @@ procedure TFEstado.BInativarClick(Sender: TObject);
 var
   codigo: integer;
 begin
-  if (UsuarioAdmnistrador) and
+  if not (FDMEstado.TEstado.RecordCount > 0) then
+  begin
+    informar('Nenhum registro selecionado!');
+  end
+  else if (UsuarioAdmnistrador) and
      (confirmar('Realmente deseja inativar o registro: ' + FDMEstado.TEstadonome.Value + '?')) then
   begin
     codigo := FDMEstado.TEstadocodigo.Value;

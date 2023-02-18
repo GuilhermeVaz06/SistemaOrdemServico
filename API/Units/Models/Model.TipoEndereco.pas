@@ -338,7 +338,7 @@ var
 begin
   tipoEnderecoConsultado := TTipoEndereco.Create;
   sql := TStringList.Create;
-  sql.Add('SELECT CODIGO_TIPO_ENDERECO, DESCRICAO');
+  sql.Add('SELECT CODIGO_TIPO_ENDERECO, DESCRICAO, `STATUS`');
   sql.Add('  FROM tipo_endereco');
   sql.Add(' WHERE DESCRICAO = ' + QuotedStr(FDescricao));
 
@@ -365,6 +365,7 @@ begin
 
     tipoEnderecoConsultado.FCodigo := query.FieldByName('CODIGO_TIPO_ENDERECO').Value;
     tipoEnderecoConsultado.FDescricao := query.FieldByName('DESCRICAO').Value;
+    tipoEnderecoConsultado.FStatus := query.FieldByName('STATUS').Value;
   end;
 
   Result := tipoEnderecoConsultado;

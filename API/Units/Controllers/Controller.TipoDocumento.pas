@@ -299,7 +299,8 @@ begin
       if (Assigned(tipoDocumentoConsultado)) then
       begin
         erros.Add('Já existe um Tipo de Documento [' + IntToStrSenaoZero(tipoDocumentoConsultado.id) +
-                  ' - ' + tipoDocumentoConsultado.descricao + '], cadastrado com essa descrição!');
+                  ' - ' + tipoDocumentoConsultado.descricao +
+                  ' - ' + tipoDocumentoConsultado.status + '], cadastrado com essa descrição!');
         tipoDocumentoConsultado.Destroy;
       end;
     end;
@@ -450,7 +451,8 @@ begin
         if (Assigned(tipoDocumentoConsultado)) then
         begin
           erros.Add('Já existe um tipo de documento [' + IntToStrSenaoZero(tipoDocumentoConsultado.id) +
-                  ' - ' + tipoDocumentoConsultado.descricao + '], cadastrado com essa descrição!');
+                  ' - ' + tipoDocumentoConsultado.descricao +
+                  ' - ' + tipoDocumentoConsultado.status + '], cadastrado com essa descrição!');
           tipoDocumentoConsultado.Destroy;
         end;
       end;

@@ -98,7 +98,7 @@ var
 begin
   cidadeConsultado := TCidade.Create;
   sql := TStringList.Create;
-  sql.Add('SELECT CODIGO_CIDADE, NOME');
+  sql.Add('SELECT CODIGO_CIDADE, NOME, `STATUS`');
   sql.Add('  FROM cidade');
   sql.Add(' WHERE CODIGO_IBGE = ' + QuotedStr(FCodigoIbge));
   sql.Add('   AND NOME = ' + QuotedStr(FNome));
@@ -126,6 +126,7 @@ begin
 
     cidadeConsultado.FCodigo := query.FieldByName('CODIGO_CIDADE').Value;
     cidadeConsultado.FNome := query.FieldByName('NOME').Value;
+    cidadeConsultado.FStatus := query.FieldByName('STATUS').Value;
   end;
 
   Result := cidadeConsultado;

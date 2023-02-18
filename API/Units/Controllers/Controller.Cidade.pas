@@ -304,7 +304,8 @@ begin
       if (Assigned(cidadeConsultado)) then
       begin
         erros.Add('Já existe um cidade [' + IntToStrSenaoZero(cidadeConsultado.id) +
-                  ' - ' + cidadeConsultado.nome + '], cadastrada com esse codigo IBGE ou com esse nome!');
+                  ' - ' + cidadeConsultado.nome +
+                  ' - ' + cidadeConsultado.status + '], cadastrada com esse codigo IBGE ou com esse nome!');
         cidadeConsultado.Destroy;
       end
       else
@@ -464,7 +465,8 @@ begin
         if (Assigned(cidadeConsultado)) then
         begin
           erros.Add('Já existe uma cidade [' + IntToStrSenaoZero(cidadeConsultado.id) +
-                  ' - ' + cidadeConsultado.nome + '], cadastrada com esse codigo IBGE ou com esse nome!');
+                  ' - ' + cidadeConsultado.nome +
+                  ' - ' + cidadeConsultado.status + '], cadastrada com esse codigo IBGE ou com esse nome!');
           cidadeConsultado.Destroy;
         end;
       end;

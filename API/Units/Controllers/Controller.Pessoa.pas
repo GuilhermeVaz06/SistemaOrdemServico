@@ -410,7 +410,8 @@ begin
       if (Assigned(pessoaConsultado)) then
       begin
         erros.Add('Já existe um ' + classe + ' [' + IntToStrSenaoZero(pessoaConsultado.id) +
-                  ' - ' + pessoaConsultado.nomeFantasia + '], cadastrado com esse documento!');
+                  ' - ' + pessoaConsultado.nomeFantasia +
+                  ' - ' + pessoaConsultado.status + '], cadastrado com esse documento!');
 
         pessoaConsultado.Destroy;
       end
@@ -628,7 +629,8 @@ begin
         if (Assigned(pessoaConsultado)) then
         begin
           erros.Add('Já existe um ' + classe + ' [' + IntToStrSenaoZero(pessoaConsultado.id) +
-                    ' - ' + pessoaConsultado.razaoSocial + '], cadastrado com esse documento!');
+                    ' - ' + pessoaConsultado.nomeFantasia +
+                  ' - ' + pessoaConsultado.status + '], cadastrado com esse documento!');
           pessoaConsultado.Destroy;
         end
         else

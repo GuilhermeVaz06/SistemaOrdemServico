@@ -77,8 +77,15 @@ uses UFuncao, DMTipoDocumento;
 
 procedure TFTipoDocumento.BAlterarClick(Sender: TObject);
 begin
-  UFuncao.desativaBotoes(self);
-  FDMTipoDocumento.TTipoDocumento.Edit;
+  if not (FDMTipoDocumento.TTipoDocumento.RecordCount > 0) then
+  begin
+    informar('Nenhum registro selecionado!');
+  end
+  else
+  begin
+    UFuncao.desativaBotoes(self);
+    FDMTipoDocumento.TTipoDocumento.Edit;
+  end;
 end;
 
 procedure TFTipoDocumento.BCadastrarClick(Sender: TObject);
@@ -140,8 +147,12 @@ procedure TFTipoDocumento.BInativarClick(Sender: TObject);
 var
   codigo: integer;
 begin
-  if (UsuarioAdmnistrador) and
-     (confirmar('Realmente deseja inativar o registro: ' + FDMTipoDocumento.TTipoDocumentodescricao.Value + '?')) then
+  if not (FDMTipoDocumento.TTipoDocumento.RecordCount > 0) then
+  begin
+    informar('Nenhum registro selecionado!');
+  end
+  else if (UsuarioAdmnistrador) and
+          (confirmar('Realmente deseja inativar o registro: ' + FDMTipoDocumento.TTipoDocumentodescricao.Value + '?')) then
   begin
     codigo := FDMTipoDocumento.TTipoDocumentocodigo.Value;
 

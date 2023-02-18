@@ -77,8 +77,15 @@ uses UFuncao, DMPais;
 
 procedure TFPais.BAlterarClick(Sender: TObject);
 begin
-  UFuncao.desativaBotoes(self);
-  FDMPais.TPais.Edit;
+  if not (FDMPais.TPais.RecordCount > 0) then
+  begin
+    informar('Nenhum registro selecionado!');
+  end
+  else
+  begin
+    UFuncao.desativaBotoes(self);
+    FDMPais.TPais.Edit;
+  end;
 end;
 
 procedure TFPais.BCadastrarClick(Sender: TObject);
@@ -140,7 +147,11 @@ procedure TFPais.BInativarClick(Sender: TObject);
 var
   codigo: integer;
 begin
-  if (UsuarioAdmnistrador) and
+  if not (FDMPais.TPais.RecordCount > 0) then
+  begin
+    informar('Nenhum registro selecionado!');
+  end
+  else if (UsuarioAdmnistrador) and
      (confirmar('Realmente deseja inativar o registro: ' + FDMPais.TPaisnome.Value + '?')) then
   begin
     codigo := FDMPais.TPaiscodigo.Value;

@@ -272,7 +272,8 @@ begin
       if (Assigned(tipoEnderecoConsultado)) then
       begin
         erros.Add('Já existe um Tipo de Endereço [' + IntToStrSenaoZero(tipoEnderecoConsultado.id) +
-                  ' - ' + tipoEnderecoConsultado.descricao + '], cadastrado com essa descrição!');
+                  ' - ' + tipoEnderecoConsultado.descricao +
+                  ' - ' + tipoEnderecoConsultado.status + '], cadastrado com essa descrição!');
         tipoEnderecoConsultado.Destroy;
       end;
     end;
@@ -403,7 +404,8 @@ begin
         if (Assigned(tipoEnderecoConsultado)) then
         begin
           erros.Add('Já existe um tipo de Endereço [' + IntToStrSenaoZero(tipoEnderecoConsultado.id) +
-                  ' - ' + tipoEnderecoConsultado.descricao + '], cadastrado com essa descrição!');
+                  ' - ' + tipoEnderecoConsultado.descricao +
+                  ' - ' + tipoEnderecoConsultado.status + '], cadastrado com essa descrição!');
           tipoEnderecoConsultado.Destroy;
         end;
       end;

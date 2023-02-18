@@ -298,7 +298,8 @@ begin
       if (Assigned(estadoConsultado)) then
       begin
         erros.Add('Já existe um Estado [' + IntToStrSenaoZero(estadoConsultado.id) +
-                  ' - ' + estadoConsultado.nome + '], cadastrado com esse codigo IBGE ou com esse nome!');
+                  ' - ' + estadoConsultado.nome +
+                  ' - ' + estadoConsultado.status + '], cadastrado com esse codigo IBGE ou com esse nome!');
         estadoConsultado.Destroy;
       end
       else
@@ -458,7 +459,8 @@ begin
         if (Assigned(estadoConsultado)) then
         begin
           erros.Add('Já existe um Estado [' + IntToStrSenaoZero(estadoConsultado.id) +
-                  ' - ' + estadoConsultado.nome + '], cadastrado com esse codigo IBGE ou com esse nome!');
+                  ' - ' + estadoConsultado.nome +
+                  ' - ' + estadoConsultado.status + '], cadastrado com esse codigo IBGE ou com esse nome!');
           estadoConsultado.Destroy;
         end;
       end;

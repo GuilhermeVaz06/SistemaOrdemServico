@@ -73,8 +73,15 @@ uses UFuncao, DMTipoEndereco;
 
 procedure TFTipoEndereco.BAlterarClick(Sender: TObject);
 begin
-  UFuncao.desativaBotoes(self);
-  FDMTipoEndereco.TTipoEndereco.Edit;
+  if not (FDMTipoEndereco.TTipoEndereco.RecordCount > 0) then
+  begin
+    informar('Nenhum registro selecionado!');
+  end
+  else
+  begin
+    UFuncao.desativaBotoes(self);
+    FDMTipoEndereco.TTipoEndereco.Edit;
+  end;
 end;
 
 procedure TFTipoEndereco.BCadastrarClick(Sender: TObject);
@@ -136,8 +143,12 @@ procedure TFTipoEndereco.BInativarClick(Sender: TObject);
 var
   codigo: integer;
 begin
-  if (UsuarioAdmnistrador) and
-     (confirmar('Realmente deseja inativar o registro: ' + FDMTipoEndereco.TTipoEnderecodescricao.Value + '?')) then
+  if not (FDMTipoEndereco.TTipoEndereco.RecordCount > 0) then
+  begin
+    informar('Nenhum registro selecionado!');
+  end
+  else if (UsuarioAdmnistrador) and
+          (confirmar('Realmente deseja inativar o registro: ' + FDMTipoEndereco.TTipoEnderecodescricao.Value + '?')) then
   begin
     codigo := FDMTipoEndereco.TTipoEnderecocodigo.Value;
 

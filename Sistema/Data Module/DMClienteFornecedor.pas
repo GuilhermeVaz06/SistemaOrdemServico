@@ -53,6 +53,7 @@ type
     TOutroDocumentodataAlteracao: TStringField;
     TOutroDocumentostatus: TStringField;
     TOutroDocumentocodigo: TIntegerField;
+    TOutroDocumentomascaraCaracteres: TStringField;
     procedure MemoGetText(Sender: TField; var Text: string;
       DisplayText: Boolean);
     procedure TClienteFornecedordocumentoGetText(Sender: TField; var Text: string;
@@ -60,6 +61,8 @@ type
     procedure TClienteFornecedortelefoneGetText(Sender: TField; var Text: string;
       DisplayText: Boolean);
     procedure TClienteFornecedorAfterScroll(DataSet: TDataSet);
+    procedure TOutroDocumentodocumentoGetText(Sender: TField; var Text: string;
+      DisplayText: Boolean);
   private
 
   public
@@ -93,7 +96,8 @@ begin
   Conexao := TConexao.Create;
 
   Conexao.metodo := rmPUT;
-  Conexao.url := 'outroDocumento/' + IntToStrSenaoZero(TOutroDocumentocodigo.Value);
+  Conexao.url := 'outroDocumento/' + IntToStrSenaoZero(TOutroDocumentocodigoPessoa.Value) +
+                 '/' + IntToStrSenaoZero(TOutroDocumentocodigo.Value);
   Conexao.AtribuirBody('codigoTipoDocumento', IntToStrSenaoZero(TOutroDocumentocodigoTipoDocumento.Value));
   Conexao.AtribuirBody('documento', TOutroDocumentodocumento.Value);
   Conexao.AtribuirBody('dataEmissao', DateToStr(TOutroDocumentodataEmissao.Value));
@@ -115,6 +119,7 @@ begin
     begin
       TOutroDocumentocodigo.Value := json.GetValue<Integer>('codigo', 0);
       TOutroDocumentoTipoDocumento.Value := json.GetValue<string>('TipoDocumento', '');
+      TOutroDocumentomascaraCaracteres.Value := json.GetValue<string>('mascaraCaracteres', '');
       TOutroDocumentocadastradoPor.Value := json.GetValue<string>('cadastradoPor', '');
       TOutroDocumentoalteradoPor.Value := json.GetValue<string>('alteradoPor', '');
       TOutroDocumentodataCadastro.Value := json.GetValue<string>('dataCadastro', '');
@@ -209,6 +214,7 @@ begin
     begin
       TOutroDocumentocodigo.Value := json.GetValue<Integer>('codigo', 0);
       TOutroDocumentoTipoDocumento.Value := json.GetValue<string>('TipoDocumento', '');
+      TOutroDocumentomascaraCaracteres.Value := json.GetValue<string>('mascaraCaracteres', '');
       TOutroDocumentocadastradoPor.Value := json.GetValue<string>('cadastradoPor', '');
       TOutroDocumentoalteradoPor.Value := json.GetValue<string>('alteradoPor', '');
       TOutroDocumentodataCadastro.Value := json.GetValue<string>('dataCadastro', '');
@@ -541,6 +547,12 @@ begin
   begin
     Text := TClienteFornecedortelefone.Value;
   end;
+end;
+
+procedure TFDMClienteFornecedor.TOutroDocumentodocumentoGetText(Sender: TField;
+  var Text: string; DisplayText: Boolean);
+begin
+  Text := FormatMaskText(TOutroDocumentomascaraCaracteres.Value, TOutroDocumentodocumento.Value);
 end;
 
 procedure TFDMClienteFornecedor.consultarTipoDocumento;

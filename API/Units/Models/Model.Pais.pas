@@ -91,7 +91,7 @@ var
 begin
   paisConsultado := TPais.Create;
   sql := TStringList.Create;
-  sql.Add('SELECT CODIGO_PAIS, NOME');
+  sql.Add('SELECT CODIGO_PAIS, NOME, `STATUS`');
   sql.Add('  FROM pais');
   sql.Add(' WHERE (CODIGO_IBGE = ' + QuotedStr(FCodigoIbge));
   sql.Add('    OR  NOME = ' + QuotedStr(FNome) + ')');
@@ -119,6 +119,7 @@ begin
 
     paisConsultado.FCodigo := query.FieldByName('CODIGO_PAIS').Value;
     paisConsultado.FNome := query.FieldByName('NOME').Value;
+    paisConsultado.FStatus := query.FieldByName('STATUS').Value;
   end;
 
   Result := paisConsultado;

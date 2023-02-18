@@ -85,8 +85,15 @@ uses UFuncao, DMCidade, DMEstado, Estado;
 
 procedure TFCidade.BAlterarClick(Sender: TObject);
 begin
-  UFuncao.desativaBotoes(self);
-  FDMCidade.TCidade.Edit;
+  if not (FDMCidade.TCidade.RecordCount > 0) then
+  begin
+    informar('Nenhum registro selecionado!');
+  end
+  else
+  begin
+    UFuncao.desativaBotoes(self);
+    FDMCidade.TCidade.Edit;
+  end;
 end;
 
 procedure TFCidade.BCadastrarClick(Sender: TObject);
@@ -148,7 +155,11 @@ procedure TFCidade.BInativarClick(Sender: TObject);
 var
   codigo: integer;
 begin
-  if (UsuarioAdmnistrador) and
+  if not (FDMCidade.TCidade.RecordCount > 0) then
+  begin
+    informar('Nenhum registro selecionado!');
+  end
+  else if (UsuarioAdmnistrador) and
      (confirmar('Realmente deseja inativar o registro: ' + FDMCidade.TCidadenome.Value + '?')) then
   begin
     codigo := FDMCidade.TCidadecodigo.Value;

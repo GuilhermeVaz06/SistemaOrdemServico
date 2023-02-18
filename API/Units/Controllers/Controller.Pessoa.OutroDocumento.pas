@@ -27,6 +27,7 @@ begin
   resposta.AddPair('codigoPessoa',TJSONNumber.Create(outroDocumentoItem.pessoa.id));
   resposta.AddPair('codigoTipoDocumento',TJSONNumber.Create(outroDocumentoItem.tipoDocumento.id));
   resposta.AddPair('TipoDocumento',outroDocumentoItem.tipoDocumento.descricao);
+  resposta.AddPair('mascaraCaracteres',outroDocumentoItem.tipoDocumento.mascara);
   resposta.AddPair('documento',outroDocumentoItem.documento);
   resposta.AddPair('dataEmissao',DateToStr(outroDocumentoItem.dataEmissao));
   resposta.AddPair('dataVencimento',DateToStr(outroDocumentoItem.dataVencimento));
@@ -289,7 +290,8 @@ begin
       if (Assigned(outroDocumentoConsultado)) then
       begin
         erros.Add('Já existe um outro documento [' + IntToStrSenaoZero(outroDocumentoConsultado.id) +
-                  ' - ' + outroDocumentoConsultado.documento + '] com esse mesmo numero para esse cadastro!');
+                  ' - ' + outroDocumentoConsultado.documento +
+                  ' - ' + outroDocumentoConsultado.status + '] com esse mesmo numero para esse cadastro!');
         outroDocumentoConsultado.Destroy;
       end
       else
@@ -389,7 +391,7 @@ begin
     body := TJSONObject.ParseJSONValue(TEncoding.UTF8.GetBytes(req.Body), 0) as TJSONValue;
 
     token := Req.Headers['token'];
-    outroDocumento.pessoa.id := body.GetValue<Integer>('codigoPessoa', 0);
+    outroDocumento.pessoa.id := strToIntZero(Req.Params['pessoa']);
     outroDocumento.tipoDocumento.id := body.GetValue<Integer>('codigoTipoDocumento', 0);
     outroDocumento.documento := body.GetValue<string>('documento', '');
     outroDocumento.dataEmissao := StrToDate(body.GetValue<string>('dataEmissao', ''));
@@ -419,6 +421,11 @@ begin
       erros.Add('O Codigo deve ser informado, ou deve ser um numero inteiro valido!');
     end;
 
+    if not (outroDocumento.pessoa.id > 0) then
+    begin
+      erros.Add('O Codigo da pessoa deve ser informado, ou deve ser um numero inteiro valido!');
+    end;
+
     if not (outroDocumento.tipoDocumento.id > 0) then
     begin
       erros.Add('O Codigo do tipo de documento deve ser informado, ou deve ser um numero inteiro valido!');
@@ -445,7 +452,8 @@ begin
         if (Assigned(outroDocumentoConsultado)) then
         begin
           erros.Add('Já existe um outro documento [' + IntToStrSenaoZero(outroDocumentoConsultado.id) +
-                  ' - ' + outroDocumentoConsultado.documento + '] com esse mesmo documento para esse cadastro!');
+                  ' - ' + outroDocumentoConsultado.documento +
+                  ' - ' + outroDocumentoConsultado.status + '] com esse mesmo documento para esse cadastro!');
           outroDocumentoConsultado.Destroy;
         end;
       end;
@@ -617,7 +625,7 @@ begin
   criarConexao;
   THorse.Get('/outroDocumento/:pessoa', buscarOutrosDocumentos);
   THorse.Post('/outroDocumento', cadastrarOutroDocumento);
-  THorse.Put('/outroDocumento/:id', alterarOutroDocumento);
+  THorse.Put('/outroDocumento/:pessoa/:id', alterarOutroDocumento);
   THorse.Delete('/outroDocumento/:id', inativarOutroDocumento);
 end;
 

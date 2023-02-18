@@ -380,7 +380,7 @@ var
 begin
   tipoDocumentoConsultado := TTipoDocumento.Create;
   sql := TStringList.Create;
-  sql.Add('SELECT CODIGO_TIPO_DOCUMENTO, DESCRICAO');
+  sql.Add('SELECT CODIGO_TIPO_DOCUMENTO, DESCRICAO, `STATUS`');
   sql.Add('  FROM tipo_documento');
   sql.Add(' WHERE DESCRICAO = ' + QuotedStr(FDescricao));
 
@@ -407,6 +407,7 @@ begin
 
     tipoDocumentoConsultado.FCodigo := query.FieldByName('CODIGO_TIPO_DOCUMENTO').Value;
     tipoDocumentoConsultado.FDescricao := query.FieldByName('DESCRICAO').Value;
+    tipoDocumentoConsultado.FStatus := query.FieldByName('STATUS').Value;
   end;
 
   Result := tipoDocumentoConsultado;

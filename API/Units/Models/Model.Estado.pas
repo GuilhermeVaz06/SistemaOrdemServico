@@ -98,7 +98,7 @@ var
 begin
   estadoConsultado := TEstado.Create;
   sql := TStringList.Create;
-  sql.Add('SELECT CODIGO_ESTADO, NOME');
+  sql.Add('SELECT CODIGO_ESTADO, NOME, `STATUS`');
   sql.Add('  FROM estado');
   sql.Add(' WHERE (CODIGO_IBGE = ' + QuotedStr(FCodigoIbge));
   sql.Add('    OR  NOME = ' + QuotedStr(FNome) + ')');
@@ -126,6 +126,7 @@ begin
 
     estadoConsultado.FCodigo := query.FieldByName('CODIGO_ESTADO').Value;
     estadoConsultado.FNome := query.FieldByName('NOME').Value;
+    estadoConsultado.FStatus := query.FieldByName('STATUS').Value;
   end;
 
   Result := estadoConsultado;

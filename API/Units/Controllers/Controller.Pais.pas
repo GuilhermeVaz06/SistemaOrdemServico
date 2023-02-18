@@ -286,7 +286,8 @@ begin
       if (Assigned(paisConsultado)) then
       begin
         erros.Add('Já existe um País [' + IntToStrSenaoZero(paisConsultado.id) +
-                  ' - ' + paisConsultado.nome + '], cadastrado com esse codigo IBGE ou com esse nome!');
+                  ' - ' + paisConsultado.nome +
+                  ' - ' + paisConsultado.status + '], cadastrado com esse codigo IBGE ou com esse nome!');
         paisConsultado.Destroy;
       end;
     end;
@@ -427,7 +428,8 @@ begin
         if (Assigned(paisConsultado)) then
         begin
           erros.Add('Já existe um País [' + IntToStrSenaoZero(paisConsultado.id) +
-                  ' - ' + paisConsultado.nome + '], cadastrado com esse codigo IBGE ou com esse nome!');
+                  ' - ' + paisConsultado.nome +
+                  ' - ' + paisConsultado.status + '], cadastrado com esse codigo IBGE ou com esse nome!');
           paisConsultado.Destroy;
         end;
       end;

@@ -68,7 +68,8 @@ object FOutroDocumento: TFOutroDocumento
       Height = 24
       DataField = 'documento'
       DataSource = FDMClienteFornecedor.DOutroDocumento
-      TabOrder = 0
+      TabOrder = 1
+      OnExit = DBDocumentoExit
     end
     object DBLookupComboBox1: TDBLookupComboBox
       Left = 9
@@ -80,13 +81,15 @@ object FOutroDocumento: TFOutroDocumento
       KeyField = 'codigo'
       ListField = 'descricao'
       ListSource = FDMClienteFornecedor.DTipoDocumento
-      TabOrder = 1
+      TabOrder = 0
+      OnExit = DBLookupComboBox1Exit
     end
     object EDTEmissao: TDateTimePicker
       Left = 306
       Top = 19
       Width = 111
       Height = 24
+      Date = 44975.000000000000000000
       Time = 0.918185462964174800
       TabOrder = 2
       OnChange = EDTEmissaoChange
@@ -96,6 +99,7 @@ object FOutroDocumento: TFOutroDocumento
       Top = 19
       Width = 111
       Height = 24
+      Date = 44975.000000000000000000
       Time = 0.918185462964174800
       TabOrder = 3
       OnChange = EDTVencimentoChange
@@ -121,8 +125,6 @@ object FOutroDocumento: TFOutroDocumento
       TabOrder = 5
       ValueChecked = 'A'
       ValueUnchecked = 'I'
-      ExplicitTop = 566
-      ExplicitWidth = 1355
     end
   end
   object Painel: TPanel
@@ -133,7 +135,6 @@ object FOutroDocumento: TFOutroDocumento
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitTop = 128
     object BConfirmar: TSpeedButton
       Left = 454
       Top = 0

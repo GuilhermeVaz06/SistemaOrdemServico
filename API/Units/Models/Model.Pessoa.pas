@@ -465,7 +465,7 @@ var
 begin
   pessoaConsultado := TPessoa.Create;
   sql := TStringList.Create;
-  sql.Add('SELECT CODIGO_PESSOA, NOME_FANTASIA');
+  sql.Add('SELECT CODIGO_PESSOA, NOME_FANTASIA, `STATUS`');
   sql.Add('  FROM pessoa');
   sql.Add(' WHERE DOCUMENTO = ' + QuotedStr(trim(soNumeros(FDocumento))));
   sql.Add('   AND CODIGO_TIPO_PESSOA = ' + IntToStrSenaoZero(FTipoCadastro.id));
@@ -494,6 +494,7 @@ begin
 
     pessoaConsultado.FCodigo := query.FieldByName('CODIGO_PESSOA').Value;
     pessoaConsultado.FNomeFantasia := query.FieldByName('NOME_FANTASIA').Value;
+    pessoaConsultado.FStatus := query.FieldByName('STATUS').Value;
   end;
 
   Result := pessoaConsultado;

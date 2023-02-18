@@ -30,6 +30,8 @@ type
     procedure BCancelarClick(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure FormShow(Sender: TObject);
+    procedure DBLookupComboBox1Exit(Sender: TObject);
+    procedure DBDocumentoExit(Sender: TObject);
   private
     { Private declarations }
     function validarCampos: boolean;
@@ -78,6 +80,31 @@ begin
       FDMClienteFornecedor.TOutroDocumentodataVencimento.Value := Date;
       FDMClienteFornecedor.TOutroDocumentodataEmissao.Value := Date;
       FDMClienteFornecedor.TOutroDocumentodataVencimento.Value := Date;
+    end;
+  end;
+end;
+
+procedure TFOutroDocumento.DBDocumentoExit(Sender: TObject);
+begin
+  with FDMClienteFornecedor do
+  begin
+    if TOutroDocumento.State in[dsInsert, dsEdit] then
+    begin
+      TOutroDocumentodocumento.Value := Trim(soNumeros(TOutroDocumentodocumento.Value));
+    end;
+  end;
+end;
+
+procedure TFOutroDocumento.DBLookupComboBox1Exit(Sender: TObject);
+begin
+  with FDMClienteFornecedor do
+  begin
+    if TOutroDocumento.State in[dsInsert, dsEdit] then
+    begin
+      TOutroDocumentocodigoTipoDocumento.Value := QTipoDocumentocodigo.Value;
+      TOutroDocumentotipoDocumento.Value := QTipoDocumentodescricao.Value;
+      TOutroDocumentomascaraCaracteres.Value := QTipoDocumentomascara.Value;
+      DBDocumento.SetFocus;
     end;
   end;
 end;
