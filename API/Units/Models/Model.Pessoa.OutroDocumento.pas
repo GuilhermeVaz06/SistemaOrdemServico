@@ -199,7 +199,7 @@ begin
   except
     on E: Exception do
     begin
-      raise Exception.Create('Erro ao montar Cidade ' + e.Message);
+      raise Exception.Create('Erro ao montar Outro Documento ' + e.Message);
       Result := nil;
     end;
   end;
@@ -471,7 +471,12 @@ begin
 
   if (FPessoa.id > 0) then
   begin
-    sql.Add('   AND pessoa.CODIGO_PESSOA = ' + IntToStrSenaoZero(FPessoa.id));
+    sql.Add('   AND pessoa_endereco.CODIGO_PESSOA = ' + IntToStrSenaoZero(FPessoa.id));
+  end;
+
+  if (FCodigo > 0) then
+  begin
+    sql.Add('   AND pessoa_outro_documento.CODIGO_OUTRO_DOCUMENTO = ' + IntToStrSenaoZero(FCodigo));
   end;
 
   sql.Add('   AND pessoa_outro_documento.`STATUS` = ' + QuotedStr(FStatus));
