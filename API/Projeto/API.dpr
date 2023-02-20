@@ -18,11 +18,12 @@ uses
   Controller.Cidade in '..\Units\Controllers\Controller.Cidade.pas',
   Controller.TipoDocumento in '..\Units\Controllers\Controller.TipoDocumento.pas',
   Controller.TipoEndereco in '..\Units\Controllers\Controller.TipoEndereco.pas',
-  Controller.Pessoa in '..\Units\Controllers\Controller.Pessoa.pas',
   Model.Pessoa.Contato in '..\Units\Models\Model.Pessoa.Contato.pas',
-  Model.Pessoa.Endereco in '..\Units\Models\Model.Pessoa.Endereco.pas',
   Model.Pessoa.OutroDocumento in '..\Units\Models\Model.Pessoa.OutroDocumento.pas',
-  Controller.Pessoa.OutroDocumento in '..\Units\Controllers\Controller.Pessoa.OutroDocumento.pas';
+  Controller.Pessoa.OutroDocumento in '..\Units\Controllers\Controller.Pessoa.OutroDocumento.pas',
+  Controller.Pessoa in '..\Units\Controllers\Controller.Pessoa.pas',
+  Controller.Pessoa.Endereco in '..\Units\Controllers\Controller.Pessoa.Endereco.pas',
+  Model.Pessoa.Endereco in '..\Units\Models\Model.Pessoa.Endereco.pas';
 
 {$R *.res}
 

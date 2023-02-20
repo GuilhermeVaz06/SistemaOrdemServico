@@ -84,7 +84,7 @@ begin
   sql := TStringList.Create;
   sql.Add('UPDATE `pessoa_endereco`');
   sql.Add('   SET CODIGO_TIPO_ENDERECO = ' + IntToStrSenaoZero(FTipoEndereco.id));
-  sql.Add('     , CEP = ' + QuotedStr(FCep));
+  sql.Add('     , CEP = ' + QuotedStr(soNumeros(Trim(FCep))));
   sql.Add('     , LONGRADOURO = ' + QuotedStr(FLongradouro));
   sql.Add('     , NUMERO = ' + QuotedStr(FNumero));
   sql.Add('     , BAIRRO = ' + QuotedStr(FBairro));
@@ -120,7 +120,7 @@ begin
   sql.Add(' ' + IntToStrSenaoZero(FPessoa.id));                                 //CODIGO_PESSOA
   sql.Add(',' + IntToStrSenaoZero(codigo));                                     //CODIGO_OUTRO_DOCUMENTO
   sql.Add(',' + IntToStrSenaoZero(FTipoEndereco.id));                           //CODIGO_TIPO_ENDERECO
-  sql.Add(',' + QuotedStr(FCep));                                               //CEP
+  sql.Add(',' + QuotedStr(soNumeros(Trim(FCep))));                              //CEP
   sql.Add(',' + QuotedStr(FLongradouro));                                       //LONGRADOURO
   sql.Add(',' + QuotedStr(FNumero));                                            //NUMERO
   sql.Add(',' + QuotedStr(FBairro));                                            //BAIRRO
@@ -167,7 +167,7 @@ begin
     sql.Add(', pessoa_endereco.CEP, pessoa_endereco.LONGRADOURO, pessoa_endereco.NUMERO, pessoa_endereco.BAIRRO');
     sql.Add(', pessoa_endereco.COMPLEMENTO, pessoa_endereco.OBSERVACAO, pessoa_endereco.CODIGO_CIDADE, pessoa_endereco.PRIORIDADE');
     sql.Add(', pessoa_endereco.CODIGO_SESSAO_CADASTRO, pessoa_endereco.CODIGO_SESSAO_ALTERACAO, pessoa_endereco.DATA_CADASTRO');
-    sql.Add(', pessoa_endereco.DATA_ULTIMA_ALTERACAO, pessoa_endereco.`STATUS`, pessoa.NOME_FANTASIA nomePessoa');
+    sql.Add(', pessoa_endereco.DATA_ULTIMA_ALTERACAO, pessoa_endereco.`STATUS`');
     sql.Add(', tipo_endereco.DESCRICAO tipoEndereco, cidade.NOME nomeCidade');
     sql.Add('');
     sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
@@ -180,9 +180,8 @@ begin
     sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
     sql.Add('      AND sessao.CODIGO_SESSAO = pessoa_endereco.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
     sql.Add('');
-    sql.Add('  FROM pessoa_endereco, pessoa, tipo_endereco, cidade');
-    sql.Add(' WHERE pessoa_endereco.CODIGO_PESSOA = pessoa.CODIGO_PESSOA');
-    sql.Add('   AND pessoa_endereco.CODIGO_TIPO_ENDERECO = tipo_endereco.CODIGO_TIPO_ENDERECO');
+    sql.Add('  FROM pessoa_endereco, tipo_endereco, cidade');
+    sql.Add(' WHERE pessoa_endereco.CODIGO_TIPO_ENDERECO = tipo_endereco.CODIGO_TIPO_ENDERECO');
     sql.Add('   AND pessoa_endereco.CODIGO_CIDADE = cidade.CODIGO_CIDADE');
 
     if (FPessoa.id > 0) then
@@ -245,6 +244,7 @@ begin
   sql.Add('SELECT CODIGO_ENDERECO, LONGRADOURO');
   sql.Add('  FROM pessoa_endereco');
   sql.Add(' WHERE CODIGO_ENDERECO = ' + IntToStrSenaoZero(FCodigo));
+  sql.Add('   AND CODIGO_PESSOA = ' + IntToStrSenaoZero(FPessoa.id));
   sql.Add(' LIMIT 1');
 
   query := FConexao.executarComandoDQL(sql.Text);
@@ -261,8 +261,8 @@ begin
     query.First;
     FRegistrosAfetados := FConexao.registrosAfetados;
 
-    enderecoConsultado.FCodigo := query.FieldByName('CODIGO_OUTRO_DOCUMENTO').Value;
-    enderecoConsultado.FLongradouro := query.FieldByName('DOCUMENTO').Value;
+    enderecoConsultado.FCodigo := query.FieldByName('CODIGO_ENDERECO').Value;
+    enderecoConsultado.FLongradouro := query.FieldByName('LONGRADOURO').Value;
   end;
 
   Result := enderecoConsultado;
@@ -281,7 +281,7 @@ begin
   sql.Add(', pessoa_endereco.CEP, pessoa_endereco.LONGRADOURO, pessoa_endereco.NUMERO, pessoa_endereco.BAIRRO');
   sql.Add(', pessoa_endereco.COMPLEMENTO, pessoa_endereco.OBSERVACAO, pessoa_endereco.CODIGO_CIDADE, pessoa_endereco.PRIORIDADE');
   sql.Add(', pessoa_endereco.CODIGO_SESSAO_CADASTRO, pessoa_endereco.CODIGO_SESSAO_ALTERACAO, pessoa_endereco.DATA_CADASTRO');
-  sql.Add(', pessoa_endereco.DATA_ULTIMA_ALTERACAO, pessoa_endereco.`STATUS`, pessoa.NOME_FANTASIA nomePessoa');
+  sql.Add(', pessoa_endereco.DATA_ULTIMA_ALTERACAO, pessoa_endereco.`STATUS`');
   sql.Add(', tipo_endereco.DESCRICAO tipoEndereco, cidade.NOME nomeCidade');
   sql.Add('');
   sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
@@ -294,9 +294,8 @@ begin
   sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
   sql.Add('      AND sessao.CODIGO_SESSAO = pessoa_endereco.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
   sql.Add('');
-  sql.Add('  FROM pessoa_endereco, pessoa, tipo_endereco, cidade');
-  sql.Add(' WHERE pessoa_endereco.CODIGO_PESSOA = pessoa.CODIGO_PESSOA');
-  sql.Add('   AND pessoa_endereco.CODIGO_TIPO_ENDERECO = tipo_endereco.CODIGO_TIPO_ENDERECO');
+  sql.Add('  FROM pessoa_endereco, tipo_endereco, cidade');
+  sql.Add(' WHERE pessoa_endereco.CODIGO_TIPO_ENDERECO = tipo_endereco.CODIGO_TIPO_ENDERECO');
   sql.Add('   AND pessoa_endereco.CODIGO_CIDADE = cidade.CODIGO_CIDADE');
   sql.Add('   AND pessoa_endereco.CODIGO_ENDERECO = ' + IntToStrSenaoZero(codigo));
 
@@ -411,12 +410,12 @@ begin
   sql.Add('  FROM pessoa_endereco');
   sql.Add(' WHERE CODIGO_PESSOA = ' + IntToStrSenaoZero(FPessoa.id));
   sql.Add('   AND CODIGO_TIPO_ENDERECO = ' + IntToStrSenaoZero(FTipoEndereco.id));
-  sql.Add('   AND CEP = ' + QuotedStr(FCep));
+  sql.Add('   AND CEP = ' + QuotedStr(soNumeros(Trim(FCep))));
   sql.Add('   AND NUMERO = ' + QuotedStr(FNumero));
 
   if (FCodigo > 0) then
   begin
-    sql.Add('   AND CODIGO_OUTRO_DOCUMENTO <> ' + IntToStrSenaoZero(FCodigo));
+    sql.Add('   AND CODIGO_ENDERECO <> ' + IntToStrSenaoZero(FCodigo));
   end;
 
   sql.Add(' LIMIT 1');
@@ -498,7 +497,6 @@ begin
 
     data.FCodigo := query.FieldByName('CODIGO_ENDERECO').Value;
     data.FPessoa.id := query.FieldByName('CODIGO_PESSOA').Value;
-    data.FPessoa.nomeFantasia := query.FieldByName('nomePessoa').Value;
     FTipoEndereco.id := query.FieldByName('CODIGO_TIPO_ENDERECO').Value;
     FTipoEndereco.descricao := query.FieldByName('tipoEndereco').Value;
     FCep := query.FieldByName('CEP').Value;

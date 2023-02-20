@@ -385,6 +385,7 @@ begin
   sql.Add('SELECT CODIGO_OUTRO_DOCUMENTO, DOCUMENTO');
   sql.Add('  FROM pessoa_outro_documento');
   sql.Add(' WHERE CODIGO_OUTRO_DOCUMENTO = ' + IntToStrSenaoZero(FCodigo));
+  sql.Add('   AND CODIGO_PESSOA = ' + IntToStrSenaoZero(FPessoa.id));
   sql.Add(' LIMIT 1');
 
   query := FConexao.executarComandoDQL(sql.Text);
@@ -471,7 +472,7 @@ begin
 
   if (FPessoa.id > 0) then
   begin
-    sql.Add('   AND pessoa_endereco.CODIGO_PESSOA = ' + IntToStrSenaoZero(FPessoa.id));
+    sql.Add('   AND pessoa_outro_documento.CODIGO_PESSOA = ' + IntToStrSenaoZero(FPessoa.id));
   end;
 
   if (FCodigo > 0) then

@@ -442,7 +442,7 @@ begin
 
       if not (Assigned(outroDocumentoConsultado)) then
       begin
-        erros.Add('Nenhum outro documento encontrado com o codigo [' + IntToStrSenaoZero(outroDocumento.id) + ']!');
+        erros.Add('Nenhum outro documento encontrado com o codigo [' + IntToStrSenaoZero(outroDocumento.id) + '] para essa pessoa!');
       end
       else
       begin
@@ -539,6 +539,7 @@ begin
   try
     token := Req.Headers['token'];
     outroDocumento.id := strToIntZero(Req.Params['id']);
+    outroDocumento.pessoa.id := strToIntZero(Req.Params['pessoa']);
   except
     on E: Exception do
     begin
@@ -554,6 +555,11 @@ begin
     erros := TStringList.Create;
     arrayResposta := TJSONArray.Create;
 
+    if not (outroDocumento.pessoa.id > 0) then
+    begin
+      erros.Add('O Codigo da pessoa deve ser informado, ou deve ser um numero inteiro valido!');
+    end;
+
     if not (outroDocumento.id > 0) then
     begin
       erros.Add('O Codigo deve ser informado, ou deve ser um numero inteiro valido!');
@@ -565,7 +571,7 @@ begin
 
       if not (Assigned(outroDocumentoConsultado)) then
       begin
-        erros.Add('Nenhuma outro documento encontrado com o codigo [' + IntToStrSenaoZero(outroDocumento.id) + ']!');
+        erros.Add('Nenhuma outro documento encontrado com o codigo [' + IntToStrSenaoZero(outroDocumento.id) + '] para essa pessoa!');
       end
       else
       begin
@@ -626,7 +632,7 @@ begin
   THorse.Get('/outroDocumento/:pessoa', buscarOutrosDocumentos);
   THorse.Post('/outroDocumento', cadastrarOutroDocumento);
   THorse.Put('/outroDocumento/:pessoa/:id', alterarOutroDocumento);
-  THorse.Delete('/outroDocumento/:id', inativarOutroDocumento);
+  THorse.Delete('/outroDocumento/:pessoa/:id', inativarOutroDocumento);
 end;
 
 end.
