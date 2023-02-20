@@ -168,7 +168,7 @@ begin
     sql.Add(', pessoa_endereco.COMPLEMENTO, pessoa_endereco.OBSERVACAO, pessoa_endereco.CODIGO_CIDADE, pessoa_endereco.PRIORIDADE');
     sql.Add(', pessoa_endereco.CODIGO_SESSAO_CADASTRO, pessoa_endereco.CODIGO_SESSAO_ALTERACAO, pessoa_endereco.DATA_CADASTRO');
     sql.Add(', pessoa_endereco.DATA_ULTIMA_ALTERACAO, pessoa_endereco.`STATUS`');
-    sql.Add(', tipo_endereco.DESCRICAO tipoEndereco, cidade.NOME nomeCidade');
+    sql.Add(', tipo_endereco.DESCRICAO tipoEndereco, cidade.NOME nomeCidade, pais.NOME nomePais, estado.NOME nomeEstado');
     sql.Add('');
     sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
     sql.Add('     FROM pessoa, sessao');
@@ -180,9 +180,11 @@ begin
     sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
     sql.Add('      AND sessao.CODIGO_SESSAO = pessoa_endereco.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
     sql.Add('');
-    sql.Add('  FROM pessoa_endereco, tipo_endereco, cidade');
+    sql.Add('  FROM pessoa_endereco, tipo_endereco, cidade, estado, pais');
     sql.Add(' WHERE pessoa_endereco.CODIGO_TIPO_ENDERECO = tipo_endereco.CODIGO_TIPO_ENDERECO');
     sql.Add('   AND pessoa_endereco.CODIGO_CIDADE = cidade.CODIGO_CIDADE');
+    sql.Add('   AND cidade.CODIGO_ESTADO = estado.CODIGO_ESTADO');
+    sql.Add('   AND estado.CODIGO_PAIS = pais.CODIGO_PAIS');
 
     if (FPessoa.id > 0) then
     begin
@@ -282,7 +284,7 @@ begin
   sql.Add(', pessoa_endereco.COMPLEMENTO, pessoa_endereco.OBSERVACAO, pessoa_endereco.CODIGO_CIDADE, pessoa_endereco.PRIORIDADE');
   sql.Add(', pessoa_endereco.CODIGO_SESSAO_CADASTRO, pessoa_endereco.CODIGO_SESSAO_ALTERACAO, pessoa_endereco.DATA_CADASTRO');
   sql.Add(', pessoa_endereco.DATA_ULTIMA_ALTERACAO, pessoa_endereco.`STATUS`');
-  sql.Add(', tipo_endereco.DESCRICAO tipoEndereco, cidade.NOME nomeCidade');
+  sql.Add(', tipo_endereco.DESCRICAO tipoEndereco, cidade.NOME nomeCidade, pais.NOME nomePais, estado.NOME nomeEstado');
   sql.Add('');
   sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
   sql.Add('     FROM pessoa, sessao');
@@ -294,9 +296,12 @@ begin
   sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
   sql.Add('      AND sessao.CODIGO_SESSAO = pessoa_endereco.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
   sql.Add('');
-  sql.Add('  FROM pessoa_endereco, tipo_endereco, cidade');
+  sql.Add('  FROM pessoa_endereco, tipo_endereco, cidade, estado, pais');
   sql.Add(' WHERE pessoa_endereco.CODIGO_TIPO_ENDERECO = tipo_endereco.CODIGO_TIPO_ENDERECO');
   sql.Add('   AND pessoa_endereco.CODIGO_CIDADE = cidade.CODIGO_CIDADE');
+  sql.Add('   AND cidade.CODIGO_ESTADO = estado.CODIGO_ESTADO');
+  sql.Add('   AND estado.CODIGO_PAIS = pais.CODIGO_PAIS');
+
   sql.Add('   AND pessoa_endereco.CODIGO_ENDERECO = ' + IntToStrSenaoZero(codigo));
 
   query := FConexao.executarComandoDQL(sql.Text);
@@ -325,10 +330,12 @@ var
 begin
   sql := TStringList.Create;
   sql.Add('SELECT COUNT(pessoa_endereco.CODIGO_ENDERECO) TOTAL');
-  sql.Add('  FROM pessoa_endereco, pessoa, tipo_endereco, cidade');
+  sql.Add('  FROM pessoa_endereco, pessoa, tipo_endereco, cidade, estado, pais');
   sql.Add(' WHERE pessoa_endereco.CODIGO_PESSOA = pessoa.CODIGO_PESSOA');
   sql.Add('   AND pessoa_endereco.CODIGO_TIPO_ENDERECO = tipo_endereco.CODIGO_TIPO_ENDERECO');
   sql.Add('   AND pessoa_endereco.CODIGO_CIDADE = cidade.CODIGO_CIDADE');
+  sql.Add('   AND cidade.CODIGO_ESTADO = estado.CODIGO_ESTADO');
+  sql.Add('   AND estado.CODIGO_PAIS = pais.CODIGO_PAIS');
 
   if (FPessoa.id > 0) then
   begin
@@ -497,17 +504,19 @@ begin
 
     data.FCodigo := query.FieldByName('CODIGO_ENDERECO').Value;
     data.FPessoa.id := query.FieldByName('CODIGO_PESSOA').Value;
-    FTipoEndereco.id := query.FieldByName('CODIGO_TIPO_ENDERECO').Value;
-    FTipoEndereco.descricao := query.FieldByName('tipoEndereco').Value;
-    FCep := query.FieldByName('CEP').Value;
-    FLongradouro := query.FieldByName('LONGRADOURO').Value;
-    FNumero := query.FieldByName('NUMERO').Value;
-    FBairro := query.FieldByName('BAIRRO').Value;
-    FComplemento := query.FieldByName('COMPLEMENTO').Value;
-    FObservacao := query.FieldByName('OBSERVACAO').AsString;
-    FCidade.id := query.FieldByName('CODIGO_CIDADE').Value;
-    FCidade.nome := query.FieldByName('nomeCidade').Value;
-    FPrioridade := query.FieldByName('PRIORIDADE').Value;
+    data.FTipoEndereco.id := query.FieldByName('CODIGO_TIPO_ENDERECO').Value;
+    data.FTipoEndereco.descricao := query.FieldByName('tipoEndereco').Value;
+    data.FCep := query.FieldByName('CEP').Value;
+    data.FLongradouro := query.FieldByName('LONGRADOURO').Value;
+    data.FNumero := query.FieldByName('NUMERO').Value;
+    data.FBairro := query.FieldByName('BAIRRO').Value;
+    data.FComplemento := query.FieldByName('COMPLEMENTO').Value;
+    data.FObservacao := query.FieldByName('OBSERVACAO').AsString;
+    data.FCidade.id := query.FieldByName('CODIGO_CIDADE').Value;
+    data.FCidade.nome := query.FieldByName('nomeCidade').Value;
+    data.FCidade.estado.pais.nome := query.FieldByName('nomePais').Value;
+    data.FCidade.estado.nome := query.FieldByName('nomeEstado').Value;
+    data.FPrioridade := query.FieldByName('PRIORIDADE').Value;
     data.FCadastradoPor.usuario := query.FieldByName('usuarioCadastro').Value;
     data.FAlteradoPor.usuario := query.FieldByName('usuarioAlteracao').Value;
     data.FDataCadastro := query.FieldByName('DATA_CADASTRO').Value;

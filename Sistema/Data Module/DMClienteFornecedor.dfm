@@ -1,5 +1,6 @@
 object FDMClienteFornecedor: TFDMClienteFornecedor
   OldCreateOrder = False
+  OnCreate = DataModuleCreate
   Height = 343
   Width = 475
   object DClienteFornecedor: TDataSource
@@ -172,12 +173,6 @@ object FDMClienteFornecedor: TFDMClienteFornecedor
       FieldName = 'mascaraCaracteres'
       Size = 30
     end
-    object TOutroDocumentodataEmissao: TDateField
-      FieldName = 'dataEmissao'
-    end
-    object TOutroDocumentodataVencimento: TDateField
-      FieldName = 'dataVencimento'
-    end
     object TOutroDocumentoobservacao: TMemoField
       FieldName = 'observacao'
       OnGetText = MemoGetText
@@ -200,6 +195,136 @@ object FDMClienteFornecedor: TFDMClienteFornecedor
     end
     object TOutroDocumentodataAlteracao: TStringField
       FieldName = 'dataAlteracao'
+    end
+    object TOutroDocumentodataEmissao: TStringField
+      FieldName = 'dataEmissao'
+      Size = 10
+    end
+    object TOutroDocumentodataVencimento: TStringField
+      FieldName = 'dataVencimento'
+      Size = 10
+    end
+  end
+  object DEndereco: TDataSource
+    DataSet = TEndereco
+    Left = 375
+    Top = 68
+  end
+  object TEndereco: TFDMemTable
+    FieldDefs = <>
+    IndexDefs = <>
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired, uvAutoCommitUpdates]
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.AutoCommitUpdates = True
+    StoreDefs = True
+    Left = 374
+    Top = 18
+    object TEnderecocodigo: TIntegerField
+      FieldName = 'codigo'
+    end
+    object TEnderecocodigoPessoa: TIntegerField
+      FieldName = 'codigoPessoa'
+    end
+    object TEnderecocodigoTipoEndereco: TIntegerField
+      FieldName = 'codigoTipoEndereco'
+    end
+    object TEnderecotipoEndereco: TStringField
+      FieldName = 'tipoEndereco'
+      Size = 150
+    end
+    object TEnderecocep: TStringField
+      FieldName = 'cep'
+      OnGetText = TEnderecocepGetText
+      Size = 10
+    end
+    object TEnderecolongradouro: TStringField
+      FieldName = 'longradouro'
+      Size = 150
+    end
+    object TEndereconumero: TStringField
+      FieldName = 'numero'
+      Size = 10
+    end
+    object TEnderecobairro: TStringField
+      FieldName = 'bairro'
+      Size = 150
+    end
+    object TEnderecocomplemento: TStringField
+      FieldName = 'complemento'
+      Size = 150
+    end
+    object TEnderecoobservacao: TMemoField
+      FieldName = 'observacao'
+      OnGetText = MemoGetText
+      BlobType = ftMemo
+    end
+    object TEnderecocodigoCidade: TIntegerField
+      FieldName = 'codigoCidade'
+    end
+    object TEndereconomeCidade: TStringField
+      FieldName = 'nomeCidade'
+      Size = 150
+    end
+    object TEndereconomeEstado: TStringField
+      FieldName = 'nomeEstado'
+      Size = 150
+    end
+    object TEndereconomePais: TStringField
+      FieldName = 'nomePais'
+      Size = 150
+    end
+    object TEnderecoprioridade: TStringField
+      FieldName = 'prioridade'
+      Size = 1
+    end
+    object TEnderecocadastradoPor: TStringField
+      FieldName = 'cadastradoPor'
+      Size = 150
+    end
+    object TEnderecoalteradoPor: TStringField
+      FieldName = 'alteradoPor'
+      Size = 150
+    end
+    object TEnderecodataCadastro: TStringField
+      FieldName = 'dataCadastro'
+    end
+    object TEnderecodataAlteracao: TStringField
+      FieldName = 'dataAlteracao'
+    end
+    object TEnderecostatus: TStringField
+      FieldName = 'status'
+      Size = 1
+    end
+  end
+  object DPrioridade: TDataSource
+    DataSet = QPrioridade
+    Left = 60
+    Top = 176
+  end
+  object QPrioridade: TFDMemTable
+    FieldDefs = <>
+    IndexDefs = <>
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired, uvAutoCommitUpdates]
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.AutoCommitUpdates = True
+    StoreDefs = True
+    Left = 59
+    Top = 126
+    object QPrioridadecodigo: TStringField
+      FieldName = 'codigo'
+      Size = 1
+    end
+    object QPrioridadedescricao: TStringField
+      FieldName = 'descricao'
+      Size = 50
     end
   end
 end

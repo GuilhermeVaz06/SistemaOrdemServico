@@ -44,8 +44,6 @@ type
     TOutroDocumentocodigoTipoDocumento: TIntegerField;
     TOutroDocumentodocumento: TStringField;
     TOutroDocumentoTipoDocumento: TStringField;
-    TOutroDocumentodataEmissao: TDateField;
-    TOutroDocumentodataVencimento: TDateField;
     TOutroDocumentoobservacao: TMemoField;
     TOutroDocumentocadastradoPor: TStringField;
     TOutroDocumentoalteradoPor: TStringField;
@@ -54,6 +52,34 @@ type
     TOutroDocumentostatus: TStringField;
     TOutroDocumentocodigo: TIntegerField;
     TOutroDocumentomascaraCaracteres: TStringField;
+    DEndereco: TDataSource;
+    TEndereco: TFDMemTable;
+    TEnderecocodigo: TIntegerField;
+    TEnderecocodigoPessoa: TIntegerField;
+    TEnderecocodigoTipoEndereco: TIntegerField;
+    TEnderecotipoEndereco: TStringField;
+    TEnderecocep: TStringField;
+    TEnderecolongradouro: TStringField;
+    TEndereconumero: TStringField;
+    TEnderecobairro: TStringField;
+    TEnderecocomplemento: TStringField;
+    TEnderecoobservacao: TMemoField;
+    TEnderecocodigoCidade: TIntegerField;
+    TEndereconomeCidade: TStringField;
+    TEnderecoprioridade: TStringField;
+    TEnderecocadastradoPor: TStringField;
+    TEnderecoalteradoPor: TStringField;
+    TEnderecodataCadastro: TStringField;
+    TEnderecodataAlteracao: TStringField;
+    TEnderecostatus: TStringField;
+    TEndereconomeEstado: TStringField;
+    TEndereconomePais: TStringField;
+    DPrioridade: TDataSource;
+    QPrioridade: TFDMemTable;
+    QPrioridadecodigo: TStringField;
+    QPrioridadedescricao: TStringField;
+    TOutroDocumentodataEmissao: TStringField;
+    TOutroDocumentodataVencimento: TStringField;
     procedure MemoGetText(Sender: TField; var Text: string;
       DisplayText: Boolean);
     procedure TClienteFornecedordocumentoGetText(Sender: TField; var Text: string;
@@ -62,6 +88,9 @@ type
       DisplayText: Boolean);
     procedure TClienteFornecedorAfterScroll(DataSet: TDataSet);
     procedure TOutroDocumentodocumentoGetText(Sender: TField; var Text: string;
+      DisplayText: Boolean);
+    procedure DataModuleCreate(Sender: TObject);
+    procedure TEnderecocepGetText(Sender: TField; var Text: string;
       DisplayText: Boolean);
   private
 
@@ -77,6 +106,10 @@ type
     function alterarOutroDocumento: Boolean;
     function inativarOutroDocumento: Boolean;
     procedure consultarTipoDocumento;
+    procedure consultarDadosEndereco(codigo: integer; mostrarErro: Boolean);
+    function cadastrarEndereco: Boolean;
+    function alterarEndereco: Boolean;
+    function inativarEndereco: Boolean;
   end;
 
 var
@@ -87,6 +120,61 @@ implementation
 uses UFuncao, UConexao, ClienteFornecedor;
 
 {$R *.dfm}
+
+function TFDMClienteFornecedor.alterarEndereco: Boolean;
+var
+  Conexao: TConexao;
+  json: TJSONValue;
+begin
+  Conexao := TConexao.Create;
+
+  Conexao.metodo := rmPUT;
+  Conexao.url := 'endereco/' + IntToStrSenaoZero(TEnderecocodigoPessoa.Value) +
+                 '/' + IntToStrSenaoZero(TEnderecocodigo.Value);
+  Conexao.AtribuirBody('codigoTipoEndereco', IntToStrSenaoZero(TEnderecocodigoTipoEndereco.Value));
+  Conexao.AtribuirBody('cep', TEnderecocep.Value);
+  Conexao.AtribuirBody('longradouro',  TEnderecolongradouro.Value);
+  Conexao.AtribuirBody('numero',  TEndereconumero.Value);
+  Conexao.AtribuirBody('bairro',  TEnderecobairro.Value);
+  Conexao.AtribuirBody('complemento',  TEnderecocomplemento.Value);
+  Conexao.AtribuirBody('observacao',  TEnderecoobservacao.Value);
+  Conexao.AtribuirBody('codigoCidade', IntToStrSenaoZero( TEnderecocodigoCidade.Value));
+  Conexao.AtribuirBody('prioridade',  TEnderecoprioridade.Value);
+  Conexao.AtribuirBody('status', TEnderecostatus.Value);
+  Conexao.Enviar;
+
+  if not (Conexao.status in[200..202]) then
+  begin
+    informar(Conexao.erro);
+    Result := False;
+  end
+  else
+  begin
+    json := converterJsonTextoJsonValue(Conexao.resposta);
+
+    if (Assigned(json)) then
+    begin
+      TEnderecocodigo.Value := json.GetValue<Integer>('codigo', 0);
+      TEnderecotipoEndereco.Value := json.GetValue<string>('tipoEndereco', '');
+      TEndereconomeCidade.Value := json.GetValue<string>('nomeCidade', '');
+      TEndereconomeEstado.Value := json.GetValue<string>('nomeEstado', '');
+      TEndereconomePais.Value := json.GetValue<string>('nomePais', '');
+      TEnderecocadastradoPor.Value := json.GetValue<string>('cadastradoPor', '');
+      TEnderecoalteradoPor.Value := json.GetValue<string>('alteradoPor', '');
+      TEnderecodataCadastro.Value := json.GetValue<string>('dataCadastro', '');
+      TEnderecodataAlteracao.Value := json.GetValue<string>('dataAlteracao', '');
+      TEnderecostatus.Value := json.GetValue<string>('status', 'A');
+
+      Result := True;
+    end
+    else
+    begin
+      Result := False;
+    end;
+  end;
+
+  Conexao.Destroy;
+end;
 
 function TFDMClienteFornecedor.alterarOutroDocumento: Boolean;
 var
@@ -100,8 +188,8 @@ begin
                  '/' + IntToStrSenaoZero(TOutroDocumentocodigo.Value);
   Conexao.AtribuirBody('codigoTipoDocumento', IntToStrSenaoZero(TOutroDocumentocodigoTipoDocumento.Value));
   Conexao.AtribuirBody('documento', TOutroDocumentodocumento.Value);
-  Conexao.AtribuirBody('dataEmissao', DateToStr(TOutroDocumentodataEmissao.Value));
-  Conexao.AtribuirBody('dataVencimento', DateToStr(TOutroDocumentodataVencimento.Value));
+  Conexao.AtribuirBody('dataEmissao', TOutroDocumentodataEmissao.Value);
+  Conexao.AtribuirBody('dataVencimento', TOutroDocumentodataVencimento.Value);
   Conexao.AtribuirBody('observacao', TOutroDocumentoobservacao.Value);
   Conexao.AtribuirBody('status', TOutroDocumentostatus.Value);
   Conexao.Enviar;
@@ -184,6 +272,60 @@ begin
   Conexao.Destroy;
 end;
 
+function TFDMClienteFornecedor.cadastrarEndereco: Boolean;
+var
+  Conexao: TConexao;
+  json: TJSONValue;
+begin
+  Conexao := TConexao.Create;
+
+  Conexao.metodo := rmPOST;
+  Conexao.url := 'endereco';
+  Conexao.AtribuirBody('codigoPessoa', IntToStrSenaoZero(TEnderecocodigoPessoa.Value));
+  Conexao.AtribuirBody('codigoTipoEndereco', IntToStrSenaoZero(TEnderecocodigoTipoEndereco.Value));
+  Conexao.AtribuirBody('cep', TEnderecocep.Value);
+  Conexao.AtribuirBody('longradouro',  TEnderecolongradouro.Value);
+  Conexao.AtribuirBody('numero',  TEndereconumero.Value);
+  Conexao.AtribuirBody('bairro',  TEnderecobairro.Value);
+  Conexao.AtribuirBody('complemento',  TEnderecocomplemento.Value);
+  Conexao.AtribuirBody('observacao',  TEnderecoobservacao.Value);
+  Conexao.AtribuirBody('codigoCidade', IntToStrSenaoZero( TEnderecocodigoCidade.Value));
+  Conexao.AtribuirBody('prioridade',  TEnderecoprioridade.Value);
+  Conexao.Enviar;
+
+  if not (Conexao.status in[200..202]) then
+  begin
+    informar(Conexao.erro);
+    Result := False;
+  end
+  else
+  begin
+    json := converterJsonTextoJsonValue(Conexao.resposta);
+
+    if (Assigned(json)) then
+    begin
+      TEnderecocodigo.Value := json.GetValue<Integer>('codigo', 0);
+      TEnderecotipoEndereco.Value := json.GetValue<string>('tipoEndereco', '');
+      TEndereconomeCidade.Value := json.GetValue<string>('nomeCidade', '');
+      TEndereconomeEstado.Value := json.GetValue<string>('nomeEstado', '');
+      TEndereconomePais.Value := json.GetValue<string>('nomePais', '');
+      TEnderecocadastradoPor.Value := json.GetValue<string>('cadastradoPor', '');
+      TEnderecoalteradoPor.Value := json.GetValue<string>('alteradoPor', '');
+      TEnderecodataCadastro.Value := json.GetValue<string>('dataCadastro', '');
+      TEnderecodataAlteracao.Value := json.GetValue<string>('dataAlteracao', '');
+      TEnderecostatus.Value := json.GetValue<string>('status', 'A');
+
+      Result := True;
+    end
+    else
+    begin
+      Result := False;
+    end;
+  end;
+
+  Conexao.Destroy;
+end;
+
 function TFDMClienteFornecedor.cadastrarOutroDocumento: Boolean;
 var
   Conexao: TConexao;
@@ -196,8 +338,8 @@ begin
   Conexao.AtribuirBody('codigoPessoa', IntToStrSenaoZero(TOutroDocumentocodigoPessoa.Value));
   Conexao.AtribuirBody('codigoTipoDocumento', IntToStrSenaoZero(TOutroDocumentocodigoTipoDocumento.Value));
   Conexao.AtribuirBody('documento', TOutroDocumentodocumento.Value);
-  Conexao.AtribuirBody('dataEmissao', DateToStr(TOutroDocumentodataEmissao.Value));
-  Conexao.AtribuirBody('dataVencimento', DateToStr(TOutroDocumentodataVencimento.Value));
+  Conexao.AtribuirBody('dataEmissao', TOutroDocumentodataEmissao.Value);
+  Conexao.AtribuirBody('dataVencimento', TOutroDocumentodataVencimento.Value);
   Conexao.AtribuirBody('observacao', TOutroDocumentoobservacao.Value);
   Conexao.Enviar;
 
@@ -357,6 +499,83 @@ begin
   Conexao.Destroy;
 end;
 
+procedure TFDMClienteFornecedor.consultarDadosEndereco(codigo: integer;
+  mostrarErro: Boolean);
+var
+  Conexao: TConexao;
+  master, item: TJSONArray;
+  json: TJSONValue;
+  limite, offset: integer;
+  continuar: Boolean;
+begin
+  if (TClienteFornecedorcodigo.Value > 0) then
+  begin
+    Conexao := TConexao.Create;
+
+    if (Assigned(FClienteFornecedor)) then
+    begin
+      if FClienteFornecedor.CBInativoEndereco.Checked then
+      begin
+        Conexao.AtribuirParametro('status', 'I');
+      end
+      else
+      begin
+        Conexao.AtribuirParametro('status', 'A');
+      end;
+    end;
+
+    if (codigo > 0) then
+    begin
+      Conexao.AtribuirParametro('codigo', IntToStrSenaoZero(codigo));
+    end;
+
+    dadosPessoaConsultados := TClienteFornecedorcodigo.Value;
+
+    Conexao.metodo := rmGET;
+    Conexao.url := 'endereco/' + IntToStrSenaoZero(TClienteFornecedorcodigo.Value);
+    master := TJSONArray.Create;
+    limite := 500;
+    offset := 0;
+
+    repeat
+      Conexao.AtribuirParametro('limite', IntToStrSenaoZero(limite));
+      Conexao.AtribuirParametro('offset', IntToStrSenaoZero(offset));
+      Conexao.Enviar;
+      continuar := False;
+      offset := offset + limite;
+
+      if not (Conexao.status in[200..202]) and (mostrarErro) then
+      begin
+        informar(Conexao.erro);
+        Break;
+      end
+      else if (Conexao.status in[200..202]) then
+      begin
+        json := converterJsonTextoJsonValue(Conexao.resposta);
+        item := converterJsonValueJsonArray(json, 'dados');
+        continuar := json.GetValue<Boolean>('maisRegistros', False);
+        copiarItemJsonArray(item, master);
+      end
+      else if not (Conexao.status in[200..202]) and (mostrarErro = False) then
+      begin
+        Break;
+      end;
+    until not continuar;
+
+    if (Assigned(master)) and (master.Count > 0) then
+    begin
+      converterArrayJsonQuery(converterJsonArrayRestResponse(master), TEndereco);
+    end
+    else
+    begin
+      TEndereco.Close;
+      TEndereco.Open;
+    end;
+
+    Conexao.Destroy;
+  end;
+end;
+
 procedure TFDMClienteFornecedor.consultarDadosOutroDocumento(codigo: integer; mostrarErro: Boolean);
 var
   Conexao: TConexao;
@@ -466,6 +685,40 @@ begin
   Conexao.Destroy;
 end;
 
+function TFDMClienteFornecedor.inativarEndereco: Boolean;
+var
+  Conexao: TConexao;
+  json: TJSONValue;
+begin
+  Conexao := TConexao.Create;
+
+  Conexao.metodo := rmDELETE;
+  Conexao.url := 'endereco/' + IntToStrSenaoZero(TEnderecocodigoPessoa.Value) +
+                 '/' + IntToStrSenaoZero(TEnderecocodigo.Value);
+  Conexao.Enviar;
+
+  if not (Conexao.status in[200..202]) then
+  begin
+    informar(Conexao.erro);
+    Result := False;
+  end
+  else
+  begin
+    json := converterJsonTextoJsonValue(Conexao.resposta);
+
+    if (Assigned(json)) then
+    begin
+      Result := True;
+    end
+    else
+    begin
+      Result := False;
+    end;
+  end;
+
+  Conexao.Destroy;
+end;
+
 function TFDMClienteFornecedor.inativarOutroDocumento: Boolean;
 var
   Conexao: TConexao;
@@ -474,7 +727,8 @@ begin
   Conexao := TConexao.Create;
 
   Conexao.metodo := rmDELETE;
-  Conexao.url := 'outroDocumento/' + IntToStrSenaoZero(TOutroDocumentocodigo.Value);
+  Conexao.url := 'outroDocumento/' + IntToStrSenaoZero(TOutroDocumentocodigoPessoa.Value) +
+                 '/' + IntToStrSenaoZero(TOutroDocumentocodigo.Value);
   Conexao.Enviar;
 
   if not (Conexao.status in[200..202]) then
@@ -508,9 +762,13 @@ end;
 procedure TFDMClienteFornecedor.TClienteFornecedorAfterScroll(
   DataSet: TDataSet);
 begin
-  if (FClienteFornecedor.PCTela.ActivePage = FClienteFornecedor.TBCadastro) then
+  if (Assigned(FClienteFornecedor)) then
   begin
-    consultarDadosOutroDocumento(0, False);
+    if (FClienteFornecedor.PCTela.ActivePage = FClienteFornecedor.TBCadastro) then
+    begin
+      consultarDadosOutroDocumento(0, False);
+      consultarDadosEndereco(0, False);
+    end;
   end;
 end;
 
@@ -547,6 +805,12 @@ begin
   begin
     Text := TClienteFornecedortelefone.Value;
   end;
+end;
+
+procedure TFDMClienteFornecedor.TEnderecocepGetText(Sender: TField;
+  var Text: string; DisplayText: Boolean);
+begin
+  Text := FormatMaskText('99999-999;0', TEnderecocep.Value);
 end;
 
 procedure TFDMClienteFornecedor.TOutroDocumentodocumentoGetText(Sender: TField;
@@ -603,6 +867,29 @@ begin
   end;
 
   Conexao.Destroy;
+end;
+
+procedure TFDMClienteFornecedor.DataModuleCreate(Sender: TObject);
+var
+  jsonArray: TJSONArray;
+  json: TJSONObject;
+begin
+  jsonArray := TJSONArray.Create;
+
+  json := TJSONObject.Create;
+  json.AddPair('codigo', 'P');
+  json.AddPair('descricao', 'Principal');
+
+  jsonArray.Add(json);
+
+  json := TJSONObject.Create;
+  json.AddPair('codigo', 'S');
+  json.AddPair('descricao', 'Secundario');
+
+  jsonArray.Add(json);
+
+  converterArrayJsonQuery(converterJsonArrayRestResponse(jsonArray), QPrioridade);
+  QPrioridade.Active;
 end;
 
 end.

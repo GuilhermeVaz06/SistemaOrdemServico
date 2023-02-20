@@ -17,7 +17,8 @@ uses
   TipoEndereco in '..\Tela\TipoEndereco.pas' {FTipoEndereco},
   OutroDocumento in '..\Tela\OutroDocumento.pas' {FOutroDocumento},
   DMClienteFornecedor in '..\Data Module\DMClienteFornecedor.pas' {FDMClienteFornecedor: TDataModule},
-  ClienteFornecedor in '..\Tela\ClienteFornecedor.pas' {FClienteFornecedor};
+  ClienteFornecedor in '..\Tela\ClienteFornecedor.pas' {FClienteFornecedor},
+  Endereco in '..\Tela\Endereco.pas' {FEndereco};
 
 {$R *.res}
 

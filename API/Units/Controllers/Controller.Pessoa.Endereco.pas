@@ -35,6 +35,8 @@ begin
   resposta.AddPair('observacao',enderecoItem.observacao);
   resposta.AddPair('codigoCidade',TJSONNumber.Create(enderecoItem.cidade.id));
   resposta.AddPair('nomeCidade',enderecoItem.cidade.nome);
+  resposta.AddPair('nomeEstado',enderecoItem.cidade.estado.nome);
+  resposta.AddPair('nomePais',enderecoItem.cidade.estado.pais.nome);
   resposta.AddPair('prioridade',enderecoItem.prioridade);
   resposta.AddPair('cadastradoPor',enderecoItem.cadastradoPor.usuario);
   resposta.AddPair('alteradoPor',enderecoItem.alteradoPor.usuario);

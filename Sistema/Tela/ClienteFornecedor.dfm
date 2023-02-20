@@ -27,7 +27,6 @@ object FClienteFornecedor: TFClienteFornecedor
     ActivePage = TBCadastro
     Align = alClient
     TabOrder = 0
-    ExplicitTop = 1
     object TBCadastro: TTabSheet
       Caption = 'Cadastro'
       OnShow = TBCadastroShow
@@ -241,7 +240,7 @@ object FClienteFornecedor: TFClienteFornecedor
         Top = 172
         Width = 1355
         Height = 341
-        ActivePage = TBOutrosDocumentos
+        ActivePage = TBEndereco
         Align = alClient
         TabOrder = 2
         object TBOutrosDocumentos: TTabSheet
@@ -260,7 +259,7 @@ object FClienteFornecedor: TFClienteFornecedor
               Width = 96
               Height = 29
               Align = alLeft
-              Caption = 'Confirmar'
+              Caption = 'Cadastrar'
               ImageIndex = 0
               Images = FMenuPrincipal.ImageList1
               Enabled = False
@@ -403,13 +402,209 @@ object FClienteFornecedor: TFClienteFornecedor
             Enabled = False
             TabOrder = 2
             OnClick = CBInativoOutroDocumentoClick
-            ExplicitTop = 566
-            ExplicitWidth = 1355
           end
         end
         object TBEndereco: TTabSheet
           Caption = 'Endere'#231'o'
           ImageIndex = 1
+          object Panel1: TPanel
+            Left = 0
+            Top = 0
+            Width = 1347
+            Height = 29
+            Align = alTop
+            BevelOuter = bvNone
+            TabOrder = 0
+            object BCadastrarEndereco: TSpeedButton
+              Left = 0
+              Top = 0
+              Width = 96
+              Height = 29
+              Align = alLeft
+              Caption = 'Cadastrar'
+              ImageIndex = 0
+              Images = FMenuPrincipal.ImageList1
+              Enabled = False
+              OnClick = BCadastrarEnderecoClick
+              ExplicitLeft = 8
+              ExplicitHeight = 41
+            end
+            object BExcluirEndereco: TSpeedButton
+              Left = 96
+              Top = 0
+              Width = 96
+              Height = 29
+              Align = alLeft
+              Caption = 'Excluir'
+              ImageIndex = 3
+              Images = FMenuPrincipal.ImageList1
+              Enabled = False
+              OnClick = BExcluirEnderecoClick
+              ExplicitLeft = 1
+              ExplicitTop = -1
+              ExplicitHeight = 39
+            end
+          end
+          object GEndereco: TDBGrid
+            Left = 0
+            Top = 29
+            Width = 1347
+            Height = 264
+            Align = alClient
+            DataSource = FDMClienteFornecedor.DEndereco
+            Enabled = False
+            Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+            ReadOnly = True
+            TabOrder = 1
+            TitleFont.Charset = DEFAULT_CHARSET
+            TitleFont.Color = clWindowText
+            TitleFont.Height = -13
+            TitleFont.Name = 'Tahoma'
+            TitleFont.Style = []
+            OnDrawColumnCell = GDadosDrawColumnCell
+            OnDblClick = GEnderecoDblClick
+            OnTitleClick = GDadosTitleClick
+            Columns = <
+              item
+                Expanded = False
+                FieldName = 'codigo'
+                Title.Alignment = taCenter
+                Title.Caption = 'Codigo'
+                Width = 65
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'tipoEndereco'
+                Title.Alignment = taCenter
+                Title.Caption = 'Descri'#231#227'o'
+                Width = 100
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'cep'
+                Title.Alignment = taCenter
+                Title.Caption = 'CEP'
+                Width = 100
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'longradouro'
+                Title.Alignment = taCenter
+                Title.Caption = 'Longradouro'
+                Width = 100
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'numero'
+                Title.Alignment = taCenter
+                Title.Caption = 'Numero'
+                Width = 100
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'bairro'
+                Title.Alignment = taCenter
+                Title.Caption = 'Bairro'
+                Width = 100
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'complemento'
+                Title.Alignment = taCenter
+                Title.Caption = 'Complemento'
+                Width = 100
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'nomeCidade'
+                Title.Alignment = taCenter
+                Title.Caption = 'Cidade'
+                Width = 100
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'nomeEstado'
+                Title.Alignment = taCenter
+                Title.Caption = 'Estado'
+                Width = 100
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'nomePais'
+                Title.Alignment = taCenter
+                Title.Caption = 'Pais'
+                Width = 100
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'observacao'
+                Title.Alignment = taCenter
+                Title.Caption = 'Observa'#231#227'o'
+                Width = 100
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'cadastradoPor'
+                Title.Alignment = taCenter
+                Title.Caption = 'Cadastrado Por'
+                Width = 143
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'alteradoPor'
+                Title.Alignment = taCenter
+                Title.Caption = 'Alterado Por'
+                Width = 130
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'dataCadastro'
+                Title.Alignment = taCenter
+                Title.Caption = 'Data Cadastro'
+                Width = 134
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'dataAlteracao'
+                Title.Alignment = taCenter
+                Title.Caption = 'Data Altera'#231#227'o'
+                Width = 153
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'status'
+                Title.Alignment = taCenter
+                Title.Caption = 'Status'
+                Width = 61
+                Visible = True
+              end>
+          end
+          object CBInativoEndereco: TCheckBox
+            Left = 0
+            Top = 293
+            Width = 1347
+            Height = 17
+            Align = alBottom
+            Caption = 'Mostrar Inativos'
+            Enabled = False
+            TabOrder = 2
+            OnClick = CBInativoEnderecoClick
+          end
         end
         object TBContato: TTabSheet
           Caption = 'Outros Contatos'

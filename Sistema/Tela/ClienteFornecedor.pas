@@ -64,6 +64,11 @@ type
     DBMemo1: TDBMemo;
     SpeedButton1: TSpeedButton;
     CBInativoOutroDocumento: TCheckBox;
+    Panel1: TPanel;
+    BCadastrarEndereco: TSpeedButton;
+    BExcluirEndereco: TSpeedButton;
+    GEndereco: TDBGrid;
+    CBInativoEndereco: TCheckBox;
     procedure BFecharClick(Sender: TObject);
     procedure BCadastrarClick(Sender: TObject);
     procedure BAlterarClick(Sender: TObject);
@@ -86,6 +91,10 @@ type
     procedure TBCadastroShow(Sender: TObject);
     procedure CBInativoOutroDocumentoClick(Sender: TObject);
     procedure GDocumentoDblClick(Sender: TObject);
+    procedure GEnderecoDblClick(Sender: TObject);
+    procedure BCadastrarEnderecoClick(Sender: TObject);
+    procedure BExcluirEnderecoClick(Sender: TObject);
+    procedure CBInativoEnderecoClick(Sender: TObject);
   private
     { Private declarations }
     function validarCampos: boolean;
@@ -99,7 +108,7 @@ var
 
 implementation
 
-uses UFuncao, DMClienteFornecedor, OutroDocumento;
+uses UFuncao, DMClienteFornecedor, OutroDocumento, Endereco;
 
 {$R *.dfm}
 
@@ -134,8 +143,8 @@ begin
     begin
       TOutroDocumento.Append;
       TOutroDocumentocodigoPessoa.Value := TClienteFornecedorcodigo.Value;
-      TOutroDocumentodataEmissao.Value := Date;
-      TOutroDocumentodataVencimento.Value := Date;
+      TOutroDocumentodataEmissao.Value := DateToStr(Date);
+      TOutroDocumentodataVencimento.Value := DateToStr(Date);
     end;
 
     FOutroDocumento.ShowModal;
@@ -145,6 +154,28 @@ begin
   else
   begin
     informar('Antes de inserir um outro documento confirme o cadastro do ' + FDMClienteFornecedor.tipoCadastro);
+  end;
+end;
+
+procedure TFClienteFornecedor.BCadastrarEnderecoClick(Sender: TObject);
+begin
+  if (FDMClienteFornecedor.TClienteFornecedorcodigo.Value > 0) then
+  try
+    Application.CreateForm(TFEndereco, FEndereco);
+
+    with FDMClienteFornecedor do
+    begin
+      TEndereco.Append;
+      TEnderecocodigoPessoa.Value := TClienteFornecedorcodigo.Value;
+    end;
+
+    FEndereco.ShowModal;
+  finally
+    FreeAndNil(FEndereco);
+  end
+  else
+  begin
+    informar('Antes de inserir um endereço confirme o cadastro do ' + FDMClienteFornecedor.tipoCadastro);
   end;
 end;
 
@@ -189,6 +220,29 @@ begin
     FDMClienteFornecedor.consultarDados(0);
   finally
     BConsultar.Enabled := True;
+  end;
+end;
+
+procedure TFClienteFornecedor.BExcluirEnderecoClick(Sender: TObject);
+var
+  codigo: integer;
+begin
+  with FDMClienteFornecedor do
+  begin
+    if not (TEndereco.RecordCount > 0) then
+    begin
+      informar('Nenhum registro selecionado!');
+    end
+    else if (confirmar('Realmente deseja inativar o endereço: ' + TEnderecolongradouro.Value + ' - ' + TEndereconumero.Value + '?')) then
+    begin
+      codigo := TEnderecocodigo.Value;
+
+      if (inativarEndereco) then
+      begin
+        consultarDadosEndereco(0, True);
+        TEndereco.Locate('codigo', codigo, [loCaseInsensitive]);
+      end;
+    end;
   end;
 end;
 
@@ -248,6 +302,11 @@ begin
   end;
 end;
 
+procedure TFClienteFornecedor.CBInativoEnderecoClick(Sender: TObject);
+begin
+  FDMClienteFornecedor.consultarDadosEndereco(0, False);
+end;
+
 procedure TFClienteFornecedor.CBInativoOutroDocumentoClick(Sender: TObject);
 begin
   FDMClienteFornecedor.consultarDadosOutroDocumento(0, False);
@@ -300,6 +359,8 @@ end;
 procedure TFClienteFornecedor.FormShow(Sender: TObject);
 begin
   PCTela.ActivePage := TBConsulta;
+  PCDados.ActivePage := TBOutrosDocumentos;
+
   FDMClienteFornecedor.consultarTipoDocumento;
   BConsultarClick(nil);
 end;
@@ -339,6 +400,22 @@ begin
   end;
 end;
 
+procedure TFClienteFornecedor.GEnderecoDblClick(Sender: TObject);
+begin
+  if (FDMClienteFornecedor.TEndereco.RecordCount > 0) then
+  try
+    Application.CreateForm(TFEndereco, FEndereco);
+    FDMClienteFornecedor.TEndereco.Edit;
+    FEndereco.ShowModal;
+  finally
+    FreeAndNil(FEndereco);
+  end
+  else
+  begin
+    informar('Nenhum registro selecionado!');
+  end;
+end;
+
 procedure TFClienteFornecedor.TBCadastroShow(Sender: TObject);
 begin
   with FDMClienteFornecedor do
@@ -346,6 +423,7 @@ begin
     if (dadosPessoaConsultados <> TClienteFornecedorcodigo.Value) then
     begin
       consultarDadosOutroDocumento(0, False);
+      consultarDadosEndereco(0, False);
     end;
   end;
 end;

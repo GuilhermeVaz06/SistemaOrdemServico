@@ -76,10 +76,8 @@ begin
       FDMClienteFornecedor.TOutroDocumento.Post;
       FDMClienteFornecedor.TOutroDocumento.Append;
       FDMClienteFornecedor.TOutroDocumentocodigoPessoa.Value := FDMClienteFornecedor.TClienteFornecedorcodigo.Value;
-      FDMClienteFornecedor.TOutroDocumentodataEmissao.Value := Date;
-      FDMClienteFornecedor.TOutroDocumentodataVencimento.Value := Date;
-      FDMClienteFornecedor.TOutroDocumentodataEmissao.Value := Date;
-      FDMClienteFornecedor.TOutroDocumentodataVencimento.Value := Date;
+      FDMClienteFornecedor.TOutroDocumentodataEmissao.Value := DateToStr(Date);
+      FDMClienteFornecedor.TOutroDocumentodataVencimento.Value := DateToStr(Date);
     end;
   end;
 end;
@@ -111,12 +109,12 @@ end;
 
 procedure TFOutroDocumento.EDTEmissaoChange(Sender: TObject);
 begin
-  FDMClienteFornecedor.TOutroDocumentodataEmissao.Value := EDTEmissao.Date;
+  FDMClienteFornecedor.TOutroDocumentodataEmissao.Value := DateToStr(EDTEmissao.Date);
 end;
 
 procedure TFOutroDocumento.EDTVencimentoChange(Sender: TObject);
 begin
-  FDMClienteFornecedor.TOutroDocumentodataVencimento.Value := EDTVencimento.Date;
+  FDMClienteFornecedor.TOutroDocumentodataVencimento.Value := DateToStr(EDTVencimento.Date);
 end;
 
 procedure TFOutroDocumento.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -129,8 +127,8 @@ end;
 
 procedure TFOutroDocumento.FormShow(Sender: TObject);
 begin
-  EDTEmissao.DateTime := FDMClienteFornecedor.TOutroDocumentodataEmissao.Value;
-  EDTVencimento.DateTime := FDMClienteFornecedor.TOutroDocumentodataVencimento.Value;
+  EDTEmissao.DateTime := StrToDate(FDMClienteFornecedor.TOutroDocumentodataEmissao.Value);
+  EDTVencimento.DateTime := StrToDate(FDMClienteFornecedor.TOutroDocumentodataVencimento.Value);
   EDTEmissaoChange(nil);
   EDTVencimentoChange(nil);
 end;
