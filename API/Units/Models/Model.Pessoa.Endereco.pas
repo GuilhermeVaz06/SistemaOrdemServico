@@ -301,7 +301,6 @@ begin
   sql.Add('   AND pessoa_endereco.CODIGO_CIDADE = cidade.CODIGO_CIDADE');
   sql.Add('   AND cidade.CODIGO_ESTADO = estado.CODIGO_ESTADO');
   sql.Add('   AND estado.CODIGO_PAIS = pais.CODIGO_PAIS');
-
   sql.Add('   AND pessoa_endereco.CODIGO_ENDERECO = ' + IntToStrSenaoZero(codigo));
 
   query := FConexao.executarComandoDQL(sql.Text);
