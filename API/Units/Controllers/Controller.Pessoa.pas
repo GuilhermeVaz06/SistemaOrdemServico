@@ -168,11 +168,6 @@ begin
         pessoa.nomeFantasia := Req.Query['nomeFantasia'];
       end;
 
-      if (tipoPessoa = tpUsuario) then
-      begin
-        pessoa.senha := Req.Query['senha'];
-      end;
-
       pessoa.telefone := Req.Query['telefone'];
       pessoa.email := Req.Query['email'];
       pessoa.observacao := Req.Query['observacao'];
@@ -1026,6 +1021,31 @@ begin
   excluirPessoa(Req, Res, Next, 'excluirFornecedor', 'Fornecedor', tpFornecedor);
 end;
 
+procedure buscarUsuario(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+begin
+  buscarPessoa(Req, Res, Next, 'buscarUsuario', 'Usuario', tpUsuario);
+end;
+
+procedure cadastrarUsuario(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+begin
+  cadastrarPessoa(Req, Res, Next, 'cadastrarUsuario', 'Usuario', tpUsuario);
+end;
+
+procedure alterarUsuario(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+begin
+  alterarPessoa(Req, Res, Next, 'alterarUsuario', 'Usuario', tpUsuario);
+end;
+
+procedure inativarUsuario(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+begin
+  inativarPessoa(Req, Res, Next, 'inativarUsuario', 'Usuario', tpUsuario);
+end;
+
+procedure excluirUsuario(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+begin
+  excluirPessoa(Req, Res, Next, 'excluirUsuario', 'Usuario', tpUsuario);
+end;
+
 procedure Registry;
 begin
   criarConexao;
@@ -1040,6 +1060,12 @@ begin
   THorse.Put('/fornecedor/:id', alterarFornecedor);
   THorse.Delete('/fornecedor/:id', inativarFornecedor);
   THorse.Delete('/fornecedorExcluir/:id', excluirFornecedor);
+
+  THorse.Get('/usuario', buscarUsuario);
+  THorse.Post('/usuario', cadastrarUsuario);
+  THorse.Put('/usuario/:id', alterarUsuario);
+  THorse.Delete('/usuario/:id', inativarUsuario);
+  THorse.Delete('/usuarioExcluir/:id', excluirUsuario);
 end;
 
 end.

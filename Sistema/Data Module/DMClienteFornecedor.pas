@@ -99,6 +99,7 @@ type
     TContatodataAlteracao: TStringField;
     TContatostatus: TStringField;
     TContatoobservacao: TMemoField;
+    TClienteFornecedorsenha: TStringField;
     procedure MemoGetText(Sender: TField; var Text: string;
       DisplayText: Boolean);
     procedure TClienteFornecedordocumentoGetText(Sender: TField; var Text: string;

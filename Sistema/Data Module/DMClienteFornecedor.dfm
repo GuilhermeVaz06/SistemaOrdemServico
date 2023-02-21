@@ -63,6 +63,10 @@ object FDMClienteFornecedor: TFDMClienteFornecedor
       OnGetText = MemoGetText
       BlobType = ftMemo
     end
+    object TClienteFornecedorsenha: TStringField
+      FieldName = 'senha'
+      Size = 250
+    end
     object TClienteFornecedorstatus: TStringField
       FieldName = 'status'
       Size = 1
