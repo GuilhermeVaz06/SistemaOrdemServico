@@ -1001,6 +1001,31 @@ begin
   excluirPessoa(Req, Res, Next, 'excluirCliente', 'Cliente', tpCliente);
 end;
 
+procedure buscarFornecedor(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+begin
+  buscarPessoa(Req, Res, Next, 'buscarFornecedor', 'Fornecedor', tpFornecedor);
+end;
+
+procedure cadastrarFornecedor(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+begin
+  cadastrarPessoa(Req, Res, Next, 'cadastrarFornecedor', 'Fornecedor', tpFornecedor);
+end;
+
+procedure alterarFornecedor(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+begin
+  alterarPessoa(Req, Res, Next, 'alterarFornecedor', 'Fornecedor', tpFornecedor);
+end;
+
+procedure inativarFornecedor(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+begin
+  inativarPessoa(Req, Res, Next, 'inativarFornecedor', 'Fornecedor', tpFornecedor);
+end;
+
+procedure excluirFornecedor(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+begin
+  excluirPessoa(Req, Res, Next, 'excluirFornecedor', 'Fornecedor', tpFornecedor);
+end;
+
 procedure Registry;
 begin
   criarConexao;
@@ -1009,6 +1034,12 @@ begin
   THorse.Put('/cliente/:id', alterarCliente);
   THorse.Delete('/cliente/:id', inativarCliente);
   THorse.Delete('/clienteExcluir/:id', excluirCliente);
+
+  THorse.Get('/fornecedor', buscarFornecedor);
+  THorse.Post('/fornecedor', cadastrarFornecedor);
+  THorse.Put('/fornecedor/:id', alterarFornecedor);
+  THorse.Delete('/fornecedor/:id', inativarFornecedor);
+  THorse.Delete('/fornecedorExcluir/:id', excluirFornecedor);
 end;
 
 end.
