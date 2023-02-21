@@ -31,6 +31,7 @@ function converterJsonTextoJsonValue(jsonText: string): TJSONValue;
 function converterJsonValueJsonArray(json: TJSONValue; nome: string): TJSONArray;
 procedure desativaBotoes(form: TForm);
 procedure abreTelaCliente;
+procedure abreTelaFornecedor;
 procedure ordenarGrid(Coluna: TColumn);
 procedure copiarItemJsonArray(arrayOrigem: TJSONArray; out arrayDestino : TJSONArray);
 procedure converterArrayJsonQuery(json: IRESTResponseJSON; out dataSet: TFDMemTable); overload;
@@ -82,6 +83,18 @@ begin
     Application.CreateForm(TFClienteFornecedor, FClienteFornecedor);
     FClienteFornecedor.Caption := 'Cadastro de Cliente';
     FDMClienteFornecedor.tipoCadastro := 'cliente';
+    FClienteFornecedor.ShowModal;
+  finally
+    FreeAndNil(FClienteFornecedor);
+  end;
+end;
+
+procedure abreTelaFornecedor;
+begin
+  try
+    Application.CreateForm(TFClienteFornecedor, FClienteFornecedor);
+    FClienteFornecedor.Caption := 'Cadastro de Fornecedor';
+    FDMClienteFornecedor.tipoCadastro := 'fornecedor';
     FClienteFornecedor.ShowModal;
   finally
     FreeAndNil(FClienteFornecedor);

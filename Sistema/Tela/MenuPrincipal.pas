@@ -30,6 +30,7 @@ type
     procedure tipoDocumento1Click(Sender: TObject);
     procedure tipoEndereco1Click(Sender: TObject);
     procedure cliente1Click(Sender: TObject);
+    procedure fornecedor1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -81,6 +82,11 @@ begin
   NomeUsuarioSessaoLogado := 'Guilherme';
   UsuarioAdmnistrador := True;
   SessaoLogadoToken := '96FC542F00DC204B1408A6314962E10A';
+end;
+
+procedure TFMenuPrincipal.fornecedor1Click(Sender: TObject);
+begin
+  abreTelaFornecedor;
 end;
 
 procedure TFMenuPrincipal.pais1Click(Sender: TObject);
