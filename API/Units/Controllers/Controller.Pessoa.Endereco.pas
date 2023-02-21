@@ -306,13 +306,25 @@ begin
     begin
       erros.Add('O longradouro deve ser informado!');
     end
-    else if (Length(Trim(endereco.longradouro)) <= 2) then
+    else if (Length(endereco.longradouro) <= 2) then
     begin
       erros.Add('O longradouro deve conter no minimo 2 caracteres validos!');
     end
-    else if (Length(Trim(endereco.longradouro)) > 150) then
+    else if (Length(endereco.longradouro) > 150) then
     begin
       erros.Add('O longradouro deve conter no maximo 150 caracteres validos!');
+    end;
+
+    if (endereco.complemento <> '') then
+    begin
+      if (Length(endereco.complemento) <= 2) then
+      begin
+        erros.Add('O complemento deve conter no minimo 2 caracteres validos!');
+      end
+      else if (Length(endereco.complemento) > 150) then
+      begin
+        erros.Add('O complemento deve conter no maximo 150 caracteres validos!');
+      end;
     end;
 
     if (endereco.numero = '') then
@@ -505,6 +517,18 @@ begin
     else if (Length(soNumeros(Trim(endereco.cep))) <> 8) then
     begin
       erros.Add('O CEP deve conter 8 caracteres numericos valido!');
+    end;
+
+    if (endereco.complemento <> '') then
+    begin
+      if (Length(endereco.complemento) <= 2) then
+      begin
+        erros.Add('O complemento deve conter no minimo 2 caracteres validos!');
+      end
+      else if (Length(endereco.complemento) > 150) then
+      begin
+        erros.Add('O complemento deve conter no maximo 150 caracteres validos!');
+      end;
     end;
 
     if (endereco.longradouro = '') then

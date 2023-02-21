@@ -269,9 +269,9 @@ begin
     begin
       erros.Add('A descrição deve conter no minimo 2 caracteres validos!');
     end
-    else if (Length(Trim(tipoDocumento.descricao)) > 10) then
+    else if (Length(Trim(tipoDocumento.descricao)) > 20) then
     begin
-      erros.Add('A descrição deve conter no maximo 10 caracteres validos!');
+      erros.Add('A descrição deve conter no maximo 20 caracteres validos!');
     end;
 
     if (Trim(tipoDocumento.mascara) = '') then
@@ -407,9 +407,9 @@ begin
     begin
       erros.Add('A descrição do Tipo do documento deve conter no minimo 2 caracteres validos!');
     end
-    else if (Length(Trim(tipoDocumento.descricao)) > 10) then
+    else if (Length(Trim(tipoDocumento.descricao)) > 20) then
     begin
-      erros.Add('A descrição do Tipo do documento deve conter no maximo 10 caracteres validos!');
+      erros.Add('A descrição do Tipo do documento deve conter no maximo 20 caracteres validos!');
     end;
 
     if (Trim(tipoDocumento.mascara) = '') then

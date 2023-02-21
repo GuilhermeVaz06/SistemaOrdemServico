@@ -40,8 +40,8 @@ type TContato = class
     property id:Integer read FCodigo write FCodigo;
     property pessoa: TPessoa read FPessoa write FPessoa;
     property tipoDocumento: TTipoDocumento read FTipoDocumento write FTipoDocumento;
-    property documento: string read FObservacao write FObservacao;
-    property observacao: string read FDocumento write FDocumento;
+    property documento: string read FDocumento write FDocumento;
+    property observacao: string read FObservacao write FObservacao;
     property nome: string read FNome write FNome;
     property dataNascimento: TDateTime read FDataNascimento write FDataNascimento;
     property funcao: string read FFuncao write FFuncao;
@@ -113,6 +113,8 @@ begin
   sql.Add('  FROM pessoa_contato');
   sql.Add(' WHERE CODIGO_PESSOA = ' + IntToStrSenaoZero(FPessoa.id));
   sql.Add('   AND NOME = ' + QuotedStr(FNome));
+  sql.Add('   AND DOCUMENTO = ' + QuotedStr(soNumeros(Trim(FDocumento))));
+  sql.Add('   AND CODIGO_TIPO_DOCUMENTO = ' + IntToStrSenaoZero(FTipoDocumento.id));
 
   if (FCodigo > 0) then
   begin
@@ -205,6 +207,7 @@ begin
     data.FFuncao := query.FieldByName('FUNCAO').Value;
     data.FTelefone := query.FieldByName('TELEFONE').Value;
     data.FEmail := query.FieldByName('EMAIL').Value;
+    data.FObservacao := query.FieldByName('OBSERVACAO').AsString;
     data.FCadastradoPor.usuario := query.FieldByName('usuarioCadastro').Value;
     data.FAlteradoPor.usuario := query.FieldByName('usuarioAlteracao').Value;
     data.FDataCadastro := query.FieldByName('DATA_CADASTRO').Value;
@@ -242,7 +245,7 @@ begin
   sql.Add('     , EMAIL = ' + QuotedStr(FEmail));
   sql.Add('     , `STATUS` = ' + QuotedStr(FStatus));
   sql.Add('     , CODIGO_SESSAO_ALTERACAO = ' + IntToStrSenaoZero(FConexao.codigoSessao));
-  sql.Add(' WHERE CODIGO_ENDERECO = ' + IntToStrSenaoZero(FCodigo));
+  sql.Add(' WHERE CODIGO_CONTATO = ' + IntToStrSenaoZero(FCodigo));
 
   FConexao.executarComandoDML(sql.Text);
   FreeAndNil(sql);
@@ -262,7 +265,7 @@ begin
   codigo := FConexao.ultimoRegistro('pessoa_contato', 'CODIGO_CONTATO');
 
   sql := TStringList.Create;
-  sql.Add('INSERT INTO `pessoa_endereco` (CODIGO_PESSOA, CODIGO_CONTATO, CODIGO_TIPO_DOCUMENTO');
+  sql.Add('INSERT INTO `pessoa_contato` (CODIGO_PESSOA, CODIGO_CONTATO, CODIGO_TIPO_DOCUMENTO');
   sql.Add(', DOCUMENTO, NOME, DATA_NASCIMENTO, FUNCAO, TELEFONE, OBSERVACAO');
   sql.Add(', EMAIL, CODIGO_SESSAO_CADASTRO, CODIGO_SESSAO_ALTERACAO) VALUES (');
   sql.Add(' ' + IntToStrSenaoZero(FPessoa.id));                                 //CODIGO_PESSOA
@@ -312,7 +315,7 @@ begin
     sql := TStringList.Create;
     sql.Add('SELECT pessoa_contato.CODIGO_PESSOA, pessoa_contato.CODIGO_CONTATO, pessoa_contato.CODIGO_TIPO_DOCUMENTO');
     sql.Add(', pessoa_contato.DOCUMENTO, pessoa_contato.NOME, pessoa_contato.DATA_NASCIMENTO, pessoa_contato.FUNCAO');
-    sql.Add(', pessoa_contato.TELEFONE, pessoa_contato.EMAIL, pessoa_contato.CODIGO_SESSAO_CADASTRO');
+    sql.Add(', pessoa_contato.TELEFONE, pessoa_contato.EMAIL, pessoa_contato.CODIGO_SESSAO_CADASTRO, pessoa_contato.OBSERVACAO');
     sql.Add(', pessoa_contato.CODIGO_SESSAO_ALTERACAO, pessoa_contato.DATA_CADASTRO, pessoa_contato.DATA_ULTIMA_ALTERACAO');
     sql.Add(', pessoa_contato.`STATUS`, tipo_documento.DESCRICAO nomeDocumento, tipo_documento.MASCARA_CARACTERES mascaraCararteres');
     sql.Add('');
@@ -424,7 +427,7 @@ begin
   sql := TStringList.Create;
   sql.Add('SELECT pessoa_contato.CODIGO_PESSOA, pessoa_contato.CODIGO_CONTATO, pessoa_contato.CODIGO_TIPO_DOCUMENTO');
   sql.Add(', pessoa_contato.DOCUMENTO, pessoa_contato.NOME, pessoa_contato.DATA_NASCIMENTO, pessoa_contato.FUNCAO');
-  sql.Add(', pessoa_contato.TELEFONE, pessoa_contato.EMAIL, pessoa_contato.CODIGO_SESSAO_CADASTRO');
+  sql.Add(', pessoa_contato.TELEFONE, pessoa_contato.EMAIL, pessoa_contato.CODIGO_SESSAO_CADASTRO, pessoa_contato.OBSERVACAO');
   sql.Add(', pessoa_contato.CODIGO_SESSAO_ALTERACAO, pessoa_contato.DATA_CADASTRO, pessoa_contato.DATA_ULTIMA_ALTERACAO');
   sql.Add(', pessoa_contato.`STATUS`, tipo_documento.DESCRICAO nomeDocumento, tipo_documento.MASCARA_CARACTERES mascaraCararteres');
   sql.Add('');
@@ -440,7 +443,7 @@ begin
   sql.Add('');
   sql.Add('  FROM pessoa_contato, tipo_documento');
   sql.Add(' WHERE pessoa_contato.CODIGO_TIPO_DOCUMENTO = tipo_documento.CODIGO_TIPO_DOCUMENTO');
-  sql.Add('   AND pessoa_endereco.CODIGO_ENDERECO = ' + IntToStrSenaoZero(codigo));
+  sql.Add('   AND pessoa_contato.CODIGO_CONTATO = ' + IntToStrSenaoZero(codigo));
 
   query := FConexao.executarComandoDQL(sql.Text);
 

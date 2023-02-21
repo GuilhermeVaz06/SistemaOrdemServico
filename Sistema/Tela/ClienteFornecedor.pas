@@ -69,6 +69,11 @@ type
     BExcluirEndereco: TSpeedButton;
     GEndereco: TDBGrid;
     CBInativoEndereco: TCheckBox;
+    Panel4: TPanel;
+    BCadastrarContato: TSpeedButton;
+    BExcluirContato: TSpeedButton;
+    GContato: TDBGrid;
+    CBInativoContato: TCheckBox;
     procedure BFecharClick(Sender: TObject);
     procedure BCadastrarClick(Sender: TObject);
     procedure BAlterarClick(Sender: TObject);
@@ -95,6 +100,10 @@ type
     procedure BCadastrarEnderecoClick(Sender: TObject);
     procedure BExcluirEnderecoClick(Sender: TObject);
     procedure CBInativoEnderecoClick(Sender: TObject);
+    procedure GContatoDblClick(Sender: TObject);
+    procedure BExcluirContatoClick(Sender: TObject);
+    procedure BCadastrarContatoClick(Sender: TObject);
+    procedure CBInativoContatoClick(Sender: TObject);
   private
     { Private declarations }
     function validarCampos: boolean;
@@ -108,7 +117,7 @@ var
 
 implementation
 
-uses UFuncao, DMClienteFornecedor, OutroDocumento, Endereco;
+uses UFuncao, DMClienteFornecedor, OutroDocumento, Endereco, Contato;
 
 {$R *.dfm}
 
@@ -131,6 +140,29 @@ begin
   UFuncao.desativaBotoes(self);
   FDMClienteFornecedor.TClienteFornecedor.Append;
   PCDados.ActivePage := TBOutrosDocumentos;
+end;
+
+procedure TFClienteFornecedor.BCadastrarContatoClick(Sender: TObject);
+begin
+  if (FDMClienteFornecedor.TClienteFornecedorcodigo.Value > 0) then
+  try
+    Application.CreateForm(TFContato, FContato);
+
+    with FDMClienteFornecedor do
+    begin
+      TContato.Append;
+      TContatocodigoPessoa.Value := TClienteFornecedorcodigo.Value;
+      TContatodataNascimento.Value := DateToStr(Date);
+    end;
+
+    FContato.ShowModal;
+  finally
+    FreeAndNil(FContato);
+  end
+  else
+  begin
+    informar('Antes de inserir um endereço confirme o cadastro do ' + FDMClienteFornecedor.tipoCadastro);
+  end;
 end;
 
 procedure TFClienteFornecedor.BCadastrarDocumentoClick(Sender: TObject);
@@ -223,6 +255,29 @@ begin
   end;
 end;
 
+procedure TFClienteFornecedor.BExcluirContatoClick(Sender: TObject);
+var
+  codigo: integer;
+begin
+  with FDMClienteFornecedor do
+  begin
+    if not (TContato.RecordCount > 0) then
+    begin
+      informar('Nenhum registro selecionado!');
+    end
+    else if (confirmar('Realmente deseja inativar o contato: ' + TContatonome.Value + '?')) then
+    begin
+      codigo := TContatocodigo.Value;
+
+      if (inativarContato) then
+      begin
+        consultarDadosContato(0, True);
+        TContato.Locate('codigo', codigo, [loCaseInsensitive]);
+      end;
+    end;
+  end;
+end;
+
 procedure TFClienteFornecedor.BExcluirEnderecoClick(Sender: TObject);
 var
   codigo: integer;
@@ -302,6 +357,11 @@ begin
   end;
 end;
 
+procedure TFClienteFornecedor.CBInativoContatoClick(Sender: TObject);
+begin
+  FDMClienteFornecedor.consultarDadosContato(0, False);
+end;
+
 procedure TFClienteFornecedor.CBInativoEnderecoClick(Sender: TObject);
 begin
   FDMClienteFornecedor.consultarDadosEndereco(0, False);
@@ -365,6 +425,22 @@ begin
   BConsultarClick(nil);
 end;
 
+procedure TFClienteFornecedor.GContatoDblClick(Sender: TObject);
+begin
+  if (FDMClienteFornecedor.TContato.RecordCount > 0) then
+  try
+    Application.CreateForm(TFContato, FContato);
+    FDMClienteFornecedor.TContato.Edit;
+    FContato.ShowModal;
+  finally
+    FreeAndNil(FContato);
+  end
+  else
+  begin
+    informar('Nenhum registro selecionado!');
+  end;
+end;
+
 procedure TFClienteFornecedor.GDadosDblClick(Sender: TObject);
 begin
   if (consulta) then
@@ -424,6 +500,7 @@ begin
     begin
       consultarDadosOutroDocumento(0, False);
       consultarDadosEndereco(0, False);
+      consultarDadosContato(0, False);
     end;
   end;
 end;

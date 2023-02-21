@@ -6,7 +6,7 @@ uses Vcl.Forms, Vcl.Grids, Winapi.Windows, FireDAC.Comp.Client, REST.Client,
      System.SysUtils, Vcl.Dialogs, System.DateUtils, Vcl.DBCtrls, Vcl.ExtCtrls,
      Vcl.Buttons, System.UITypes, System.JSON, DataSet.Serialize, Vcl.DBGrids,
      Vcl.Graphics, System.IniFiles, REST.Response.Adapter, Data.DBJson,
-     Vcl.StdCtrls, Vcl.ComCtrls;
+     Vcl.StdCtrls, Vcl.ComCtrls, System.MaskUtils;
 
 function soNumeros(Valor: string): string;
 function strToDoubleZero(valor: string): Double;
@@ -20,6 +20,7 @@ function IntToStrSenaoZero(valor: Integer): string;
 function doubleToStrSenaoZero(valor: Double): string;
 function confirmar(mesagem: String): Boolean;
 function strZero(valor: string): string;
+function mascaraTelefone(telefone: string): string;
 function firstDayOfMoth(data: TDateTime): TDateTime;
 function lastDayOfMoth(data: TDateTime): TDateTime;
 function formatarValorMonetario(valor: Double): string;
@@ -46,6 +47,34 @@ var
 implementation
 
 uses ClienteFornecedor, DMClienteFornecedor;
+
+function mascaraTelefone(telefone: string): string;
+begin
+  if (Length(telefone) = 12) then
+  begin
+    Result := FormatMaskText('(999) 9 9999-9999;0', telefone);
+  end
+  else if (Length(telefone) = 11) then
+  begin
+    Result := FormatMaskText('(99) 9 9999-9999;0', telefone);
+  end
+  else if (Length(telefone) = 10) then
+  begin
+    Result := FormatMaskText('(99) 9999-9999;0', telefone);
+  end
+  else if (Length(telefone) = 9) then
+  begin
+    Result := FormatMaskText('9 9999-9999;0', telefone);
+  end
+  else if (Length(telefone) = 8) then
+  begin
+    Result := FormatMaskText('9999-9999;0', telefone);
+  end
+  else
+  begin
+    Result := telefone;
+  end;
+end;
 
 procedure abreTelaCliente;
 begin

@@ -18,7 +18,8 @@ uses
   OutroDocumento in '..\Tela\OutroDocumento.pas' {FOutroDocumento},
   DMClienteFornecedor in '..\Data Module\DMClienteFornecedor.pas' {FDMClienteFornecedor: TDataModule},
   ClienteFornecedor in '..\Tela\ClienteFornecedor.pas' {FClienteFornecedor},
-  Endereco in '..\Tela\Endereco.pas' {FEndereco};
+  Endereco in '..\Tela\Endereco.pas' {FEndereco},
+  Contato in '..\Tela\Contato.pas' {FContato};
 
 {$R *.res}
 
@@ -34,5 +35,6 @@ begin
   Application.CreateForm(TFDMTipoEndereco, FDMTipoEndereco);
   Application.CreateForm(TFOutroDocumento, FOutroDocumento);
   Application.CreateForm(TFDMClienteFornecedor, FDMClienteFornecedor);
+  Application.CreateForm(TFContato, FContato);
   Application.Run;
 end.

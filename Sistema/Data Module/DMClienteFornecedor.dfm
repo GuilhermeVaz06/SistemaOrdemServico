@@ -30,7 +30,6 @@ object FDMClienteFornecedor: TFDMClienteFornecedor
     end
     object TClienteFornecedortipoDocumento: TStringField
       FieldName = 'tipoDocumento'
-      Size = 10
     end
     object TClienteFornecedorqtdeCaracteres: TIntegerField
       FieldName = 'qtdeCaracteres'
@@ -53,7 +52,7 @@ object FDMClienteFornecedor: TFDMClienteFornecedor
     end
     object TClienteFornecedortelefone: TStringField
       FieldName = 'telefone'
-      OnGetText = TClienteFornecedortelefoneGetText
+      OnGetText = telefoneGetText
     end
     object TClienteFornecedoremail: TStringField
       FieldName = 'email'
@@ -106,7 +105,6 @@ object FDMClienteFornecedor: TFDMClienteFornecedor
     end
     object QTipoDocumentodescricao: TStringField
       FieldName = 'descricao'
-      Size = 10
     end
     object QTipoDocumentoqtdeCaracteres: TIntegerField
       FieldName = 'qtdeCaracteres'
@@ -163,7 +161,6 @@ object FDMClienteFornecedor: TFDMClienteFornecedor
     end
     object TOutroDocumentoTipoDocumento: TStringField
       FieldName = 'TipoDocumento'
-      Size = 10
     end
     object TOutroDocumentodocumento: TStringField
       FieldName = 'documento'
@@ -325,6 +322,88 @@ object FDMClienteFornecedor: TFDMClienteFornecedor
     object QPrioridadedescricao: TStringField
       FieldName = 'descricao'
       Size = 50
+    end
+  end
+  object DContato: TDataSource
+    DataSet = TContato
+    Left = 172
+    Top = 176
+  end
+  object TContato: TFDMemTable
+    FieldDefs = <>
+    IndexDefs = <>
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired, uvAutoCommitUpdates]
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.AutoCommitUpdates = True
+    StoreDefs = True
+    Left = 172
+    Top = 127
+    object TContatocodigo: TIntegerField
+      FieldName = 'codigo'
+    end
+    object TContatocodigoPessoa: TIntegerField
+      FieldName = 'codigoPessoa'
+    end
+    object TContatocodigoTipoDocumento: TIntegerField
+      FieldName = 'codigoTipoDocumento'
+    end
+    object TContatotipoDocumento: TStringField
+      FieldName = 'tipoDocumento'
+    end
+    object TContatomascaraCararteres: TStringField
+      FieldName = 'mascaraCararteres'
+      Size = 30
+    end
+    object TContatodocumento: TStringField
+      FieldName = 'documento'
+      OnGetText = TContatodocumentoGetText
+    end
+    object TContatonome: TStringField
+      FieldName = 'nome'
+      Size = 150
+    end
+    object TContatodataNascimento: TStringField
+      FieldName = 'dataNascimento'
+      Size = 10
+    end
+    object TContatofuncao: TStringField
+      FieldName = 'funcao'
+      Size = 150
+    end
+    object TContatotelefone: TStringField
+      FieldName = 'telefone'
+      OnGetText = telefoneGetText
+    end
+    object TContatoemail: TStringField
+      FieldName = 'email'
+      Size = 250
+    end
+    object TContatoobservacao: TMemoField
+      FieldName = 'observacao'
+      OnGetText = MemoGetText
+      BlobType = ftMemo
+    end
+    object TContatocadastradoPor: TStringField
+      FieldName = 'cadastradoPor'
+      Size = 150
+    end
+    object TContatoalteradoPor: TStringField
+      FieldName = 'alteradoPor'
+      Size = 150
+    end
+    object TContatodataCadastro: TStringField
+      FieldName = 'dataCadastro'
+    end
+    object TContatodataAlteracao: TStringField
+      FieldName = 'dataAlteracao'
+    end
+    object TContatostatus: TStringField
+      FieldName = 'status'
+      Size = 1
     end
   end
 end

@@ -25,7 +25,6 @@ object FDMTipoDocumento: TFDMTipoDocumento
     end
     object TTipoDocumentodescricao: TStringField
       FieldName = 'descricao'
-      Size = 10
     end
     object TTipoDocumentoqtdeCaracteres: TIntegerField
       FieldName = 'qtdeCaracteres'

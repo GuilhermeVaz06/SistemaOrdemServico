@@ -24,7 +24,7 @@ object FClienteFornecedor: TFClienteFornecedor
     Top = 0
     Width = 1363
     Height = 614
-    ActivePage = TBCadastro
+    ActivePage = TBConsulta
     Align = alClient
     TabOrder = 0
     object TBCadastro: TTabSheet
@@ -240,7 +240,7 @@ object FClienteFornecedor: TFClienteFornecedor
         Top = 172
         Width = 1355
         Height = 341
-        ActivePage = TBEndereco
+        ActivePage = TBOutrosDocumentos
         Align = alClient
         TabOrder = 2
         object TBOutrosDocumentos: TTabSheet
@@ -604,11 +604,195 @@ object FClienteFornecedor: TFClienteFornecedor
             Enabled = False
             TabOrder = 2
             OnClick = CBInativoEnderecoClick
+            ExplicitTop = 294
           end
         end
         object TBContato: TTabSheet
           Caption = 'Outros Contatos'
           ImageIndex = 2
+          object Panel4: TPanel
+            Left = 0
+            Top = 0
+            Width = 1347
+            Height = 29
+            Align = alTop
+            BevelOuter = bvNone
+            TabOrder = 0
+            ExplicitTop = 8
+            object BCadastrarContato: TSpeedButton
+              Left = 0
+              Top = 0
+              Width = 96
+              Height = 29
+              Align = alLeft
+              Caption = 'Cadastrar'
+              ImageIndex = 0
+              Images = FMenuPrincipal.ImageList1
+              Enabled = False
+              OnClick = BCadastrarContatoClick
+              ExplicitLeft = 8
+              ExplicitHeight = 41
+            end
+            object BExcluirContato: TSpeedButton
+              Left = 96
+              Top = 0
+              Width = 96
+              Height = 29
+              Align = alLeft
+              Caption = 'Excluir'
+              ImageIndex = 3
+              Images = FMenuPrincipal.ImageList1
+              Enabled = False
+              OnClick = BExcluirContatoClick
+              ExplicitLeft = 1
+              ExplicitTop = -1
+              ExplicitHeight = 39
+            end
+          end
+          object GContato: TDBGrid
+            Left = 0
+            Top = 29
+            Width = 1347
+            Height = 264
+            Align = alClient
+            DataSource = FDMClienteFornecedor.DContato
+            Enabled = False
+            Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+            ReadOnly = True
+            TabOrder = 1
+            TitleFont.Charset = DEFAULT_CHARSET
+            TitleFont.Color = clWindowText
+            TitleFont.Height = -13
+            TitleFont.Name = 'Tahoma'
+            TitleFont.Style = []
+            OnDrawColumnCell = GDadosDrawColumnCell
+            OnDblClick = GContatoDblClick
+            OnTitleClick = GDadosTitleClick
+            Columns = <
+              item
+                Expanded = False
+                FieldName = 'codigo'
+                Title.Alignment = taCenter
+                Title.Caption = 'Codigo'
+                Width = 65
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'tipoDocumento'
+                Title.Alignment = taCenter
+                Title.Caption = 'Tipo Documento'
+                Width = 100
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'documento'
+                Title.Alignment = taCenter
+                Title.Caption = 'Documento'
+                Width = 100
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'nome'
+                Title.Alignment = taCenter
+                Title.Caption = 'Nome'
+                Width = 100
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'dataNascimento'
+                Title.Alignment = taCenter
+                Title.Caption = 'Data Nascimento'
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'funcao'
+                Title.Alignment = taCenter
+                Title.Caption = 'Fun'#231#227'o'
+                Width = 100
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'telefone'
+                Title.Alignment = taCenter
+                Title.Caption = 'Telefone'
+                Width = 100
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'observacao'
+                Title.Alignment = taCenter
+                Title.Caption = 'Observa'#231#227'o'
+                Width = 102
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'email'
+                Title.Alignment = taCenter
+                Title.Caption = 'Email'
+                Width = 100
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'cadastradoPor'
+                Title.Alignment = taCenter
+                Title.Caption = 'Cadastrado Por'
+                Width = 143
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'alteradoPor'
+                Title.Alignment = taCenter
+                Title.Caption = 'Alterado Por'
+                Width = 130
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'dataCadastro'
+                Title.Alignment = taCenter
+                Title.Caption = 'Data Cadastro'
+                Width = 134
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'dataAlteracao'
+                Title.Alignment = taCenter
+                Title.Caption = 'Data Altera'#231#227'o'
+                Width = 153
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'status'
+                Title.Alignment = taCenter
+                Title.Caption = 'Status'
+                Width = 61
+                Visible = True
+              end>
+          end
+          object CBInativoContato: TCheckBox
+            Left = 0
+            Top = 293
+            Width = 1347
+            Height = 17
+            Align = alBottom
+            Caption = 'Mostrar Inativos'
+            Enabled = False
+            TabOrder = 2
+            OnClick = CBInativoContatoClick
+            ExplicitTop = 294
+          end
         end
       end
       object PDados: TPanel
@@ -699,7 +883,7 @@ object FClienteFornecedor: TFClienteFornecedor
           OnExit = DBDocumentoExit
         end
         object DBLookupComboBox1: TDBLookupComboBox
-          Left = 90
+          Left = 91
           Top = 17
           Width = 102
           Height = 24

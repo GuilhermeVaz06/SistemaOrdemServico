@@ -401,6 +401,46 @@ begin
       begin
         erros.Add('O nome deve conter no maximo 150 caracteres validos!');
       end;
+
+      if (tipoPessoa = tpUsuario) then
+      begin
+        if (pessoa.senha = '') then
+        begin
+          erros.Add('A senha deve ser informada!');
+        end
+        else if (Length(pessoa.senha) < 6) then
+        begin
+          erros.Add('A senha deve conter no minimo 6 caracteres validos!');
+        end
+        else if (Length(pessoa.senha) > 250) then
+        begin
+          erros.Add('A senha deve conter no maximo 250 caracteres validos!');
+        end;
+      end;
+    end;
+
+    if (pessoa.telefone <> '') then
+    begin
+      if (Length(pessoa.telefone) < 8) then
+      begin
+        erros.Add('O telefone deve conter no minimo 8 caracteres validos!');
+      end
+      else if (Length(pessoa.telefone) > 20) then
+      begin
+        erros.Add('O telefone deve conter no maximo 20 caracteres validos!');
+      end;
+    end;
+
+    if (pessoa.email <> '') then
+    begin
+      if (Length(pessoa.email) < 8) then
+      begin
+        erros.Add('O email deve conter no minimo 8 caracteres validos!');
+      end
+      else if (Length(pessoa.email) > 250) then
+      begin
+        erros.Add('O email deve conter no maximo 250 caracteres validos!');
+      end;
     end;
 
     if (erros.Text = '') then
@@ -605,6 +645,46 @@ begin
       else if (Length(Trim(pessoa.razaoSocial)) > 150) then
       begin
         erros.Add('O nome deve conter no maximo 150 caracteres validos!');
+      end;
+
+      if (tipoPessoa = tpUsuario) then
+      begin
+        if (pessoa.senha = '') then
+        begin
+          erros.Add('A senha deve ser informada!');
+        end
+        else if (Length(pessoa.senha) < 6) then
+        begin
+          erros.Add('A senha deve conter no minimo 6 caracteres validos!');
+        end
+        else if (Length(pessoa.senha) > 250) then
+        begin
+          erros.Add('A senha deve conter no maximo 250 caracteres validos!');
+        end;
+      end;
+    end;
+
+    if (pessoa.telefone = '') then
+    begin
+      if (Length(pessoa.telefone) < 8) then
+      begin
+        erros.Add('O telefone deve conter no minimo 8 caracteres validos!');
+      end
+      else if (Length(pessoa.telefone) > 20) then
+      begin
+        erros.Add('O telefone deve conter no maximo 20 caracteres validos!');
+      end;
+    end;
+
+    if (pessoa.email = '') then
+    begin
+      if (Length(pessoa.email) < 8) then
+      begin
+        erros.Add('O email deve conter no minimo 8 caracteres validos!');
+      end
+      else if (Length(pessoa.email) > 250) then
+      begin
+        erros.Add('O email deve conter no maximo 250 caracteres validos!');
       end;
     end;
 

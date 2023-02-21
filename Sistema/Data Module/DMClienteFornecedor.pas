@@ -80,17 +80,38 @@ type
     QPrioridadedescricao: TStringField;
     TOutroDocumentodataEmissao: TStringField;
     TOutroDocumentodataVencimento: TStringField;
+    DContato: TDataSource;
+    TContato: TFDMemTable;
+    TContatocodigo: TIntegerField;
+    TContatocodigoPessoa: TIntegerField;
+    TContatocodigoTipoDocumento: TIntegerField;
+    TContatotipoDocumento: TStringField;
+    TContatomascaraCararteres: TStringField;
+    TContatodocumento: TStringField;
+    TContatonome: TStringField;
+    TContatodataNascimento: TStringField;
+    TContatofuncao: TStringField;
+    TContatotelefone: TStringField;
+    TContatoemail: TStringField;
+    TContatocadastradoPor: TStringField;
+    TContatoalteradoPor: TStringField;
+    TContatodataCadastro: TStringField;
+    TContatodataAlteracao: TStringField;
+    TContatostatus: TStringField;
+    TContatoobservacao: TMemoField;
     procedure MemoGetText(Sender: TField; var Text: string;
       DisplayText: Boolean);
     procedure TClienteFornecedordocumentoGetText(Sender: TField; var Text: string;
       DisplayText: Boolean);
-    procedure TClienteFornecedortelefoneGetText(Sender: TField; var Text: string;
+    procedure telefoneGetText(Sender: TField; var Text: string;
       DisplayText: Boolean);
     procedure TClienteFornecedorAfterScroll(DataSet: TDataSet);
     procedure TOutroDocumentodocumentoGetText(Sender: TField; var Text: string;
       DisplayText: Boolean);
     procedure DataModuleCreate(Sender: TObject);
     procedure TEnderecocepGetText(Sender: TField; var Text: string;
+      DisplayText: Boolean);
+    procedure TContatodocumentoGetText(Sender: TField; var Text: string;
       DisplayText: Boolean);
   private
 
@@ -110,6 +131,10 @@ type
     function cadastrarEndereco: Boolean;
     function alterarEndereco: Boolean;
     function inativarEndereco: Boolean;
+    procedure consultarDadosContato(codigo: integer; mostrarErro: Boolean);
+    function cadastrarContato: Boolean;
+    function alterarContato: Boolean;
+    function inativarContato: Boolean;
   end;
 
 var
@@ -120,6 +145,58 @@ implementation
 uses UFuncao, UConexao, ClienteFornecedor;
 
 {$R *.dfm}
+
+function TFDMClienteFornecedor.alterarContato: Boolean;
+var
+  Conexao: TConexao;
+  json: TJSONValue;
+begin
+  Conexao := TConexao.Create;
+
+  Conexao.metodo := rmPUT;
+  Conexao.url := 'contato/' + IntToStrSenaoZero(TContatocodigoPessoa.Value) +
+                 '/' + IntToStrSenaoZero(TContatocodigo.Value);
+  Conexao.AtribuirBody('codigoTipoDocumento', IntToStrSenaoZero(TContatocodigoTipoDocumento.Value));
+  Conexao.AtribuirBody('documento', TContatodocumento.Value);
+  Conexao.AtribuirBody('nome',  TContatonome.Value);
+  Conexao.AtribuirBody('dataNascimento', TContatodataNascimento.Value);
+  Conexao.AtribuirBody('funcao',  TContatofuncao.Value);
+  Conexao.AtribuirBody('telefone',  TContatotelefone.Value);
+  Conexao.AtribuirBody('email',  TContatoemail.Value);
+  Conexao.AtribuirBody('observacao', TContatoobservacao.Value);
+  Conexao.AtribuirBody('status', TContatostatus.Value);
+  Conexao.Enviar;
+
+  if not (Conexao.status in[200..202]) then
+  begin
+    informar(Conexao.erro);
+    Result := False;
+  end
+  else
+  begin
+    json := converterJsonTextoJsonValue(Conexao.resposta);
+
+    if (Assigned(json)) then
+    begin
+      TContatocodigo.Value := json.GetValue<Integer>('codigo', 0);
+      TContatotipoDocumento.Value := json.GetValue<string>('tipoDocumento', '');
+      TContatomascaraCararteres.Value := json.GetValue<string>('mascaraCararteres', '');
+      TContatocadastradoPor.Value := json.GetValue<string>('cadastradoPor', '');
+      TContatoalteradoPor.Value := json.GetValue<string>('alteradoPor', '');
+      TContatodataCadastro.Value := json.GetValue<string>('dataCadastro', '');
+      TContatodataAlteracao.Value := json.GetValue<string>('dataAlteracao', '');
+      TContatostatus.Value := json.GetValue<string>('status', 'A');
+
+      Result := True;
+    end
+    else
+    begin
+      Result := False;
+    end;
+  end;
+
+  Conexao.Destroy;
+end;
 
 function TFDMClienteFornecedor.alterarEndereco: Boolean;
 var
@@ -260,6 +337,57 @@ begin
       TClienteFornecedordataCadastro.Value := json.GetValue<string>('dataCadastro', '');
       TClienteFornecedordataAlteracao.Value := json.GetValue<string>('dataAlteracao', '');
       TClienteFornecedorstatus.Value := json.GetValue<string>('status', 'A');
+
+      Result := True;
+    end
+    else
+    begin
+      Result := False;
+    end;
+  end;
+
+  Conexao.Destroy;
+end;
+
+function TFDMClienteFornecedor.cadastrarContato: Boolean;
+var
+  Conexao: TConexao;
+  json: TJSONValue;
+begin
+  Conexao := TConexao.Create;
+
+  Conexao.metodo := rmPOST;
+  Conexao.url := 'contato';
+  Conexao.AtribuirBody('codigoPessoa', IntToStrSenaoZero(TContatocodigoPessoa.Value));
+  Conexao.AtribuirBody('codigoTipoDocumento', IntToStrSenaoZero(TContatocodigoTipoDocumento.Value));
+  Conexao.AtribuirBody('documento', TContatodocumento.Value);
+  Conexao.AtribuirBody('nome',  TContatonome.Value);
+  Conexao.AtribuirBody('dataNascimento', TContatodataNascimento.Value);
+  Conexao.AtribuirBody('funcao',  TContatofuncao.Value);
+  Conexao.AtribuirBody('telefone',  TContatotelefone.Value);
+  Conexao.AtribuirBody('email',  TContatoemail.Value);
+  Conexao.AtribuirBody('observacao', TContatoobservacao.Value);
+  Conexao.Enviar;
+
+  if not (Conexao.status in[200..202]) then
+  begin
+    informar(Conexao.erro);
+    Result := False;
+  end
+  else
+  begin
+    json := converterJsonTextoJsonValue(Conexao.resposta);
+
+    if (Assigned(json)) then
+    begin
+      TContatocodigo.Value := json.GetValue<Integer>('codigo', 0);
+      TContatotipoDocumento.Value := json.GetValue<string>('tipoDocumento', '');
+      TContatomascaraCararteres.Value := json.GetValue<string>('mascaraCararteres', '');
+      TContatocadastradoPor.Value := json.GetValue<string>('cadastradoPor', '');
+      TContatoalteradoPor.Value := json.GetValue<string>('alteradoPor', '');
+      TContatodataCadastro.Value := json.GetValue<string>('dataCadastro', '');
+      TContatodataAlteracao.Value := json.GetValue<string>('dataAlteracao', '');
+      TContatostatus.Value := json.GetValue<string>('status', 'A');
 
       Result := True;
     end
@@ -499,6 +627,83 @@ begin
   Conexao.Destroy;
 end;
 
+procedure TFDMClienteFornecedor.consultarDadosContato(codigo: integer;
+  mostrarErro: Boolean);
+var
+  Conexao: TConexao;
+  master, item: TJSONArray;
+  json: TJSONValue;
+  limite, offset: integer;
+  continuar: Boolean;
+begin
+  if (TClienteFornecedorcodigo.Value > 0) then
+  begin
+    Conexao := TConexao.Create;
+
+    if (Assigned(FClienteFornecedor)) then
+    begin
+      if FClienteFornecedor.CBInativoContato.Checked then
+      begin
+        Conexao.AtribuirParametro('status', 'I');
+      end
+      else
+      begin
+        Conexao.AtribuirParametro('status', 'A');
+      end;
+    end;
+
+    if (codigo > 0) then
+    begin
+      Conexao.AtribuirParametro('codigo', IntToStrSenaoZero(codigo));
+    end;
+
+    dadosPessoaConsultados := TClienteFornecedorcodigo.Value;
+
+    Conexao.metodo := rmGET;
+    Conexao.url := 'contato/' + IntToStrSenaoZero(TClienteFornecedorcodigo.Value);
+    master := TJSONArray.Create;
+    limite := 500;
+    offset := 0;
+
+    repeat
+      Conexao.AtribuirParametro('limite', IntToStrSenaoZero(limite));
+      Conexao.AtribuirParametro('offset', IntToStrSenaoZero(offset));
+      Conexao.Enviar;
+      continuar := False;
+      offset := offset + limite;
+
+      if not (Conexao.status in[200..202]) and (mostrarErro) then
+      begin
+        informar(Conexao.erro);
+        Break;
+      end
+      else if (Conexao.status in[200..202]) then
+      begin
+        json := converterJsonTextoJsonValue(Conexao.resposta);
+        item := converterJsonValueJsonArray(json, 'dados');
+        continuar := json.GetValue<Boolean>('maisRegistros', False);
+        copiarItemJsonArray(item, master);
+      end
+      else if not (Conexao.status in[200..202]) and (mostrarErro = False) then
+      begin
+        Break;
+      end;
+    until not continuar;
+
+    if (Assigned(master)) and (master.Count > 0) then
+    begin
+      converterArrayJsonQuery(converterJsonArrayRestResponse(master), TContato);
+    end
+    else
+    begin
+      TContato.Close;
+      TContato.Open;
+    end;
+
+    Conexao.Destroy;
+  end;
+end;
+
 procedure TFDMClienteFornecedor.consultarDadosEndereco(codigo: integer;
   mostrarErro: Boolean);
 var
@@ -685,6 +890,40 @@ begin
   Conexao.Destroy;
 end;
 
+function TFDMClienteFornecedor.inativarContato: Boolean;
+var
+  Conexao: TConexao;
+  json: TJSONValue;
+begin
+  Conexao := TConexao.Create;
+
+  Conexao.metodo := rmDELETE;
+  Conexao.url := 'contato/' + IntToStrSenaoZero(TContatocodigoPessoa.Value) +
+                 '/' + IntToStrSenaoZero(TContatocodigo.Value);
+  Conexao.Enviar;
+
+  if not (Conexao.status in[200..202]) then
+  begin
+    informar(Conexao.erro);
+    Result := False;
+  end
+  else
+  begin
+    json := converterJsonTextoJsonValue(Conexao.resposta);
+
+    if (Assigned(json)) then
+    begin
+      Result := True;
+    end
+    else
+    begin
+      Result := False;
+    end;
+  end;
+
+  Conexao.Destroy;
+end;
+
 function TFDMClienteFornecedor.inativarEndereco: Boolean;
 var
   Conexao: TConexao;
@@ -768,6 +1007,7 @@ begin
     begin
       consultarDadosOutroDocumento(0, False);
       consultarDadosEndereco(0, False);
+      consultarDadosContato(0, False);
     end;
   end;
 end;
@@ -778,33 +1018,16 @@ begin
   Text := FormatMaskText(TClienteFornecedormascaraCaracteres.Value, TClienteFornecedordocumento.Value);
 end;
 
-procedure TFDMClienteFornecedor.TClienteFornecedortelefoneGetText(Sender: TField; var Text: string;
+procedure TFDMClienteFornecedor.TContatodocumentoGetText(Sender: TField;
+  var Text: string; DisplayText: Boolean);
+begin
+  Text := FormatMaskText(TContatomascaraCararteres.Value, TContatodocumento.Value);
+end;
+
+procedure TFDMClienteFornecedor.telefoneGetText(Sender: TField; var Text: string;
   DisplayText: Boolean);
 begin
-  if (Length(TClienteFornecedortelefone.Value) = 12) then
-  begin
-    Text := FormatMaskText('(999) 9 9999-9999;0', TClienteFornecedortelefone.Value);
-  end
-  else if (Length(TClienteFornecedortelefone.Value) = 11) then
-  begin
-    Text := FormatMaskText('(99) 9 9999-9999;0', TClienteFornecedortelefone.Value);
-  end
-  else if (Length(TClienteFornecedortelefone.Value) = 10) then
-  begin
-    Text := FormatMaskText('(99) 9999-9999;0', TClienteFornecedortelefone.Value);
-  end
-  else if (Length(TClienteFornecedortelefone.Value) = 9) then
-  begin
-    Text := FormatMaskText('9 9999-9999;0', TClienteFornecedortelefone.Value);
-  end
-  else if (Length(TClienteFornecedortelefone.Value) = 8) then
-  begin
-    Text := FormatMaskText('9999-9999;0', TClienteFornecedortelefone.Value);
-  end
-  else
-  begin
-    Text := TClienteFornecedortelefone.Value;
-  end;
+  Text := mascaraTelefone((Sender as TStringField).Value);
 end;
 
 procedure TFDMClienteFornecedor.TEnderecocepGetText(Sender: TField;
