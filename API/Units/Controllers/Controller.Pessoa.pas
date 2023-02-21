@@ -849,7 +849,7 @@ begin
 
       if Assigned(pessoaConsultado) then
       begin
-        resposta.AddPair('tipo', 'Exclusão de ' + classe);
+        resposta.AddPair('tipo', 'Inativação de ' + classe);
         resposta.AddPair('registrosAfetados', TJSONNumber.Create(pessoa.registrosAfetados));
         montarPessoa(pessoaConsultado, resposta);
         Res.Send<TJSONAncestor>(resposta.Clone).Status(200);
@@ -869,6 +869,103 @@ begin
     on E: Exception do
     begin
       mensagem := 'Erro não tratado ao inativar um' + classe + '!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro(UpperCase(classe) + '017', mensagem))));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
+    end;
+  end;
+
+  pessoa.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
+  limparVariaveis;
+  FreeAndNil(resposta);
+end;
+
+procedure excluirPessoa(Req: THorseRequest; Res: THorseResponse; Next: TProc; procedimento, classe: string; tipoPessoa: integer);
+var
+  erros: TStringList;
+  resposta: TJSONObject;
+  arrayResposta: TJSONArray;
+  pessoaConsultado: TPessoa;
+  i: integer;
+  resultado: Boolean;
+  mensagem: string;
+  codigoLog: integer;
+begin
+  continuar := True;
+  resposta := TJSONObject.Create;
+  codigoLog := gerarLogPessoa(Req, Res, procedimento, classe, resposta);
+
+  if (continuar) then
+  try
+    token := Req.Headers['token'];
+    pessoa.id := strToIntZero(Req.Params['id']);
+  except
+    on E: Exception do
+    begin
+      mensagem := 'Erro ao recuperar dados da requisição: ' + e.Message + '!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(JsonErro(UpperCase(classe) + '015', mensagem))));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+      continuar := False;
+    end;
+  end;
+
+  if (continuar) and (verificarToken(res, classe, resposta)) then
+  try
+    erros := TStringList.Create;
+    arrayResposta := TJSONArray.Create;
+
+    if not (pessoa.id > 0) then
+    begin
+      erros.Add('O Codigo do ' + classe + ' deve ser informado, ou deve ser um numero inteiro valido!');
+    end;
+
+    if (erros.Text = '') then
+    begin
+      pessoaConsultado := pessoa.consultarChave();
+
+      if not (Assigned(pessoaConsultado)) then
+      begin
+        erros.Add('Nenhum ' + classe + ' encontrado com o codigo [' + IntToStrSenaoZero(pessoa.id) + ']!');
+      end
+      else
+      begin
+        pessoaConsultado.Destroy;
+      end;
+    end;
+
+    if (erros.Text <> '') then
+    begin
+      for i := 0 to erros.Count - 1 do
+      begin
+        arrayResposta.Add(UFuncao.JsonErro(UpperCase(classe) + '016',  erros[i]));
+      end;
+
+      resposta.AddPair(TJSONPair.Create('Erros', arrayResposta));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+    end
+    else
+    begin
+      FreeAndNil(arrayResposta);
+      resultado := pessoa.excluirCadastro;
+
+      if (resultado) then
+      begin
+        resposta.AddPair('tipo', 'Exclusão de ' + classe);
+        resposta.AddPair('registrosAfetados', TJSONNumber.Create(pessoa.registrosAfetados));
+        Res.Send<TJSONAncestor>(resposta.Clone).Status(200);
+      end
+      else
+      begin
+        mensagem := 'Erro não tratado ao excluir um ' + classe + '!';
+        resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro(UpperCase(classe) + '017', mensagem))));
+        Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
+      end;
+    end;
+
+    FreeAndNil(erros);
+  except
+    on E: Exception do
+    begin
+      mensagem := 'Erro não tratado ao excluir um ' + classe + '!';
       resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro(UpperCase(classe) + '017', mensagem))));
       Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
     end;
@@ -899,6 +996,11 @@ begin
   inativarPessoa(Req, Res, Next, 'inativarCliente', 'Cliente', tpCliente);
 end;
 
+procedure excluirCliente(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+begin
+  excluirPessoa(Req, Res, Next, 'excluirCliente', 'Cliente', tpCliente);
+end;
+
 procedure Registry;
 begin
   criarConexao;
@@ -906,6 +1008,7 @@ begin
   THorse.Post('/cliente', cadastrarCliente);
   THorse.Put('/cliente/:id', alterarCliente);
   THorse.Delete('/cliente/:id', inativarCliente);
+  THorse.Delete('/clienteExcluir/:id', excluirCliente);
 end;
 
 end.

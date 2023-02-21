@@ -24,7 +24,7 @@ object FClienteFornecedor: TFClienteFornecedor
     Top = 0
     Width = 1363
     Height = 614
-    ActivePage = TBConsulta
+    ActivePage = TBCadastro
     Align = alClient
     TabOrder = 0
     object TBCadastro: TTabSheet
@@ -240,7 +240,7 @@ object FClienteFornecedor: TFClienteFornecedor
         Top = 172
         Width = 1355
         Height = 341
-        ActivePage = TBOutrosDocumentos
+        ActivePage = TBContato
         Align = alClient
         TabOrder = 2
         object TBOutrosDocumentos: TTabSheet

@@ -60,6 +60,7 @@ type TPessoa = class
     procedure atualizarLog(codigo, status: Integer; resposta: string);
 
     function consultar: TArray<TPessoa>;
+    function excluirCadastro: Boolean;
     function consultarChave: TPessoa;
     function existeRegistro: TPessoa;
     function cadastrarPessoa: TPessoa;
@@ -455,6 +456,77 @@ begin
   end;
 
   inherited;
+end;
+
+function TPessoa.excluirCadastro: Boolean;
+var
+  sql: TStringList;
+  resposta: boolean;
+begin
+  sql := TStringList.Create;
+  resposta := True;
+
+  if (resposta = True) then
+  try
+    sql.Clear;
+    sql.Add('DELETE FROM pessoa_contato');
+    sql.Add(' WHERE pessoa_contato.CODIGO_PESSOA = ' + IntToStrSenaoZero(FCodigo));
+    sql.Add('   AND pessoa_contato.`STATUS` = ''I'' ');
+    FConexao.executarComandoDML(sql.Text);
+    resposta := True;
+  except
+    on E: Exception do
+    begin
+      resposta := False;
+    end;
+  end;
+
+  if (resposta = True) then
+  try
+    sql.Clear;
+    sql.Add('DELETE FROM pessoa_endereco');
+    sql.Add(' WHERE pessoa_endereco.CODIGO_PESSOA = ' + IntToStrSenaoZero(FCodigo));
+    sql.Add('   AND pessoa_endereco.`STATUS` = ''I'' ');
+    FConexao.executarComandoDML(sql.Text);
+    resposta := True;
+  except
+    on E: Exception do
+    begin
+      resposta := False;
+    end;
+  end;
+
+  if (resposta = True) then
+  try
+    sql.Clear;
+    sql.Add('DELETE FROM pessoa_outro_documento');
+    sql.Add(' WHERE pessoa_outro_documento.CODIGO_PESSOA = ' + IntToStrSenaoZero(FCodigo));
+    sql.Add('   AND pessoa_outro_documento.`STATUS` = ''I'' ');
+    FConexao.executarComandoDML(sql.Text);
+    resposta := True;
+  except
+    on E: Exception do
+    begin
+      resposta := False;
+    end;
+  end;
+
+  if (resposta = True) then
+  try
+    sql.Clear;
+    sql.Add('DELETE FROM `pessoa`');
+    sql.Add(' WHERE `pessoa`.CODIGO_PESSOA = ' + IntToStrSenaoZero(FCodigo));
+    FConexao.executarComandoDML(sql.Text);
+    resposta := True;
+  except
+    on E: Exception do
+    begin
+      resposta := False;
+    end;
+  end;
+
+  Result := resposta;
+  FreeAndNil(sql);
 end;
 
 function TPessoa.existeRegistro: TPessoa;

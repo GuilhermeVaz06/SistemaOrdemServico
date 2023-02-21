@@ -107,6 +107,7 @@ type
   private
     { Private declarations }
     function validarCampos: boolean;
+    function confirmarCadastro(confirmar: boolean): Boolean;
   public
     { Public declarations }
     consulta: Boolean;
@@ -144,7 +145,11 @@ end;
 
 procedure TFClienteFornecedor.BCadastrarContatoClick(Sender: TObject);
 begin
-  if (FDMClienteFornecedor.TClienteFornecedorcodigo.Value > 0) then
+  if not (FDMClienteFornecedor.TClienteFornecedorcodigo.Value > 0) and (confirmarCadastro(False) = False) then
+  begin
+    Exit;
+  end;
+
   try
     Application.CreateForm(TFContato, FContato);
 
@@ -158,16 +163,16 @@ begin
     FContato.ShowModal;
   finally
     FreeAndNil(FContato);
-  end
-  else
-  begin
-    informar('Antes de inserir um endereço confirme o cadastro do ' + FDMClienteFornecedor.tipoCadastro);
   end;
 end;
 
 procedure TFClienteFornecedor.BCadastrarDocumentoClick(Sender: TObject);
 begin
-  if (FDMClienteFornecedor.TClienteFornecedorcodigo.Value > 0) then
+  if not (FDMClienteFornecedor.TClienteFornecedorcodigo.Value > 0) and (confirmarCadastro(False) = False) then
+  begin
+    Exit;
+  end;
+
   try
     Application.CreateForm(TFOutroDocumento, FOutroDocumento);
 
@@ -182,16 +187,16 @@ begin
     FOutroDocumento.ShowModal;
   finally
     FreeAndNil(FOutroDocumento);
-  end
-  else
-  begin
-    informar('Antes de inserir um outro documento confirme o cadastro do ' + FDMClienteFornecedor.tipoCadastro);
   end;
 end;
 
 procedure TFClienteFornecedor.BCadastrarEnderecoClick(Sender: TObject);
 begin
-  if (FDMClienteFornecedor.TClienteFornecedorcodigo.Value > 0) then
+  if not (FDMClienteFornecedor.TClienteFornecedorcodigo.Value > 0) and (confirmarCadastro(False) = False) then
+  begin
+    Exit;
+  end;
+
   try
     Application.CreateForm(TFEndereco, FEndereco);
 
@@ -204,44 +209,33 @@ begin
     FEndereco.ShowModal;
   finally
     FreeAndNil(FEndereco);
-  end
-  else
-  begin
-    informar('Antes de inserir um endereço confirme o cadastro do ' + FDMClienteFornecedor.tipoCadastro);
   end;
 end;
 
 procedure TFClienteFornecedor.BCancelarClick(Sender: TObject);
 begin
+  CBInativoContato.Checked := False;
+  CBInativoEndereco.Checked := False;
+  CBInativoOutroDocumento.Checked := False;
+
+  if (FDMClienteFornecedor.TClienteFornecedor.State = dsInsert) and
+     (FDMClienteFornecedor.TClienteFornecedorcodigo.Value > 0) and
+     ((FDMClienteFornecedor.TOutroDocumento.RecordCount <= 0) and
+      (FDMClienteFornecedor.TContato.RecordCount <= 0) and
+      (FDMClienteFornecedor.TEndereco.RecordCount <= 0)) and
+     (FDMClienteFornecedor.excluirPessoa = False) then
+  begin
+    informar('Erro ao cancelar cadastro, contate o suporte!');
+  end;
+
   Painel.SetFocus;
   FDMClienteFornecedor.TClienteFornecedor.Cancel;
   UFuncao.desativaBotoes(self);
 end;
 
 procedure TFClienteFornecedor.BConfirmarClick(Sender: TObject);
-var
-  resposta: Boolean;
 begin
-  Painel.SetFocus;
-  resposta := False;
-
-  if (validarCampos) then
-  begin
-    if (FDMClienteFornecedor.TClienteFornecedor.State = dsInsert) then
-    begin
-      resposta := FDMClienteFornecedor.cadastrarClienteFornecedor;
-    end
-    else if (FDMClienteFornecedor.TClienteFornecedor.State = dsEdit) then
-    begin
-      resposta := FDMClienteFornecedor.alterarClienteFornecedor;
-    end;
-
-    if (resposta) then
-    begin
-      FDMClienteFornecedor.TClienteFornecedor.Post;
-      UFuncao.desativaBotoes(self);
-    end;
-  end;
+  confirmarCadastro(True);
 end;
 
 procedure TFClienteFornecedor.BConsultarClick(Sender: TObject);
@@ -375,6 +369,45 @@ end;
 procedure TFClienteFornecedor.CBMostrarInativoClick(Sender: TObject);
 begin
   BConsultarClick(nil);
+end;
+
+function TFClienteFornecedor.confirmarCadastro(confirmar: boolean): Boolean;
+var
+  resposta: Boolean;
+begin
+  Painel.SetFocus;
+  resposta := False;
+
+  if (validarCampos) then
+  begin
+    if (FDMClienteFornecedor.TClienteFornecedor.State = dsInsert) then
+    begin
+      resposta := FDMClienteFornecedor.cadastrarClienteFornecedor;
+    end
+    else if (FDMClienteFornecedor.TClienteFornecedor.State = dsEdit) then
+    begin
+      resposta := FDMClienteFornecedor.alterarClienteFornecedor;
+    end;
+
+    if (FDMClienteFornecedor.TClienteFornecedor.State = dsInsert) and
+       (confirmar) and
+       ((FDMClienteFornecedor.TOutroDocumento.RecordCount <= 0) and
+        (FDMClienteFornecedor.TContato.RecordCount <= 0) and
+        (FDMClienteFornecedor.TEndereco.RecordCount <= 0)) and
+       (UFuncao.confirmar('Nenhum item (endereço, outro documento ou contato)' +
+                          ' foi adicionado a esse ' + FDMClienteFornecedor.tipoCadastro  +
+                          ' realmente deseja continuar?') = False) then
+    begin
+//   se cair aqui não faz nada
+    end
+    else if (resposta) and (confirmar) then
+    begin
+      FDMClienteFornecedor.TClienteFornecedor.Post;
+      UFuncao.desativaBotoes(self);
+    end;
+  end;
+
+  Result := resposta;
 end;
 
 procedure TFClienteFornecedor.DBDocumentoExit(Sender: TObject);

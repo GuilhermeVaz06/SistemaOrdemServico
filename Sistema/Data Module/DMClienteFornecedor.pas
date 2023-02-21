@@ -135,6 +135,7 @@ type
     function cadastrarContato: Boolean;
     function alterarContato: Boolean;
     function inativarContato: Boolean;
+    function excluirPessoa: Boolean;
   end;
 
 var
@@ -636,7 +637,7 @@ var
   limite, offset: integer;
   continuar: Boolean;
 begin
-  if (TClienteFornecedorcodigo.Value > 0) then
+  if (TClienteFornecedorcodigo.Value > 0) or (TClienteFornecedor.State = dsInsert) then
   begin
     Conexao := TConexao.Create;
 
@@ -713,7 +714,7 @@ var
   limite, offset: integer;
   continuar: Boolean;
 begin
-  if (TClienteFornecedorcodigo.Value > 0) then
+  if (TClienteFornecedorcodigo.Value > 0) or (TClienteFornecedor.State = dsInsert) then
   begin
     Conexao := TConexao.Create;
 
@@ -789,7 +790,7 @@ var
   limite, offset: integer;
   continuar: Boolean;
 begin
-  if (TClienteFornecedorcodigo.Value > 0) then
+  if (TClienteFornecedorcodigo.Value > 0) or (TClienteFornecedor.State = dsInsert) then
   begin
     Conexao := TConexao.Create;
 
@@ -1113,6 +1114,30 @@ begin
 
   converterArrayJsonQuery(converterJsonArrayRestResponse(jsonArray), QPrioridade);
   QPrioridade.Active;
+end;
+
+function TFDMClienteFornecedor.excluirPessoa: Boolean;
+var
+  Conexao: TConexao;
+  json: TJSONValue;
+begin
+  Conexao := TConexao.Create;
+
+  Conexao.metodo := rmDELETE;
+  Conexao.url := tipoCadastro + 'Excluir/' + IntToStrSenaoZero(TClienteFornecedorcodigo.Value);
+  Conexao.Enviar;
+
+  if not (Conexao.status in[200..202]) then
+  begin
+    informar(Conexao.erro);
+    Result := False;
+  end
+  else
+  begin
+    Result := True;
+  end;
+
+  Conexao.Destroy;
 end;
 
 end.
