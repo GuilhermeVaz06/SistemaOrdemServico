@@ -46,6 +46,10 @@ object FDMClienteFornecedor: TFDMClienteFornecedor
       FieldName = 'razaoSocial'
       Size = 150
     end
+    object TClienteFornecedornome: TStringField
+      FieldName = 'nome'
+      Size = 150
+    end
     object TClienteFornecedornomeFantasia: TStringField
       FieldName = 'nomeFantasia'
       Size = 150

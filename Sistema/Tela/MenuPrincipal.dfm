@@ -69,6 +69,7 @@ object FMenuPrincipal: TFMenuPrincipal
       end
       object usuario1: TMenuItem
         Caption = 'Usuario'
+        OnClick = usuario1Click
       end
       object pais1: TMenuItem
         Caption = 'Pa'#237's'

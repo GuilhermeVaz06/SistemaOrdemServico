@@ -13,11 +13,11 @@ type
     TBConsulta: TTabSheet;
     Panel3: TPanel;
     BConsultar: TSpeedButton;
-    Label10: TLabel;
+    LConsultaRazaoSocial: TLabel;
     ERazaoSocial: TEdit;
     GDados: TDBGrid;
     CBMostrarInativo: TCheckBox;
-    Label14: TLabel;
+    LConsultaNomeFantasia: TLabel;
     ENomeFantasia: TEdit;
     Painel: TPanel;
     BFechar: TSpeedButton;
@@ -49,16 +49,16 @@ type
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
-    Label8: TLabel;
-    Label9: TLabel;
+    LRazaoSocial: TLabel;
+    LNomeFantasia: TLabel;
     Label11: TLabel;
     Label12: TLabel;
     Label13: TLabel;
     ECodigo: TDBEdit;
     DBDocumento: TDBEdit;
-    DBLookupComboBox1: TDBLookupComboBox;
-    DBEdit1: TDBEdit;
-    DBEdit2: TDBEdit;
+    DBLDocumento: TDBLookupComboBox;
+    DBRazaoSocial: TDBEdit;
+    DBNomeFantasia: TDBEdit;
     DBEdit3: TDBEdit;
     DBEdit4: TDBEdit;
     DBMemo1: TDBMemo;
@@ -89,7 +89,7 @@ type
     procedure CBMostrarInativoClick(Sender: TObject);
     procedure GDadosDblClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
-    procedure DBLookupComboBox1Exit(Sender: TObject);
+    procedure DBLDocumentoExit(Sender: TObject);
     procedure DBDocumentoExit(Sender: TObject);
     procedure BCadastrarDocumentoClick(Sender: TObject);
     procedure BRemoverDocumentoClick(Sender: TObject);
@@ -132,15 +132,45 @@ begin
   begin
     UFuncao.desativaBotoes(self);
     FDMClienteFornecedor.TClienteFornecedor.Edit;
-    PCDados.ActivePage := TBOutrosDocumentos;
+
+    if (FDMClienteFornecedor.tipoCadastro = 'usuario') then
+    begin
+      PCDados.ActivePage := TBEndereco;
+    end
+    else
+    begin
+      PCDados.ActivePage := TBOutrosDocumentos;
+    end;
   end;
 end;
 
 procedure TFClienteFornecedor.BCadastrarClick(Sender: TObject);
 begin
   UFuncao.desativaBotoes(self);
-  FDMClienteFornecedor.TClienteFornecedor.Append;
-  PCDados.ActivePage := TBOutrosDocumentos;
+
+  with FDMClienteFornecedor do
+  begin
+    TClienteFornecedor.Append;
+
+    if (tipoCadastro = 'usuario') then
+    begin
+      PCDados.ActivePage := TBEndereco;
+
+      if (QTipoDocumento.Locate('descricao', 'CPF', [loCaseInsensitive])) then
+      begin
+        TClienteFornecedorcodigoTipoDocumento.Value := QTipoDocumentocodigo.Value;
+        DBLDocumentoExit(nil);
+      end
+      else
+      begin
+        informar('Tipo documento "CPF" não localizado, contate o suporte!');
+      end;
+    end
+    else
+    begin
+      PCDados.ActivePage := TBOutrosDocumentos;
+    end;
+  end;
 end;
 
 procedure TFClienteFornecedor.BCadastrarContatoClick(Sender: TObject);
@@ -374,19 +404,31 @@ end;
 function TFClienteFornecedor.confirmarCadastro(confirmar: boolean): Boolean;
 var
   resposta: Boolean;
+  mensagem: string;
 begin
   Painel.SetFocus;
   resposta := False;
 
   if (validarCampos) then
   begin
-    if (FDMClienteFornecedor.TClienteFornecedor.State = dsInsert) then
+    if (FDMClienteFornecedor.TClienteFornecedor.State = dsInsert) and
+       (FDMClienteFornecedor.TClienteFornecedorcodigo.Value <= 0) then
     begin
       resposta := FDMClienteFornecedor.cadastrarClienteFornecedor;
     end
-    else if (FDMClienteFornecedor.TClienteFornecedor.State = dsEdit) then
+    else if (FDMClienteFornecedor.TClienteFornecedor.State = dsEdit) or
+       (FDMClienteFornecedor.TClienteFornecedorcodigo.Value > 0) then
     begin
       resposta := FDMClienteFornecedor.alterarClienteFornecedor;
+    end;
+
+    if (FDMClienteFornecedor.tipoCadastro <> 'usuario') then
+    begin
+      mensagem := 'Nenhum item (endereço, outro documento ou contato)';
+    end
+    else
+    begin
+      mensagem := 'Nenhum endereço';
     end;
 
     if (FDMClienteFornecedor.TClienteFornecedor.State = dsInsert) and
@@ -394,8 +436,7 @@ begin
        ((FDMClienteFornecedor.TOutroDocumento.RecordCount <= 0) and
         (FDMClienteFornecedor.TContato.RecordCount <= 0) and
         (FDMClienteFornecedor.TEndereco.RecordCount <= 0)) and
-       (UFuncao.confirmar('Nenhum item (endereço, outro documento ou contato)' +
-                          ' foi adicionado a esse ' + FDMClienteFornecedor.tipoCadastro  +
+       (UFuncao.confirmar(mensagem + ' foi adicionado a esse ' + FDMClienteFornecedor.tipoCadastro  +
                           ' realmente deseja continuar?') = False) then
     begin
 //   se cair aqui não faz nada
@@ -421,7 +462,7 @@ begin
   end;
 end;
 
-procedure TFClienteFornecedor.DBLookupComboBox1Exit(Sender: TObject);
+procedure TFClienteFornecedor.DBLDocumentoExit(Sender: TObject);
 begin
   with FDMClienteFornecedor do
   begin
@@ -450,9 +491,34 @@ begin
 end;
 
 procedure TFClienteFornecedor.FormShow(Sender: TObject);
+var
+  i: Integer;
 begin
   PCTela.ActivePage := TBConsulta;
-  PCDados.ActivePage := TBOutrosDocumentos;
+
+  if (FDMClienteFornecedor.tipoCadastro = 'usuario') then
+  begin
+    PCDados.ActivePage := TBEndereco;
+
+    for i := 0 to GDados.Columns.Count - 1 do
+    begin
+      if (GDados.Columns.Items[i].FieldName = 'razaoSocial') or
+         (GDados.Columns.Items[i].FieldName = 'nomeFantasia') then
+      begin
+        GDados.Columns.Items[i].Visible := False;
+      end
+      else if (GDados.Columns.Items[i].FieldName = 'nome') then
+      begin
+        GDados.Columns.Items[i].Visible := True;
+        GDados.Columns.Items[i].Width := 117;
+      end;
+    end;
+  end
+  else
+  begin
+    PCDados.ActivePage := TBOutrosDocumentos;
+  end;
+
 
   FDMClienteFornecedor.consultarTipoDocumento;
   BConsultarClick(nil);
@@ -544,30 +610,61 @@ var
 begin
   mensagem := TStringList.Create;
 
-  if (FDMClienteFornecedor.TClienteFornecedorrazaoSocial.Value = '') then
+  if (FDMClienteFornecedor.tipoCadastro <> 'usuario') then
   begin
-    mensagem.Add('A Razão Social deve ser informada!');
-  end
-  else if (Length(Trim(FDMClienteFornecedor.TClienteFornecedorrazaoSocial.Value)) <= 2) then
-  begin
-    mensagem.Add('A Razão Social deve conter no minimo 2 caracteres validos!');
-  end
-  else if (Length(Trim(FDMClienteFornecedor.TClienteFornecedorrazaoSocial.Value)) > 150) then
-  begin
-    mensagem.Add('A Razão Social deve conter no maximo 150 caracteres validos!');
-  end;
+    if (FDMClienteFornecedor.TClienteFornecedorrazaoSocial.Value = '') then
+    begin
+      mensagem.Add('A Razão Social deve ser informada!');
+    end
+    else if (Length(Trim(FDMClienteFornecedor.TClienteFornecedorrazaoSocial.Value)) <= 2) then
+    begin
+      mensagem.Add('A Razão Social deve conter no minimo 2 caracteres validos!');
+    end
+    else if (Length(Trim(FDMClienteFornecedor.TClienteFornecedorrazaoSocial.Value)) > 150) then
+    begin
+      mensagem.Add('A Razão Social deve conter no maximo 150 caracteres validos!');
+    end;
 
-  if (FDMClienteFornecedor.TClienteFornecedornomeFantasia.Value = '') then
-  begin
-    mensagem.Add('O Nome fantasia deve ser informado!');
+    if (FDMClienteFornecedor.TClienteFornecedornomeFantasia.Value = '') then
+    begin
+      mensagem.Add('O Nome fantasia deve ser informado!');
+    end
+    else if (Length(Trim(FDMClienteFornecedor.TClienteFornecedornomeFantasia.Value)) <= 2) then
+    begin
+      mensagem.Add('O Nome fantasia deve conter no minimo 2 caracteres validos!');
+    end
+    else if (Length(Trim(FDMClienteFornecedor.TClienteFornecedornomeFantasia.Value)) > 150) then
+    begin
+      mensagem.Add('O Nome fantasia deve conter no maximo 150 caracteres validos!');
+    end;
   end
-  else if (Length(Trim(FDMClienteFornecedor.TClienteFornecedornomeFantasia.Value)) <= 2) then
+  else
   begin
-    mensagem.Add('O Nome fantasia deve conter no minimo 2 caracteres validos!');
-  end
-  else if (Length(Trim(FDMClienteFornecedor.TClienteFornecedornomeFantasia.Value)) > 150) then
-  begin
-    mensagem.Add('O Nome fantasia deve conter no maximo 150 caracteres validos!');
+    if (FDMClienteFornecedor.TClienteFornecedornome.Value = '') then
+    begin
+      mensagem.Add('O nome deve ser informado!');
+    end
+    else if (Length(Trim(FDMClienteFornecedor.TClienteFornecedornome.Value)) <= 2) then
+    begin
+      mensagem.Add('O nome deve conter no minimo 2 caracteres validos!');
+    end
+    else if (Length(Trim(FDMClienteFornecedor.TClienteFornecedornome.Value)) > 150) then
+    begin
+      mensagem.Add('O nome deve conter no maximo 150 caracteres validos!');
+    end;
+
+    if (FDMClienteFornecedor.TClienteFornecedorsenha.Value = '') then
+    begin
+      mensagem.Add('A senha deve ser informada!');
+    end
+    else if (Length(Trim(FDMClienteFornecedor.TClienteFornecedorsenha.Value)) <= 2) then
+    begin
+      mensagem.Add('A senha deve conter no minimo 2 caracteres validos!');
+    end
+    else if (Length(Trim(FDMClienteFornecedor.TClienteFornecedorsenha.Value)) > 250) then
+    begin
+      mensagem.Add('A senha deve conter no maximo 250 caracteres validos!');
+    end;
   end;
 
   if (FDMClienteFornecedor.TClienteFornecedortipoDocumento.Value = '') then

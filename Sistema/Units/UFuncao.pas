@@ -32,6 +32,7 @@ function converterJsonValueJsonArray(json: TJSONValue; nome: string): TJSONArray
 procedure desativaBotoes(form: TForm);
 procedure abreTelaCliente;
 procedure abreTelaFornecedor;
+procedure abreTelaUsuario;
 procedure ordenarGrid(Coluna: TColumn);
 procedure copiarItemJsonArray(arrayOrigem: TJSONArray; out arrayDestino : TJSONArray);
 procedure converterArrayJsonQuery(json: IRESTResponseJSON; out dataSet: TFDMemTable); overload;
@@ -95,6 +96,30 @@ begin
     Application.CreateForm(TFClienteFornecedor, FClienteFornecedor);
     FClienteFornecedor.Caption := 'Cadastro de Fornecedor';
     FDMClienteFornecedor.tipoCadastro := 'fornecedor';
+    FClienteFornecedor.ShowModal;
+  finally
+    FreeAndNil(FClienteFornecedor);
+  end;
+end;
+
+procedure abreTelaUsuario;
+begin
+  try
+    Application.CreateForm(TFClienteFornecedor, FClienteFornecedor);
+    FClienteFornecedor.Caption := 'Cadastro de Usuario';
+    FClienteFornecedor.DBLDocumento.Enabled := False;
+    FClienteFornecedor.LRazaoSocial.Caption := 'Nome';
+    FClienteFornecedor.DBRazaoSocial.DataField := 'nome';
+    FClienteFornecedor.LConsultaRazaoSocial.Caption := 'Nome';
+    FClienteFornecedor.LNomeFantasia.Caption := 'Senha';
+    FClienteFornecedor.DBNomeFantasia.DataField := 'senha';
+    FClienteFornecedor.DBNomeFantasia.PasswordChar := '*';
+    FClienteFornecedor.TBOutrosDocumentos.TabVisible := False;
+    FClienteFornecedor.TBContato.TabVisible := False;
+    FClienteFornecedor.LConsultaNomeFantasia.Visible := False;
+    FClienteFornecedor.ENomeFantasia.Visible := False;
+    FClienteFornecedor.ERazaoSocial.Width := 374;
+    FDMClienteFornecedor.tipoCadastro := 'usuario';
     FClienteFornecedor.ShowModal;
   finally
     FreeAndNil(FClienteFornecedor);

@@ -240,9 +240,10 @@ object FClienteFornecedor: TFClienteFornecedor
         Top = 172
         Width = 1355
         Height = 341
-        ActivePage = TBContato
+        ActivePage = TBEndereco
         Align = alClient
         TabOrder = 2
+        ExplicitTop = 169
         object TBOutrosDocumentos: TTabSheet
           Caption = 'Outros Documentos'
           object Panel2: TPanel
@@ -604,7 +605,6 @@ object FClienteFornecedor: TFClienteFornecedor
             Enabled = False
             TabOrder = 2
             OnClick = CBInativoEnderecoClick
-            ExplicitTop = 294
           end
         end
         object TBContato: TTabSheet
@@ -618,7 +618,6 @@ object FClienteFornecedor: TFClienteFornecedor
             Align = alTop
             BevelOuter = bvNone
             TabOrder = 0
-            ExplicitTop = 8
             object BCadastrarContato: TSpeedButton
               Left = 0
               Top = 0
@@ -791,7 +790,6 @@ object FClienteFornecedor: TFClienteFornecedor
             Enabled = False
             TabOrder = 2
             OnClick = CBInativoContatoClick
-            ExplicitTop = 294
           end
         end
       end
@@ -825,14 +823,14 @@ object FClienteFornecedor: TFClienteFornecedor
           Height = 16
           Caption = 'N'#186' Documento'
         end
-        object Label8: TLabel
+        object LRazaoSocial: TLabel
           Left = 9
           Top = 47
           Width = 73
           Height = 16
           Caption = 'Raz'#227'o Social'
         end
-        object Label9: TLabel
+        object LNomeFantasia: TLabel
           Left = 199
           Top = 47
           Width = 85
@@ -882,7 +880,7 @@ object FClienteFornecedor: TFClienteFornecedor
           TabOrder = 2
           OnExit = DBDocumentoExit
         end
-        object DBLookupComboBox1: TDBLookupComboBox
+        object DBLDocumento: TDBLookupComboBox
           Left = 91
           Top = 17
           Width = 102
@@ -893,9 +891,9 @@ object FClienteFornecedor: TFClienteFornecedor
           ListField = 'descricao'
           ListSource = FDMClienteFornecedor.DTipoDocumento
           TabOrder = 1
-          OnExit = DBLookupComboBox1Exit
+          OnExit = DBLDocumentoExit
         end
-        object DBEdit1: TDBEdit
+        object DBRazaoSocial: TDBEdit
           Left = 9
           Top = 66
           Width = 184
@@ -904,7 +902,7 @@ object FClienteFornecedor: TFClienteFornecedor
           DataSource = FDMClienteFornecedor.DClienteFornecedor
           TabOrder = 4
         end
-        object DBEdit2: TDBEdit
+        object DBNomeFantasia: TDBEdit
           Left = 199
           Top = 66
           Width = 184
@@ -964,14 +962,14 @@ object FClienteFornecedor: TFClienteFornecedor
           Images = FMenuPrincipal.ImageList1
           OnClick = BConsultarClick
         end
-        object Label10: TLabel
+        object LConsultaRazaoSocial: TLabel
           Left = 3
           Top = 0
           Width = 73
           Height = 16
           Caption = 'Raz'#227'o Social'
         end
-        object Label14: TLabel
+        object LConsultaNomeFantasia: TLabel
           Left = 193
           Top = 0
           Width = 85
@@ -1061,6 +1059,14 @@ object FClienteFornecedor: TFClienteFornecedor
             Title.Caption = 'Nome Fantasia'
             Width = 117
             Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'nome'
+            Title.Alignment = taCenter
+            Title.Caption = 'Nome'
+            Width = -1
+            Visible = False
           end
           item
             Expanded = False

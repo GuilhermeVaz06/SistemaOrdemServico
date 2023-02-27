@@ -100,6 +100,7 @@ type
     TContatostatus: TStringField;
     TContatoobservacao: TMemoField;
     TClienteFornecedorsenha: TStringField;
+    TClienteFornecedornome: TStringField;
     procedure MemoGetText(Sender: TField; var Text: string;
       DisplayText: Boolean);
     procedure TClienteFornecedordocumentoGetText(Sender: TField; var Text: string;
@@ -315,8 +316,18 @@ begin
   Conexao.url := tipoCadastro;
   Conexao.AtribuirBody('codigoTipoDocumento', IntToStrSenaoZero(TClienteFornecedorcodigoTipoDocumento.Value));
   Conexao.AtribuirBody('documento', TClienteFornecedordocumento.Value);
-  Conexao.AtribuirBody('razaoSocial', TClienteFornecedorrazaoSocial.Value);
-  Conexao.AtribuirBody('nomeFantasia', TClienteFornecedornomeFantasia.Value);
+
+  if (tipoCadastro <> 'usuario') then
+  begin
+    Conexao.AtribuirBody('razaoSocial', TClienteFornecedorrazaoSocial.Value);
+    Conexao.AtribuirBody('nomeFantasia', TClienteFornecedornomeFantasia.Value);
+  end
+  else
+  begin
+    Conexao.AtribuirBody('nome', TClienteFornecedornome.Value);
+    Conexao.AtribuirBody('senha', TClienteFornecedorsenha.Value);
+  end;
+
   Conexao.AtribuirBody('telefone', TClienteFornecedortelefone.Value);
   Conexao.AtribuirBody('email', TClienteFornecedoremail.Value);
   Conexao.AtribuirBody('observacao', TClienteFornecedorobservacao.Value);
@@ -515,8 +526,18 @@ begin
   Conexao.url := tipoCadastro + '/' + IntToStrSenaoZero(TClienteFornecedorcodigo.Value);
   Conexao.AtribuirBody('codigoTipoDocumento', IntToStrSenaoZero(TClienteFornecedorcodigoTipoDocumento.Value));
   Conexao.AtribuirBody('documento', TClienteFornecedordocumento.Value);
-  Conexao.AtribuirBody('razaoSocial', TClienteFornecedorrazaoSocial.Value);
-  Conexao.AtribuirBody('nomeFantasia', TClienteFornecedornomeFantasia.Value);
+
+  if (tipoCadastro <> 'usuario') then
+  begin
+    Conexao.AtribuirBody('razaoSocial', TClienteFornecedorrazaoSocial.Value);
+    Conexao.AtribuirBody('nomeFantasia', TClienteFornecedornomeFantasia.Value);
+  end
+  else
+  begin
+    Conexao.AtribuirBody('nome', TClienteFornecedornome.Value);
+    Conexao.AtribuirBody('senha', TClienteFornecedorsenha.Value);
+  end;
+
   Conexao.AtribuirBody('telefone', TClienteFornecedortelefone.Value);
   Conexao.AtribuirBody('email', TClienteFornecedoremail.Value);
   Conexao.AtribuirBody('observacao', TClienteFornecedorobservacao.Value);
@@ -564,14 +585,19 @@ begin
 
   if (Assigned(FClienteFornecedor)) then
   begin
-    if (FClienteFornecedor.ERazaoSocial.Text <> '') then
+    if (FClienteFornecedor.ERazaoSocial.Text <> '') and (tipoCadastro <> 'usuario') then
     begin
       Conexao.AtribuirParametro('razaoSocial', FClienteFornecedor.ERazaoSocial.Text);
     end;
 
-    if (FClienteFornecedor.ENomeFantasia.Text <> '') then
+    if (FClienteFornecedor.ENomeFantasia.Text <> '') and (tipoCadastro <> 'usuario') then
     begin
       Conexao.AtribuirParametro('nomeFantasia', FClienteFornecedor.ENomeFantasia.Text);
+    end;
+
+    if (FClienteFornecedor.ERazaoSocial.Text <> '') and (tipoCadastro = 'usuario') then
+    begin
+      Conexao.AtribuirParametro('nome', FClienteFornecedor.ERazaoSocial.Text);
     end;
 
     if FClienteFornecedor.CBMostrarInativo.Checked then

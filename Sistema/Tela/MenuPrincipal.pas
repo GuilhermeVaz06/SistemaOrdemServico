@@ -31,6 +31,7 @@ type
     procedure tipoEndereco1Click(Sender: TObject);
     procedure cliente1Click(Sender: TObject);
     procedure fornecedor1Click(Sender: TObject);
+    procedure usuario1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -129,6 +130,11 @@ begin
   finally
     FreeAndNil(FTipoEndereco);
   end;
+end;
+
+procedure TFMenuPrincipal.usuario1Click(Sender: TObject);
+begin
+  abreTelaUsuario;
 end;
 
 end.
