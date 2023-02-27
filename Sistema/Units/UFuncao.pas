@@ -48,7 +48,7 @@ var
 
 implementation
 
-uses ClienteFornecedor, DMClienteFornecedor;
+uses Pessoa, DMPessoa;
 
 function mascaraTelefone(telefone: string): string;
 begin
@@ -81,48 +81,48 @@ end;
 procedure abreTelaCliente;
 begin
   try
-    Application.CreateForm(TFClienteFornecedor, FClienteFornecedor);
-    FClienteFornecedor.Caption := 'Cadastro de Cliente';
-    FDMClienteFornecedor.tipoCadastro := 'cliente';
-    FClienteFornecedor.ShowModal;
+    Application.CreateForm(TFPessoa, FPessoa);
+    FPessoa.Caption := 'Cadastro de Cliente';
+    FDMPessoa.tipoCadastro := 'cliente';
+    FPessoa.ShowModal;
   finally
-    FreeAndNil(FClienteFornecedor);
+    FreeAndNil(FPessoa);
   end;
 end;
 
 procedure abreTelaFornecedor;
 begin
   try
-    Application.CreateForm(TFClienteFornecedor, FClienteFornecedor);
-    FClienteFornecedor.Caption := 'Cadastro de Fornecedor';
-    FDMClienteFornecedor.tipoCadastro := 'fornecedor';
-    FClienteFornecedor.ShowModal;
+    Application.CreateForm(TFPessoa, FPessoa);
+    FPessoa.Caption := 'Cadastro de Fornecedor';
+    FDMPessoa.tipoCadastro := 'fornecedor';
+    FPessoa.ShowModal;
   finally
-    FreeAndNil(FClienteFornecedor);
+    FreeAndNil(FPessoa);
   end;
 end;
 
 procedure abreTelaUsuario;
 begin
   try
-    Application.CreateForm(TFClienteFornecedor, FClienteFornecedor);
-    FClienteFornecedor.Caption := 'Cadastro de Usuario';
-    FClienteFornecedor.DBLDocumento.Enabled := False;
-    FClienteFornecedor.LRazaoSocial.Caption := 'Nome';
-    FClienteFornecedor.DBRazaoSocial.DataField := 'nome';
-    FClienteFornecedor.LConsultaRazaoSocial.Caption := 'Nome';
-    FClienteFornecedor.LNomeFantasia.Caption := 'Senha';
-    FClienteFornecedor.DBNomeFantasia.DataField := 'senha';
-    FClienteFornecedor.DBNomeFantasia.PasswordChar := '*';
-    FClienteFornecedor.TBOutrosDocumentos.TabVisible := False;
-    FClienteFornecedor.TBContato.TabVisible := False;
-    FClienteFornecedor.LConsultaNomeFantasia.Visible := False;
-    FClienteFornecedor.ENomeFantasia.Visible := False;
-    FClienteFornecedor.ERazaoSocial.Width := 374;
-    FDMClienteFornecedor.tipoCadastro := 'usuario';
-    FClienteFornecedor.ShowModal;
+    Application.CreateForm(TFPessoa, FPessoa);
+    FPessoa.Caption := 'Cadastro de Usuario';
+    FPessoa.DBLDocumento.Enabled := False;
+    FPessoa.LRazaoSocial.Caption := 'Nome';
+    FPessoa.DBRazaoSocial.DataField := 'nome';
+    FPessoa.LConsultaRazaoSocial.Caption := 'Nome';
+    FPessoa.LNomeFantasia.Caption := 'Senha';
+    FPessoa.DBNomeFantasia.DataField := 'senha';
+    FPessoa.DBNomeFantasia.PasswordChar := '*';
+    FPessoa.TBOutrosDocumentos.TabVisible := False;
+    FPessoa.TBContato.TabVisible := False;
+    FPessoa.LConsultaNomeFantasia.Visible := False;
+    FPessoa.ENomeFantasia.Visible := False;
+    FPessoa.ERazaoSocial.Width := 374;
+    FDMPessoa.tipoCadastro := 'usuario';
+    FPessoa.ShowModal;
   finally
-    FreeAndNil(FClienteFornecedor);
+    FreeAndNil(FPessoa);
   end;
 end;
 

@@ -44,7 +44,7 @@ var
 
 implementation
 
-uses DMClienteFornecedor, UFuncao;
+uses DMPessoa, UFuncao;
 
 {$R *.dfm}
 
@@ -62,29 +62,29 @@ begin
 
   if (validarCampos) then
   begin
-    if (FDMClienteFornecedor.TOutroDocumento.State = dsInsert) then
+    if (FDMPessoa.TOutroDocumento.State = dsInsert) then
     begin
-      resposta := FDMClienteFornecedor.cadastrarOutroDocumento;
+      resposta := FDMPessoa.cadastrarOutroDocumento;
     end
-    else if (FDMClienteFornecedor.TOutroDocumento.State = dsEdit) then
+    else if (FDMPessoa.TOutroDocumento.State = dsEdit) then
     begin
-      resposta := FDMClienteFornecedor.alterarOutroDocumento;
+      resposta := FDMPessoa.alterarOutroDocumento;
     end;
 
     if (resposta) then
     begin
-      FDMClienteFornecedor.TOutroDocumento.Post;
-      FDMClienteFornecedor.TOutroDocumento.Append;
-      FDMClienteFornecedor.TOutroDocumentocodigoPessoa.Value := FDMClienteFornecedor.TClienteFornecedorcodigo.Value;
-      FDMClienteFornecedor.TOutroDocumentodataEmissao.Value := DateToStr(Date);
-      FDMClienteFornecedor.TOutroDocumentodataVencimento.Value := DateToStr(Date);
+      FDMPessoa.TOutroDocumento.Post;
+      FDMPessoa.TOutroDocumento.Append;
+      FDMPessoa.TOutroDocumentocodigoPessoa.Value := FDMPessoa.TPessoacodigo.Value;
+      FDMPessoa.TOutroDocumentodataEmissao.Value := DateToStr(Date);
+      FDMPessoa.TOutroDocumentodataVencimento.Value := DateToStr(Date);
     end;
   end;
 end;
 
 procedure TFOutroDocumento.DBDocumentoExit(Sender: TObject);
 begin
-  with FDMClienteFornecedor do
+  with FDMPessoa do
   begin
     if TOutroDocumento.State in[dsInsert, dsEdit] then
     begin
@@ -95,7 +95,7 @@ end;
 
 procedure TFOutroDocumento.DBLookupComboBox1Exit(Sender: TObject);
 begin
-  with FDMClienteFornecedor do
+  with FDMPessoa do
   begin
     if TOutroDocumento.State in[dsInsert, dsEdit] then
     begin
@@ -109,26 +109,26 @@ end;
 
 procedure TFOutroDocumento.EDTEmissaoChange(Sender: TObject);
 begin
-  FDMClienteFornecedor.TOutroDocumentodataEmissao.Value := DateToStr(EDTEmissao.Date);
+  FDMPessoa.TOutroDocumentodataEmissao.Value := DateToStr(EDTEmissao.Date);
 end;
 
 procedure TFOutroDocumento.EDTVencimentoChange(Sender: TObject);
 begin
-  FDMClienteFornecedor.TOutroDocumentodataVencimento.Value := DateToStr(EDTVencimento.Date);
+  FDMPessoa.TOutroDocumentodataVencimento.Value := DateToStr(EDTVencimento.Date);
 end;
 
 procedure TFOutroDocumento.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  if FDMClienteFornecedor.TOutroDocumento.State in[dsInsert, dsEdit] then
+  if FDMPessoa.TOutroDocumento.State in[dsInsert, dsEdit] then
   begin
-    FDMClienteFornecedor.TOutroDocumento.Cancel;
+    FDMPessoa.TOutroDocumento.Cancel;
   end;
 end;
 
 procedure TFOutroDocumento.FormShow(Sender: TObject);
 begin
-  EDTEmissao.DateTime := StrToDate(FDMClienteFornecedor.TOutroDocumentodataEmissao.Value);
-  EDTVencimento.DateTime := StrToDate(FDMClienteFornecedor.TOutroDocumentodataVencimento.Value);
+  EDTEmissao.DateTime := StrToDate(FDMPessoa.TOutroDocumentodataEmissao.Value);
+  EDTVencimento.DateTime := StrToDate(FDMPessoa.TOutroDocumentodataVencimento.Value);
   EDTEmissaoChange(nil);
   EDTVencimentoChange(nil);
 end;
@@ -139,7 +139,7 @@ var
 begin
   mensagem := TStringList.Create;
 
-  with FDMClienteFornecedor do
+  with FDMPessoa do
   begin
     if not (TOutroDocumentocodigoTipoDocumento.Value > 0) then
     begin

@@ -67,7 +67,7 @@ object FOutroDocumento: TFOutroDocumento
       Width = 183
       Height = 24
       DataField = 'documento'
-      DataSource = FDMClienteFornecedor.DOutroDocumento
+      DataSource = FDMPessoa.DOutroDocumento
       TabOrder = 1
       OnExit = DBDocumentoExit
     end
@@ -77,10 +77,10 @@ object FOutroDocumento: TFOutroDocumento
       Width = 102
       Height = 24
       DataField = 'codigoTipoDocumento'
-      DataSource = FDMClienteFornecedor.DOutroDocumento
+      DataSource = FDMPessoa.DOutroDocumento
       KeyField = 'codigo'
       ListField = 'descricao'
-      ListSource = FDMClienteFornecedor.DTipoDocumento
+      ListSource = FDMPessoa.DTipoDocumento
       TabOrder = 0
       OnExit = DBLookupComboBox1Exit
     end
@@ -110,7 +110,7 @@ object FOutroDocumento: TFOutroDocumento
       Width = 525
       Height = 53
       DataField = 'observacao'
-      DataSource = FDMClienteFornecedor.DOutroDocumento
+      DataSource = FDMPessoa.DOutroDocumento
       TabOrder = 4
     end
     object CBAtivo: TDBCheckBox
@@ -121,7 +121,7 @@ object FOutroDocumento: TFOutroDocumento
       Align = alBottom
       Caption = 'Ativo'
       DataField = 'status'
-      DataSource = FDMClienteFornecedor.DOutroDocumento
+      DataSource = FDMPessoa.DOutroDocumento
       TabOrder = 5
       ValueChecked = 'A'
       ValueUnchecked = 'I'

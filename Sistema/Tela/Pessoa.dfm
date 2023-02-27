@@ -1,4 +1,4 @@
-object FClienteFornecedor: TFClienteFornecedor
+object FPessoa: TFPessoa
   Left = 0
   Top = 0
   BorderStyle = bsSingle
@@ -129,7 +129,7 @@ object FClienteFornecedor: TFClienteFornecedor
           Top = 0
           Width = 147
           Height = 29
-          DataSource = FDMClienteFornecedor.DClienteFornecedor
+          DataSource = FDMPessoa.DClienteFornecedor
           VisibleButtons = [nbFirst, nbPrior, nbNext, nbLast]
           Align = alLeft
           TabOrder = 0
@@ -180,7 +180,7 @@ object FClienteFornecedor: TFClienteFornecedor
           TabStop = False
           Color = clBtnFace
           DataField = 'cadastradoPor'
-          DataSource = FDMClienteFornecedor.DClienteFornecedor
+          DataSource = FDMPessoa.DClienteFornecedor
           ReadOnly = True
           TabOrder = 0
         end
@@ -192,7 +192,7 @@ object FClienteFornecedor: TFClienteFornecedor
           TabStop = False
           Color = clBtnFace
           DataField = 'alteradoPor'
-          DataSource = FDMClienteFornecedor.DClienteFornecedor
+          DataSource = FDMPessoa.DClienteFornecedor
           ReadOnly = True
           TabOrder = 1
         end
@@ -204,7 +204,7 @@ object FClienteFornecedor: TFClienteFornecedor
           TabStop = False
           Color = clBtnFace
           DataField = 'dataCadastro'
-          DataSource = FDMClienteFornecedor.DClienteFornecedor
+          DataSource = FDMPessoa.DClienteFornecedor
           ReadOnly = True
           TabOrder = 2
         end
@@ -216,7 +216,7 @@ object FClienteFornecedor: TFClienteFornecedor
           TabStop = False
           Color = clBtnFace
           DataField = 'dataAlteracao'
-          DataSource = FDMClienteFornecedor.DClienteFornecedor
+          DataSource = FDMPessoa.DClienteFornecedor
           ReadOnly = True
           TabOrder = 3
         end
@@ -229,7 +229,7 @@ object FClienteFornecedor: TFClienteFornecedor
         Align = alBottom
         Caption = 'Ativo'
         DataField = 'status'
-        DataSource = FDMClienteFornecedor.DClienteFornecedor
+        DataSource = FDMPessoa.DClienteFornecedor
         Enabled = False
         TabOrder = 3
         ValueChecked = 'A'
@@ -290,7 +290,7 @@ object FClienteFornecedor: TFClienteFornecedor
             Width = 1347
             Height = 264
             Align = alClient
-            DataSource = FDMClienteFornecedor.DOutroDocumento
+            DataSource = FDMPessoa.DOutroDocumento
             Enabled = False
             Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
             ReadOnly = True
@@ -452,7 +452,7 @@ object FClienteFornecedor: TFClienteFornecedor
             Width = 1347
             Height = 264
             Align = alClient
-            DataSource = FDMClienteFornecedor.DEndereco
+            DataSource = FDMPessoa.DEndereco
             Enabled = False
             Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
             ReadOnly = True
@@ -654,7 +654,7 @@ object FClienteFornecedor: TFClienteFornecedor
             Width = 1347
             Height = 264
             Align = alClient
-            DataSource = FDMClienteFornecedor.DContato
+            DataSource = FDMPessoa.DContato
             Enabled = False
             Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
             ReadOnly = True
@@ -866,7 +866,7 @@ object FClienteFornecedor: TFClienteFornecedor
           TabStop = False
           Color = clBtnFace
           DataField = 'codigo'
-          DataSource = FDMClienteFornecedor.DClienteFornecedor
+          DataSource = FDMPessoa.DClienteFornecedor
           ReadOnly = True
           TabOrder = 0
         end
@@ -876,7 +876,7 @@ object FClienteFornecedor: TFClienteFornecedor
           Width = 183
           Height = 24
           DataField = 'documento'
-          DataSource = FDMClienteFornecedor.DClienteFornecedor
+          DataSource = FDMPessoa.DClienteFornecedor
           TabOrder = 2
           OnExit = DBDocumentoExit
         end
@@ -886,10 +886,10 @@ object FClienteFornecedor: TFClienteFornecedor
           Width = 102
           Height = 24
           DataField = 'codigoTipoDocumento'
-          DataSource = FDMClienteFornecedor.DClienteFornecedor
+          DataSource = FDMPessoa.DClienteFornecedor
           KeyField = 'codigo'
           ListField = 'descricao'
-          ListSource = FDMClienteFornecedor.DTipoDocumento
+          ListSource = FDMPessoa.DTipoDocumento
           TabOrder = 1
           OnExit = DBLDocumentoExit
         end
@@ -899,7 +899,7 @@ object FClienteFornecedor: TFClienteFornecedor
           Width = 184
           Height = 24
           DataField = 'razaoSocial'
-          DataSource = FDMClienteFornecedor.DClienteFornecedor
+          DataSource = FDMPessoa.DClienteFornecedor
           TabOrder = 4
         end
         object DBNomeFantasia: TDBEdit
@@ -908,7 +908,7 @@ object FClienteFornecedor: TFClienteFornecedor
           Width = 184
           Height = 24
           DataField = 'nomeFantasia'
-          DataSource = FDMClienteFornecedor.DClienteFornecedor
+          DataSource = FDMPessoa.DClienteFornecedor
           TabOrder = 5
         end
         object DBEdit3: TDBEdit
@@ -917,7 +917,7 @@ object FClienteFornecedor: TFClienteFornecedor
           Width = 184
           Height = 24
           DataField = 'telefone'
-          DataSource = FDMClienteFornecedor.DClienteFornecedor
+          DataSource = FDMPessoa.DClienteFornecedor
           TabOrder = 6
         end
         object DBEdit4: TDBEdit
@@ -926,7 +926,7 @@ object FClienteFornecedor: TFClienteFornecedor
           Width = 184
           Height = 24
           DataField = 'email'
-          DataSource = FDMClienteFornecedor.DClienteFornecedor
+          DataSource = FDMPessoa.DClienteFornecedor
           TabOrder = 7
         end
         object DBMemo1: TDBMemo
@@ -935,7 +935,7 @@ object FClienteFornecedor: TFClienteFornecedor
           Width = 373
           Height = 121
           DataField = 'observacao'
-          DataSource = FDMClienteFornecedor.DClienteFornecedor
+          DataSource = FDMPessoa.DClienteFornecedor
           ScrollBars = ssVertical
           TabOrder = 3
         end
@@ -1007,7 +1007,7 @@ object FClienteFornecedor: TFClienteFornecedor
         Width = 1355
         Height = 514
         Align = alClient
-        DataSource = FDMClienteFornecedor.DClienteFornecedor
+        DataSource = FDMPessoa.DClienteFornecedor
         Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
         ReadOnly = True
         TabOrder = 1

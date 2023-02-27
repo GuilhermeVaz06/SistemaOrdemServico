@@ -1,4 +1,4 @@
-unit ClienteFornecedor;
+unit Pessoa;
 
 interface
 
@@ -7,7 +7,7 @@ uses Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.StdCtrls, Vcl.DBCtrls, Vcl.Mask,
   Vcl.Forms, Winapi.Windows, Vcl.ComCtrls;
 
 type
-  TFClienteFornecedor = class(TForm)
+  TFPessoa = class(TForm)
     PCTela: TPageControl;
     TBCadastro: TTabSheet;
     TBConsulta: TTabSheet;
@@ -114,26 +114,26 @@ type
   end;
 
 var
-  FClienteFornecedor: TFClienteFornecedor;
+  FPessoa: TFPessoa;
 
 implementation
 
-uses UFuncao, DMClienteFornecedor, OutroDocumento, Endereco, Contato;
+uses UFuncao, DMPessoa, OutroDocumento, Endereco, Contato;
 
 {$R *.dfm}
 
-procedure TFClienteFornecedor.BAlterarClick(Sender: TObject);
+procedure TFPessoa.BAlterarClick(Sender: TObject);
 begin
-  if not (FDMClienteFornecedor.TClienteFornecedor.RecordCount > 0) then
+  if not (FDMPessoa.TPessoa.RecordCount > 0) then
   begin
     informar('Nenhum registro selecionado!');
   end
   else
   begin
     UFuncao.desativaBotoes(self);
-    FDMClienteFornecedor.TClienteFornecedor.Edit;
+    FDMPessoa.TPessoa.Edit;
 
-    if (FDMClienteFornecedor.tipoCadastro = 'usuario') then
+    if (FDMPessoa.tipoCadastro = 'usuario') then
     begin
       PCDados.ActivePage := TBEndereco;
     end
@@ -144,13 +144,13 @@ begin
   end;
 end;
 
-procedure TFClienteFornecedor.BCadastrarClick(Sender: TObject);
+procedure TFPessoa.BCadastrarClick(Sender: TObject);
 begin
   UFuncao.desativaBotoes(self);
 
-  with FDMClienteFornecedor do
+  with FDMPessoa do
   begin
-    TClienteFornecedor.Append;
+    TPessoa.Append;
 
     if (tipoCadastro = 'usuario') then
     begin
@@ -158,7 +158,7 @@ begin
 
       if (QTipoDocumento.Locate('descricao', 'CPF', [loCaseInsensitive])) then
       begin
-        TClienteFornecedorcodigoTipoDocumento.Value := QTipoDocumentocodigo.Value;
+        TPessoacodigoTipoDocumento.Value := QTipoDocumentocodigo.Value;
         DBLDocumentoExit(nil);
       end
       else
@@ -173,9 +173,9 @@ begin
   end;
 end;
 
-procedure TFClienteFornecedor.BCadastrarContatoClick(Sender: TObject);
+procedure TFPessoa.BCadastrarContatoClick(Sender: TObject);
 begin
-  if not (FDMClienteFornecedor.TClienteFornecedorcodigo.Value > 0) and (confirmarCadastro(False) = False) then
+  if not (FDMPessoa.TPessoacodigo.Value > 0) and (confirmarCadastro(False) = False) then
   begin
     Exit;
   end;
@@ -183,10 +183,10 @@ begin
   try
     Application.CreateForm(TFContato, FContato);
 
-    with FDMClienteFornecedor do
+    with FDMPessoa do
     begin
       TContato.Append;
-      TContatocodigoPessoa.Value := TClienteFornecedorcodigo.Value;
+      TContatocodigoPessoa.Value := TPessoacodigo.Value;
       TContatodataNascimento.Value := DateToStr(Date);
     end;
 
@@ -196,9 +196,9 @@ begin
   end;
 end;
 
-procedure TFClienteFornecedor.BCadastrarDocumentoClick(Sender: TObject);
+procedure TFPessoa.BCadastrarDocumentoClick(Sender: TObject);
 begin
-  if not (FDMClienteFornecedor.TClienteFornecedorcodigo.Value > 0) and (confirmarCadastro(False) = False) then
+  if not (FDMPessoa.TPessoacodigo.Value > 0) and (confirmarCadastro(False) = False) then
   begin
     Exit;
   end;
@@ -206,10 +206,10 @@ begin
   try
     Application.CreateForm(TFOutroDocumento, FOutroDocumento);
 
-    with FDMClienteFornecedor do
+    with FDMPessoa do
     begin
       TOutroDocumento.Append;
-      TOutroDocumentocodigoPessoa.Value := TClienteFornecedorcodigo.Value;
+      TOutroDocumentocodigoPessoa.Value := TPessoacodigo.Value;
       TOutroDocumentodataEmissao.Value := DateToStr(Date);
       TOutroDocumentodataVencimento.Value := DateToStr(Date);
     end;
@@ -220,9 +220,9 @@ begin
   end;
 end;
 
-procedure TFClienteFornecedor.BCadastrarEnderecoClick(Sender: TObject);
+procedure TFPessoa.BCadastrarEnderecoClick(Sender: TObject);
 begin
-  if not (FDMClienteFornecedor.TClienteFornecedorcodigo.Value > 0) and (confirmarCadastro(False) = False) then
+  if not (FDMPessoa.TPessoacodigo.Value > 0) and (confirmarCadastro(False) = False) then
   begin
     Exit;
   end;
@@ -230,10 +230,10 @@ begin
   try
     Application.CreateForm(TFEndereco, FEndereco);
 
-    with FDMClienteFornecedor do
+    with FDMPessoa do
     begin
       TEndereco.Append;
-      TEnderecocodigoPessoa.Value := TClienteFornecedorcodigo.Value;
+      TEnderecocodigoPessoa.Value := TPessoacodigo.Value;
     end;
 
     FEndereco.ShowModal;
@@ -242,48 +242,48 @@ begin
   end;
 end;
 
-procedure TFClienteFornecedor.BCancelarClick(Sender: TObject);
+procedure TFPessoa.BCancelarClick(Sender: TObject);
 begin
   CBInativoContato.Checked := False;
   CBInativoEndereco.Checked := False;
   CBInativoOutroDocumento.Checked := False;
 
-  if (FDMClienteFornecedor.TClienteFornecedor.State = dsInsert) and
-     (FDMClienteFornecedor.TClienteFornecedorcodigo.Value > 0) and
-     ((FDMClienteFornecedor.TOutroDocumento.RecordCount <= 0) and
-      (FDMClienteFornecedor.TContato.RecordCount <= 0) and
-      (FDMClienteFornecedor.TEndereco.RecordCount <= 0)) and
-     (FDMClienteFornecedor.excluirPessoa = False) then
+  if (FDMPessoa.TPessoa.State = dsInsert) and
+     (FDMPessoa.TPessoacodigo.Value > 0) and
+     ((FDMPessoa.TOutroDocumento.RecordCount <= 0) and
+      (FDMPessoa.TContato.RecordCount <= 0) and
+      (FDMPessoa.TEndereco.RecordCount <= 0)) and
+     (FDMPessoa.excluirPessoa = False) then
   begin
     informar('Erro ao cancelar cadastro, contate o suporte!');
   end;
 
   Painel.SetFocus;
-  FDMClienteFornecedor.TClienteFornecedor.Cancel;
+  FDMPessoa.TPessoa.Cancel;
   UFuncao.desativaBotoes(self);
 end;
 
-procedure TFClienteFornecedor.BConfirmarClick(Sender: TObject);
+procedure TFPessoa.BConfirmarClick(Sender: TObject);
 begin
   confirmarCadastro(True);
 end;
 
-procedure TFClienteFornecedor.BConsultarClick(Sender: TObject);
+procedure TFPessoa.BConsultarClick(Sender: TObject);
 begin
   BConsultar.Enabled := False;
 
   try
-    FDMClienteFornecedor.consultarDados(0);
+    FDMPessoa.consultarDados(0);
   finally
     BConsultar.Enabled := True;
   end;
 end;
 
-procedure TFClienteFornecedor.BExcluirContatoClick(Sender: TObject);
+procedure TFPessoa.BExcluirContatoClick(Sender: TObject);
 var
   codigo: integer;
 begin
-  with FDMClienteFornecedor do
+  with FDMPessoa do
   begin
     if not (TContato.RecordCount > 0) then
     begin
@@ -302,11 +302,11 @@ begin
   end;
 end;
 
-procedure TFClienteFornecedor.BExcluirEnderecoClick(Sender: TObject);
+procedure TFPessoa.BExcluirEnderecoClick(Sender: TObject);
 var
   codigo: integer;
 begin
-  with FDMClienteFornecedor do
+  with FDMPessoa do
   begin
     if not (TEndereco.RecordCount > 0) then
     begin
@@ -325,30 +325,30 @@ begin
   end;
 end;
 
-procedure TFClienteFornecedor.BFecharClick(Sender: TObject);
+procedure TFPessoa.BFecharClick(Sender: TObject);
 begin
   close;
 end;
 
-procedure TFClienteFornecedor.BInativarClick(Sender: TObject);
+procedure TFPessoa.BInativarClick(Sender: TObject);
 var
   codigo: integer;
 begin
-  with FDMClienteFornecedor do
+  with FDMPessoa do
   begin
-    if not (TClienteFornecedor.RecordCount > 0) then
+    if not (TPessoa.RecordCount > 0) then
     begin
       informar('Nenhum registro selecionado!');
     end
     else if (UsuarioAdmnistrador) and
-       (confirmar('Realmente deseja inativar o ' + tipoCadastro + ': ' + TClienteFornecedornomeFantasia.Value + '?')) then
+       (confirmar('Realmente deseja inativar o ' + tipoCadastro + ': ' + TPessoanomeFantasia.Value + '?')) then
     begin
-      codigo := TClienteFornecedorcodigo.Value;
+      codigo := TPessoacodigo.Value;
 
-      if (inativarClienteFornecedor) then
+      if (inativarPessoa) then
       begin
         consultarDados(0);
-        TClienteFornecedor.Locate('codigo', codigo, [loCaseInsensitive]);
+        TPessoa.Locate('codigo', codigo, [loCaseInsensitive]);
       end;
     end
     else if not (UsuarioAdmnistrador) then
@@ -358,11 +358,11 @@ begin
   end;
 end;
 
-procedure TFClienteFornecedor.BRemoverDocumentoClick(Sender: TObject);
+procedure TFPessoa.BRemoverDocumentoClick(Sender: TObject);
 var
   codigo: integer;
 begin
-  with FDMClienteFornecedor do
+  with FDMPessoa do
   begin
     if not (TOutroDocumento.RecordCount > 0) then
     begin
@@ -381,27 +381,27 @@ begin
   end;
 end;
 
-procedure TFClienteFornecedor.CBInativoContatoClick(Sender: TObject);
+procedure TFPessoa.CBInativoContatoClick(Sender: TObject);
 begin
-  FDMClienteFornecedor.consultarDadosContato(0, False);
+  FDMPessoa.consultarDadosContato(0, False);
 end;
 
-procedure TFClienteFornecedor.CBInativoEnderecoClick(Sender: TObject);
+procedure TFPessoa.CBInativoEnderecoClick(Sender: TObject);
 begin
-  FDMClienteFornecedor.consultarDadosEndereco(0, False);
+  FDMPessoa.consultarDadosEndereco(0, False);
 end;
 
-procedure TFClienteFornecedor.CBInativoOutroDocumentoClick(Sender: TObject);
+procedure TFPessoa.CBInativoOutroDocumentoClick(Sender: TObject);
 begin
-  FDMClienteFornecedor.consultarDadosOutroDocumento(0, False);
+  FDMPessoa.consultarDadosOutroDocumento(0, False);
 end;
 
-procedure TFClienteFornecedor.CBMostrarInativoClick(Sender: TObject);
+procedure TFPessoa.CBMostrarInativoClick(Sender: TObject);
 begin
   BConsultarClick(nil);
 end;
 
-function TFClienteFornecedor.confirmarCadastro(confirmar: boolean): Boolean;
+function TFPessoa.confirmarCadastro(confirmar: boolean): Boolean;
 var
   resposta: Boolean;
   mensagem: string;
@@ -411,18 +411,18 @@ begin
 
   if (validarCampos) then
   begin
-    if (FDMClienteFornecedor.TClienteFornecedor.State = dsInsert) and
-       (FDMClienteFornecedor.TClienteFornecedorcodigo.Value <= 0) then
+    if (FDMPessoa.TPessoa.State = dsInsert) and
+       (FDMPessoa.TPessoacodigo.Value <= 0) then
     begin
-      resposta := FDMClienteFornecedor.cadastrarClienteFornecedor;
+      resposta := FDMPessoa.cadastrarPessoa;
     end
-    else if (FDMClienteFornecedor.TClienteFornecedor.State = dsEdit) or
-       (FDMClienteFornecedor.TClienteFornecedorcodigo.Value > 0) then
+    else if (FDMPessoa.TPessoa.State = dsEdit) or
+       (FDMPessoa.TPessoacodigo.Value > 0) then
     begin
-      resposta := FDMClienteFornecedor.alterarClienteFornecedor;
+      resposta := FDMPessoa.alterarPessoa;
     end;
 
-    if (FDMClienteFornecedor.tipoCadastro <> 'usuario') then
+    if (FDMPessoa.tipoCadastro <> 'usuario') then
     begin
       mensagem := 'Nenhum item (endereço, outro documento ou contato)';
     end
@@ -431,19 +431,19 @@ begin
       mensagem := 'Nenhum endereço';
     end;
 
-    if (FDMClienteFornecedor.TClienteFornecedor.State = dsInsert) and
+    if (FDMPessoa.TPessoa.State = dsInsert) and
        (confirmar) and
-       ((FDMClienteFornecedor.TOutroDocumento.RecordCount <= 0) and
-        (FDMClienteFornecedor.TContato.RecordCount <= 0) and
-        (FDMClienteFornecedor.TEndereco.RecordCount <= 0)) and
-       (UFuncao.confirmar(mensagem + ' foi adicionado a esse ' + FDMClienteFornecedor.tipoCadastro  +
+       ((FDMPessoa.TOutroDocumento.RecordCount <= 0) and
+        (FDMPessoa.TContato.RecordCount <= 0) and
+        (FDMPessoa.TEndereco.RecordCount <= 0)) and
+       (UFuncao.confirmar(mensagem + ' foi adicionado a esse ' + FDMPessoa.tipoCadastro  +
                           ' realmente deseja continuar?') = False) then
     begin
 //   se cair aqui não faz nada
     end
     else if (resposta) and (confirmar) then
     begin
-      FDMClienteFornecedor.TClienteFornecedor.Post;
+      FDMPessoa.TPessoa.Post;
       UFuncao.desativaBotoes(self);
     end;
   end;
@@ -451,33 +451,33 @@ begin
   Result := resposta;
 end;
 
-procedure TFClienteFornecedor.DBDocumentoExit(Sender: TObject);
+procedure TFPessoa.DBDocumentoExit(Sender: TObject);
 begin
-  with FDMClienteFornecedor do
+  with FDMPessoa do
   begin
-    if TClienteFornecedor.State in[dsInsert, dsEdit] then
+    if TPessoa.State in[dsInsert, dsEdit] then
     begin
-      TClienteFornecedordocumento.Value := Trim(soNumeros(TClienteFornecedordocumento.Value));
+      TPessoadocumento.Value := Trim(soNumeros(TPessoadocumento.Value));
     end;
   end;
 end;
 
-procedure TFClienteFornecedor.DBLDocumentoExit(Sender: TObject);
+procedure TFPessoa.DBLDocumentoExit(Sender: TObject);
 begin
-  with FDMClienteFornecedor do
+  with FDMPessoa do
   begin
-    if TClienteFornecedor.State in[dsInsert, dsEdit] then
+    if TPessoa.State in[dsInsert, dsEdit] then
     begin
-      TClienteFornecedorcodigoTipoDocumento.Value := QTipoDocumentocodigo.Value;
-      TClienteFornecedortipoDocumento.Value := QTipoDocumentodescricao.Value;
-      TClienteFornecedorqtdeCaracteres.Value := QTipoDocumentoqtdeCaracteres.Value;
-      TClienteFornecedormascaraCaracteres.Value := QTipoDocumentomascara.Value;
+      TPessoacodigoTipoDocumento.Value := QTipoDocumentocodigo.Value;
+      TPessoatipoDocumento.Value := QTipoDocumentodescricao.Value;
+      TPessoaqtdeCaracteres.Value := QTipoDocumentoqtdeCaracteres.Value;
+      TPessoamascaraCaracteres.Value := QTipoDocumentomascara.Value;
       DBDocumento.SetFocus;
     end;
   end;
 end;
 
-procedure TFClienteFornecedor.FormClose(Sender: TObject; var Action: TCloseAction);
+procedure TFPessoa.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
   if BConfirmar.Enabled then
   begin
@@ -485,18 +485,18 @@ begin
   end;
 end;
 
-procedure TFClienteFornecedor.FormCreate(Sender: TObject);
+procedure TFPessoa.FormCreate(Sender: TObject);
 begin
   consulta := False;
 end;
 
-procedure TFClienteFornecedor.FormShow(Sender: TObject);
+procedure TFPessoa.FormShow(Sender: TObject);
 var
   i: Integer;
 begin
   PCTela.ActivePage := TBConsulta;
 
-  if (FDMClienteFornecedor.tipoCadastro = 'usuario') then
+  if (FDMPessoa.tipoCadastro = 'usuario') then
   begin
     PCDados.ActivePage := TBEndereco;
 
@@ -520,16 +520,16 @@ begin
   end;
 
 
-  FDMClienteFornecedor.consultarTipoDocumento;
+  FDMPessoa.consultarTipoDocumento;
   BConsultarClick(nil);
 end;
 
-procedure TFClienteFornecedor.GContatoDblClick(Sender: TObject);
+procedure TFPessoa.GContatoDblClick(Sender: TObject);
 begin
-  if (FDMClienteFornecedor.TContato.RecordCount > 0) then
+  if (FDMPessoa.TContato.RecordCount > 0) then
   try
     Application.CreateForm(TFContato, FContato);
-    FDMClienteFornecedor.TContato.Edit;
+    FDMPessoa.TContato.Edit;
     FContato.ShowModal;
   finally
     FreeAndNil(FContato);
@@ -540,7 +540,7 @@ begin
   end;
 end;
 
-procedure TFClienteFornecedor.GDadosDblClick(Sender: TObject);
+procedure TFPessoa.GDadosDblClick(Sender: TObject);
 begin
   if (consulta) then
   begin
@@ -548,23 +548,23 @@ begin
   end;
 end;
 
-procedure TFClienteFornecedor.GDadosDrawColumnCell(Sender: TObject; const Rect: TRect;
+procedure TFPessoa.GDadosDrawColumnCell(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
 begin
   colorirGrid(Sender, Rect, DataCol, Column, State);
 end;
 
-procedure TFClienteFornecedor.GDadosTitleClick(Column: TColumn);
+procedure TFPessoa.GDadosTitleClick(Column: TColumn);
 begin
   OrdenarGrid(Column);
 end;
 
-procedure TFClienteFornecedor.GDocumentoDblClick(Sender: TObject);
+procedure TFPessoa.GDocumentoDblClick(Sender: TObject);
 begin
-  if (FDMClienteFornecedor.TOutroDocumento.RecordCount > 0) then
+  if (FDMPessoa.TOutroDocumento.RecordCount > 0) then
   try
     Application.CreateForm(TFOutroDocumento, FOutroDocumento);
-    FDMClienteFornecedor.TOutroDocumento.Edit;
+    FDMPessoa.TOutroDocumento.Edit;
     FOutroDocumento.ShowModal;
   finally
     FreeAndNil(FOutroDocumento);
@@ -575,12 +575,12 @@ begin
   end;
 end;
 
-procedure TFClienteFornecedor.GEnderecoDblClick(Sender: TObject);
+procedure TFPessoa.GEnderecoDblClick(Sender: TObject);
 begin
-  if (FDMClienteFornecedor.TEndereco.RecordCount > 0) then
+  if (FDMPessoa.TEndereco.RecordCount > 0) then
   try
     Application.CreateForm(TFEndereco, FEndereco);
-    FDMClienteFornecedor.TEndereco.Edit;
+    FDMPessoa.TEndereco.Edit;
     FEndereco.ShowModal;
   finally
     FreeAndNil(FEndereco);
@@ -591,11 +591,11 @@ begin
   end;
 end;
 
-procedure TFClienteFornecedor.TBCadastroShow(Sender: TObject);
+procedure TFPessoa.TBCadastroShow(Sender: TObject);
 begin
-  with FDMClienteFornecedor do
+  with FDMPessoa do
   begin
-    if (dadosPessoaConsultados <> TClienteFornecedorcodigo.Value) then
+    if (dadosPessoaConsultados <> TPessoacodigo.Value) then
     begin
       consultarDadosOutroDocumento(0, False);
       consultarDadosEndereco(0, False);
@@ -604,80 +604,80 @@ begin
   end;
 end;
 
-function TFClienteFornecedor.validarCampos: boolean;
+function TFPessoa.validarCampos: boolean;
 var
   mensagem: TStringList;
 begin
   mensagem := TStringList.Create;
 
-  if (FDMClienteFornecedor.tipoCadastro <> 'usuario') then
+  if (FDMPessoa.tipoCadastro <> 'usuario') then
   begin
-    if (FDMClienteFornecedor.TClienteFornecedorrazaoSocial.Value = '') then
+    if (FDMPessoa.TPessoarazaoSocial.Value = '') then
     begin
       mensagem.Add('A Razão Social deve ser informada!');
     end
-    else if (Length(Trim(FDMClienteFornecedor.TClienteFornecedorrazaoSocial.Value)) <= 2) then
+    else if (Length(Trim(FDMPessoa.TPessoarazaoSocial.Value)) <= 2) then
     begin
       mensagem.Add('A Razão Social deve conter no minimo 2 caracteres validos!');
     end
-    else if (Length(Trim(FDMClienteFornecedor.TClienteFornecedorrazaoSocial.Value)) > 150) then
+    else if (Length(Trim(FDMPessoa.TPessoarazaoSocial.Value)) > 150) then
     begin
       mensagem.Add('A Razão Social deve conter no maximo 150 caracteres validos!');
     end;
 
-    if (FDMClienteFornecedor.TClienteFornecedornomeFantasia.Value = '') then
+    if (FDMPessoa.TPessoanomeFantasia.Value = '') then
     begin
       mensagem.Add('O Nome fantasia deve ser informado!');
     end
-    else if (Length(Trim(FDMClienteFornecedor.TClienteFornecedornomeFantasia.Value)) <= 2) then
+    else if (Length(Trim(FDMPessoa.TPessoanomeFantasia.Value)) <= 2) then
     begin
       mensagem.Add('O Nome fantasia deve conter no minimo 2 caracteres validos!');
     end
-    else if (Length(Trim(FDMClienteFornecedor.TClienteFornecedornomeFantasia.Value)) > 150) then
+    else if (Length(Trim(FDMPessoa.TPessoanomeFantasia.Value)) > 150) then
     begin
       mensagem.Add('O Nome fantasia deve conter no maximo 150 caracteres validos!');
     end;
   end
   else
   begin
-    if (FDMClienteFornecedor.TClienteFornecedornome.Value = '') then
+    if (FDMPessoa.TPessoanome.Value = '') then
     begin
       mensagem.Add('O nome deve ser informado!');
     end
-    else if (Length(Trim(FDMClienteFornecedor.TClienteFornecedornome.Value)) <= 2) then
+    else if (Length(Trim(FDMPessoa.TPessoanome.Value)) <= 2) then
     begin
       mensagem.Add('O nome deve conter no minimo 2 caracteres validos!');
     end
-    else if (Length(Trim(FDMClienteFornecedor.TClienteFornecedornome.Value)) > 150) then
+    else if (Length(Trim(FDMPessoa.TPessoanome.Value)) > 150) then
     begin
       mensagem.Add('O nome deve conter no maximo 150 caracteres validos!');
     end;
 
-    if (FDMClienteFornecedor.TClienteFornecedorsenha.Value = '') then
+    if (FDMPessoa.TPessoasenha.Value = '') then
     begin
       mensagem.Add('A senha deve ser informada!');
     end
-    else if (Length(Trim(FDMClienteFornecedor.TClienteFornecedorsenha.Value)) <= 2) then
+    else if (Length(Trim(FDMPessoa.TPessoasenha.Value)) <= 2) then
     begin
       mensagem.Add('A senha deve conter no minimo 2 caracteres validos!');
     end
-    else if (Length(Trim(FDMClienteFornecedor.TClienteFornecedorsenha.Value)) > 250) then
+    else if (Length(Trim(FDMPessoa.TPessoasenha.Value)) > 250) then
     begin
       mensagem.Add('A senha deve conter no maximo 250 caracteres validos!');
     end;
   end;
 
-  if (FDMClienteFornecedor.TClienteFornecedortipoDocumento.Value = '') then
+  if (FDMPessoa.TPessoatipoDocumento.Value = '') then
   begin
     mensagem.Add('O Documento deve ser selecionado!');
   end
-  else if (Trim(soNumeros(FDMClienteFornecedor.TClienteFornecedordocumento.Value)) = '') then
+  else if (Trim(soNumeros(FDMPessoa.TPessoadocumento.Value)) = '') then
   begin
     mensagem.Add('O Nº do Documento deve ser informado!');
   end
-  else if (Length(Trim(soNumeros(FDMClienteFornecedor.TClienteFornecedordocumento.Value))) <> FDMClienteFornecedor.TClienteFornecedorqtdeCaracteres.Value) then
+  else if (Length(Trim(soNumeros(FDMPessoa.TPessoadocumento.Value))) <> FDMPessoa.TPessoaqtdeCaracteres.Value) then
   begin
-    mensagem.Add('O Nº do Documento deve conter ' + IntToStrSenaoZero(FDMClienteFornecedor.TClienteFornecedorqtdeCaracteres.Value) +
+    mensagem.Add('O Nº do Documento deve conter ' + IntToStrSenaoZero(FDMPessoa.TPessoaqtdeCaracteres.Value) +
                  ' caracteres validos!');
   end;
 

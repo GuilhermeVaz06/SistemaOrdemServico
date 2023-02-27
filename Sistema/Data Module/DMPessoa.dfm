@@ -1,15 +1,15 @@
-object FDMClienteFornecedor: TFDMClienteFornecedor
+object FDMPessoa: TFDMPessoa
   OldCreateOrder = False
   OnCreate = DataModuleCreate
   Height = 343
   Width = 475
   object DClienteFornecedor: TDataSource
-    DataSet = TClienteFornecedor
+    DataSet = TPessoa
     Left = 60
     Top = 67
   end
-  object TClienteFornecedor: TFDMemTable
-    AfterScroll = TClienteFornecedorAfterScroll
+  object TPessoa: TFDMemTable
+    AfterScroll = TPessoaAfterScroll
     FieldDefs = <>
     IndexDefs = <>
     FetchOptions.AssignedValues = [evMode]
@@ -22,71 +22,71 @@ object FDMClienteFornecedor: TFDMClienteFornecedor
     StoreDefs = True
     Left = 59
     Top = 17
-    object TClienteFornecedorcodigo: TIntegerField
+    object TPessoacodigo: TIntegerField
       FieldName = 'codigo'
     end
-    object TClienteFornecedorcodigoTipoDocumento: TIntegerField
+    object TPessoacodigoTipoDocumento: TIntegerField
       FieldName = 'codigoTipoDocumento'
     end
-    object TClienteFornecedortipoDocumento: TStringField
+    object TPessoatipoDocumento: TStringField
       FieldName = 'tipoDocumento'
     end
-    object TClienteFornecedorqtdeCaracteres: TIntegerField
+    object TPessoaqtdeCaracteres: TIntegerField
       FieldName = 'qtdeCaracteres'
     end
-    object TClienteFornecedormascaraCaracteres: TStringField
+    object TPessoamascaraCaracteres: TStringField
       FieldName = 'mascaraCaracteres'
       Size = 30
     end
-    object TClienteFornecedordocumento: TStringField
+    object TPessoadocumento: TStringField
       FieldName = 'documento'
-      OnGetText = TClienteFornecedordocumentoGetText
+      OnGetText = TPessoadocumentoGetText
     end
-    object TClienteFornecedorrazaoSocial: TStringField
+    object TPessoarazaoSocial: TStringField
       FieldName = 'razaoSocial'
       Size = 150
     end
-    object TClienteFornecedornome: TStringField
+    object TPessoanome: TStringField
       FieldName = 'nome'
       Size = 150
     end
-    object TClienteFornecedornomeFantasia: TStringField
+    object TPessoanomeFantasia: TStringField
       FieldName = 'nomeFantasia'
       Size = 150
     end
-    object TClienteFornecedortelefone: TStringField
+    object TPessoatelefone: TStringField
       FieldName = 'telefone'
       OnGetText = telefoneGetText
     end
-    object TClienteFornecedoremail: TStringField
+    object TPessoaemail: TStringField
       FieldName = 'email'
       Size = 250
     end
-    object TClienteFornecedorobservacao: TMemoField
+    object TPessoaobservacao: TMemoField
       FieldName = 'observacao'
       OnGetText = MemoGetText
       BlobType = ftMemo
     end
-    object TClienteFornecedorsenha: TStringField
+    object TPessoasenha: TStringField
       FieldName = 'senha'
       Size = 250
     end
-    object TClienteFornecedorstatus: TStringField
+    object TPessoastatus: TStringField
       FieldName = 'status'
       Size = 1
     end
-    object TClienteFornecedorcadastradoPor: TStringField
+    object TPessoacadastradoPor: TStringField
       FieldName = 'cadastradoPor'
       Size = 150
     end
-    object TClienteFornecedoralteradoPor: TStringField
+    object TPessoaalteradoPor: TStringField
       FieldName = 'alteradoPor'
       Size = 150
     end
-    object TClienteFornecedordataCadastro: TStringField
+    object TPessoadataCadastro: TStringField
       FieldName = 'dataCadastro'
     end
-    object TClienteFornecedordataAlteracao: TStringField
+    object TPessoadataAlteracao: TStringField
       FieldName = 'dataAlteracao'
     end
   end

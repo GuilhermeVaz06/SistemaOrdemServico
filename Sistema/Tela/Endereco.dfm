@@ -108,7 +108,7 @@ object FEndereco: TFEndereco
       Width = 430
       Height = 53
       DataField = 'observacao'
-      DataSource = FDMClienteFornecedor.DEndereco
+      DataSource = FDMPessoa.DEndereco
       TabOrder = 12
     end
     object CBAtivo: TDBCheckBox
@@ -119,7 +119,7 @@ object FEndereco: TFEndereco
       Align = alBottom
       Caption = 'Ativo'
       DataField = 'status'
-      DataSource = FDMClienteFornecedor.DEndereco
+      DataSource = FDMPessoa.DEndereco
       TabOrder = 13
       ValueChecked = 'A'
       ValueUnchecked = 'I'
@@ -133,7 +133,7 @@ object FEndereco: TFEndereco
       Height = 24
       TabStop = False
       DataField = 'tipoEndereco'
-      DataSource = FDMClienteFornecedor.DEndereco
+      DataSource = FDMPessoa.DEndereco
       ReadOnly = True
       TabOrder = 1
     end
@@ -143,7 +143,7 @@ object FEndereco: TFEndereco
       Width = 124
       Height = 24
       DataField = 'cep'
-      DataSource = FDMClienteFornecedor.DEndereco
+      DataSource = FDMPessoa.DEndereco
       TabOrder = 2
     end
     object DBEdit3: TDBEdit
@@ -152,7 +152,7 @@ object FEndereco: TFEndereco
       Width = 430
       Height = 24
       DataField = 'longradouro'
-      DataSource = FDMClienteFornecedor.DEndereco
+      DataSource = FDMPessoa.DEndereco
       TabOrder = 3
     end
     object DBEdit4: TDBEdit
@@ -161,7 +161,7 @@ object FEndereco: TFEndereco
       Width = 124
       Height = 24
       DataField = 'numero'
-      DataSource = FDMClienteFornecedor.DEndereco
+      DataSource = FDMPessoa.DEndereco
       TabOrder = 4
     end
     object DBEdit5: TDBEdit
@@ -170,7 +170,7 @@ object FEndereco: TFEndereco
       Width = 124
       Height = 24
       DataField = 'bairro'
-      DataSource = FDMClienteFornecedor.DEndereco
+      DataSource = FDMPessoa.DEndereco
       TabOrder = 5
     end
     object DBEdit6: TDBEdit
@@ -179,7 +179,7 @@ object FEndereco: TFEndereco
       Width = 170
       Height = 24
       DataField = 'complemento'
-      DataSource = FDMClienteFornecedor.DEndereco
+      DataSource = FDMPessoa.DEndereco
       TabOrder = 6
     end
     object DBCidade: TDBEdit
@@ -188,7 +188,7 @@ object FEndereco: TFEndereco
       Width = 67
       Height = 24
       DataField = 'codigoCidade'
-      DataSource = FDMClienteFornecedor.DEndereco
+      DataSource = FDMPessoa.DEndereco
       TabOrder = 7
       OnDblClick = DBCidadeDblClick
       OnExit = DBCidadeExit
@@ -200,7 +200,7 @@ object FEndereco: TFEndereco
       Height = 24
       TabStop = False
       DataField = 'nomeCidade'
-      DataSource = FDMClienteFornecedor.DEndereco
+      DataSource = FDMPessoa.DEndereco
       ReadOnly = True
       TabOrder = 8
     end
@@ -211,7 +211,7 @@ object FEndereco: TFEndereco
       Height = 24
       TabStop = False
       DataField = 'nomeEstado'
-      DataSource = FDMClienteFornecedor.DEndereco
+      DataSource = FDMPessoa.DEndereco
       ReadOnly = True
       TabOrder = 9
     end
@@ -222,7 +222,7 @@ object FEndereco: TFEndereco
       Height = 24
       TabStop = False
       DataField = 'nomePais'
-      DataSource = FDMClienteFornecedor.DEndereco
+      DataSource = FDMPessoa.DEndereco
       ReadOnly = True
       TabOrder = 10
     end
@@ -232,10 +232,10 @@ object FEndereco: TFEndereco
       Width = 170
       Height = 24
       DataField = 'prioridade'
-      DataSource = FDMClienteFornecedor.DEndereco
+      DataSource = FDMPessoa.DEndereco
       KeyField = 'codigo'
       ListField = 'descricao'
-      ListSource = FDMClienteFornecedor.DPrioridade
+      ListSource = FDMPessoa.DPrioridade
       TabOrder = 11
     end
     object DBDescricao: TDBEdit
@@ -244,7 +244,7 @@ object FEndereco: TFEndereco
       Width = 87
       Height = 24
       DataField = 'codigoTipoEndereco'
-      DataSource = FDMClienteFornecedor.DEndereco
+      DataSource = FDMPessoa.DEndereco
       TabOrder = 0
       OnDblClick = DBDescricaoDblClick
       OnExit = DBDescricaoExit

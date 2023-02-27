@@ -57,7 +57,7 @@ var
 
 implementation
 
-uses DMClienteFornecedor, UFuncao, TipoEndereco, Cidade, DMTipoEndereco, DMCidade;
+uses DMPessoa, UFuncao, TipoEndereco, Cidade, DMTipoEndereco, DMCidade;
 
 {$R *.dfm}
 
@@ -75,20 +75,20 @@ begin
 
   if (validarCampos) then
   begin
-    if (FDMClienteFornecedor.TEndereco.State = dsInsert) then
+    if (FDMPessoa.TEndereco.State = dsInsert) then
     begin
-      resposta := FDMClienteFornecedor.cadastrarEndereco;
+      resposta := FDMPessoa.cadastrarEndereco;
     end
-    else if (FDMClienteFornecedor.TEndereco.State = dsEdit) then
+    else if (FDMPessoa.TEndereco.State = dsEdit) then
     begin
-      resposta := FDMClienteFornecedor.alterarEndereco;
+      resposta := FDMPessoa.alterarEndereco;
     end;
 
     if (resposta) then
     begin
-      FDMClienteFornecedor.TEndereco.Post;
-      FDMClienteFornecedor.TEndereco.Append;
-      FDMClienteFornecedor.TEnderecocodigoPessoa.Value := FDMClienteFornecedor.TClienteFornecedorcodigo.Value;
+      FDMPessoa.TEndereco.Post;
+      FDMPessoa.TEndereco.Append;
+      FDMPessoa.TEnderecocodigoPessoa.Value := FDMPessoa.TPessoacodigo.Value;
     end;
   end;
 end;
@@ -100,7 +100,7 @@ begin
     FTipoEndereco.consulta := True;
     FTipoEndereco.ShowModal;
   finally
-    FDMClienteFornecedor.TEnderecocodigoTipoEndereco.Value := FDMTipoEndereco.TTipoEnderecocodigo.Value;
+    FDMPessoa.TEnderecocodigoTipoEndereco.Value := FDMTipoEndereco.TTipoEnderecocodigo.Value;
     FreeAndNil(FTipoEndereco);
     DBDescricaoExit(nil);
   end;
@@ -108,14 +108,14 @@ end;
 
 procedure TFEndereco.DBDescricaoExit(Sender: TObject);
 begin
-  if (FDMClienteFornecedor.TEnderecocodigoTipoEndereco.Value > 0) then
+  if (FDMPessoa.TEnderecocodigoTipoEndereco.Value > 0) then
   begin
-    FDMTipoEndereco.consultarDados(FDMClienteFornecedor.TEnderecocodigoTipoEndereco.Value);
+    FDMTipoEndereco.consultarDados(FDMPessoa.TEnderecocodigoTipoEndereco.Value);
 
     if (FDMTipoEndereco.TTipoEndereco.RecordCount > 0) then
     begin
-      FDMClienteFornecedor.TEnderecocodigoTipoEndereco.Value := FDMTipoEndereco.TTipoEnderecocodigo.Value;
-      FDMClienteFornecedor.TEnderecoTipoEndereco.Value := FDMTipoEndereco.TTipoEnderecodescricao.Value;
+      FDMPessoa.TEnderecocodigoTipoEndereco.Value := FDMTipoEndereco.TTipoEnderecocodigo.Value;
+      FDMPessoa.TEnderecoTipoEndereco.Value := FDMTipoEndereco.TTipoEnderecodescricao.Value;
     end
     else
     begin
@@ -135,7 +135,7 @@ begin
     FCidade.consulta := True;
     FCidade.ShowModal;
   finally
-    FDMClienteFornecedor.TEnderecocodigoCidade.Value := FDMCidade.TCidadecodigo.Value;
+    FDMPessoa.TEnderecocodigoCidade.Value := FDMCidade.TCidadecodigo.Value;
     FreeAndNil(FCidade);
     DBCidadeExit(nil);
   end;
@@ -143,16 +143,16 @@ end;
 
 procedure TFEndereco.DBCidadeExit(Sender: TObject);
 begin
-  if (FDMClienteFornecedor.TEnderecocodigoCidade.Value > 0) then
+  if (FDMPessoa.TEnderecocodigoCidade.Value > 0) then
   begin
-    FDMCidade.consultarDados(FDMClienteFornecedor.TEnderecocodigoCidade.Value);
+    FDMCidade.consultarDados(FDMPessoa.TEnderecocodigoCidade.Value);
 
     if (FDMCidade.TCidade.RecordCount > 0) then
     begin
-      FDMClienteFornecedor.TEnderecocodigoCidade.Value := FDMCidade.TCidadecodigo.Value;
-      FDMClienteFornecedor.TEndereconomeCidade.Value := FDMCidade.TCidadenome.Value;
-      FDMClienteFornecedor.TEndereconomeEstado.Value := FDMCidade.TCidadenomeEstado.Value;
-      FDMClienteFornecedor.TEndereconomePais.Value := FDMCidade.TCidadenomePais.Value;
+      FDMPessoa.TEnderecocodigoCidade.Value := FDMCidade.TCidadecodigo.Value;
+      FDMPessoa.TEndereconomeCidade.Value := FDMCidade.TCidadenome.Value;
+      FDMPessoa.TEndereconomeEstado.Value := FDMCidade.TCidadenomeEstado.Value;
+      FDMPessoa.TEndereconomePais.Value := FDMCidade.TCidadenomePais.Value;
     end
     else
     begin
@@ -167,9 +167,9 @@ end;
 
 procedure TFEndereco.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  if FDMClienteFornecedor.TEndereco.State in[dsInsert, dsEdit] then
+  if FDMPessoa.TEndereco.State in[dsInsert, dsEdit] then
   begin
-    FDMClienteFornecedor.TEndereco.Cancel;
+    FDMPessoa.TEndereco.Cancel;
   end;
 end;
 
@@ -179,7 +179,7 @@ var
 begin
   mensagem := TStringList.Create;
 
-  with FDMClienteFornecedor do
+  with FDMPessoa do
   begin
     if not (TEnderecocodigoTipoEndereco.Value > 0) then
     begin

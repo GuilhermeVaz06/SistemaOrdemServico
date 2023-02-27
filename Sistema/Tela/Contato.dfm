@@ -88,7 +88,7 @@ object FContato: TFContato
       Width = 430
       Height = 53
       DataField = 'observacao'
-      DataSource = FDMClienteFornecedor.DContato
+      DataSource = FDMPessoa.DContato
       TabOrder = 7
     end
     object CBAtivo: TDBCheckBox
@@ -99,11 +99,10 @@ object FContato: TFContato
       Align = alBottom
       Caption = 'Ativo'
       DataField = 'status'
-      DataSource = FDMClienteFornecedor.DContato
+      DataSource = FDMPessoa.DContato
       TabOrder = 8
       ValueChecked = 'A'
       ValueUnchecked = 'I'
-      ExplicitTop = 303
     end
     object DBEdit3: TDBEdit
       Left = 9
@@ -111,7 +110,7 @@ object FContato: TFContato
       Width = 430
       Height = 24
       DataField = 'nome'
-      DataSource = FDMClienteFornecedor.DContato
+      DataSource = FDMPessoa.DContato
       TabOrder = 3
     end
     object DBEdit4: TDBEdit
@@ -120,7 +119,7 @@ object FContato: TFContato
       Width = 124
       Height = 24
       DataField = 'funcao'
-      DataSource = FDMClienteFornecedor.DContato
+      DataSource = FDMPessoa.DContato
       TabOrder = 4
     end
     object DBEdit5: TDBEdit
@@ -129,7 +128,7 @@ object FContato: TFContato
       Width = 124
       Height = 24
       DataField = 'telefone'
-      DataSource = FDMClienteFornecedor.DContato
+      DataSource = FDMPessoa.DContato
       TabOrder = 5
     end
     object DBEdit6: TDBEdit
@@ -138,7 +137,7 @@ object FContato: TFContato
       Width = 170
       Height = 24
       DataField = 'email'
-      DataSource = FDMClienteFornecedor.DContato
+      DataSource = FDMPessoa.DContato
       TabOrder = 6
     end
     object DBDocumento: TDBEdit
@@ -147,7 +146,7 @@ object FContato: TFContato
       Width = 183
       Height = 24
       DataField = 'documento'
-      DataSource = FDMClienteFornecedor.DContato
+      DataSource = FDMPessoa.DContato
       TabOrder = 1
       OnExit = DBDocumentoExit
     end
@@ -157,10 +156,10 @@ object FContato: TFContato
       Width = 111
       Height = 24
       DataField = 'codigoTipoDocumento'
-      DataSource = FDMClienteFornecedor.DContato
+      DataSource = FDMPessoa.DContato
       KeyField = 'codigo'
       ListField = 'descricao'
-      ListSource = FDMClienteFornecedor.DTipoDocumento
+      ListSource = FDMPessoa.DTipoDocumento
       TabOrder = 0
       OnExit = DBLookupComboBox1Exit
     end
@@ -183,7 +182,6 @@ object FContato: TFContato
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitTop = 320
     object BConfirmar: TSpeedButton
       Left = 351
       Top = 0

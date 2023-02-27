@@ -49,7 +49,7 @@ var
 
 implementation
 
-uses DMClienteFornecedor, UFuncao;
+uses DMPessoa, UFuncao;
 
 {$R *.dfm}
 
@@ -67,27 +67,27 @@ begin
 
   if (validarCampos) then
   begin
-    if (FDMClienteFornecedor.TContato.State = dsInsert) then
+    if (FDMPessoa.TContato.State = dsInsert) then
     begin
-      resposta := FDMClienteFornecedor.cadastrarContato;
+      resposta := FDMPessoa.cadastrarContato;
     end
-    else if (FDMClienteFornecedor.TContato.State = dsEdit) then
+    else if (FDMPessoa.TContato.State = dsEdit) then
     begin
-      resposta := FDMClienteFornecedor.alterarContato;
+      resposta := FDMPessoa.alterarContato;
     end;
 
     if (resposta) then
     begin
-      FDMClienteFornecedor.TContato.Post;
-      FDMClienteFornecedor.TContato.Append;
-      FDMClienteFornecedor.TContatocodigoPessoa.Value := FDMClienteFornecedor.TClienteFornecedorcodigo.Value;
+      FDMPessoa.TContato.Post;
+      FDMPessoa.TContato.Append;
+      FDMPessoa.TContatocodigoPessoa.Value := FDMPessoa.TPessoacodigo.Value;
     end;
   end;
 end;
 
 procedure TFContato.DBDocumentoExit(Sender: TObject);
 begin
-  with FDMClienteFornecedor do
+  with FDMPessoa do
   begin
     if TContato.State in[dsInsert, dsEdit] then
     begin
@@ -98,7 +98,7 @@ end;
 
 procedure TFContato.DBLookupComboBox1Exit(Sender: TObject);
 begin
-  with FDMClienteFornecedor do
+  with FDMPessoa do
   begin
     if TContato.State in[dsInsert, dsEdit] then
     begin
@@ -112,20 +112,20 @@ end;
 
 procedure TFContato.EDTNascimentoChange(Sender: TObject);
 begin
-  FDMClienteFornecedor.TContatodataNascimento.Value := DateToStr(EDTNascimento.Date);
+  FDMPessoa.TContatodataNascimento.Value := DateToStr(EDTNascimento.Date);
 end;
 
 procedure TFContato.FormClose(Sender: TObject; var Action: TCloseAction);
 begin
-  if FDMClienteFornecedor.TContato.State in[dsInsert, dsEdit] then
+  if FDMPessoa.TContato.State in[dsInsert, dsEdit] then
   begin
-    FDMClienteFornecedor.TContato.Cancel;
+    FDMPessoa.TContato.Cancel;
   end;
 end;
 
 procedure TFContato.FormShow(Sender: TObject);
 begin
-  EDTNascimento.Date := StrToDate(FDMClienteFornecedor.TContatodataNascimento.Value);
+  EDTNascimento.Date := StrToDate(FDMPessoa.TContatodataNascimento.Value);
 end;
 
 function TFContato.validarCampos: boolean;
@@ -134,7 +134,7 @@ var
 begin
   mensagem := TStringList.Create;
 
-  with FDMClienteFornecedor do
+  with FDMPessoa do
   begin
     if not (TContatocodigoTipoDocumento.Value > 0) then
     begin
