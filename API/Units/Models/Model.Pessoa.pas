@@ -276,6 +276,7 @@ begin
   sql.Add('SELECT CODIGO_PESSOA, NOME_FANTASIA');
   sql.Add('  FROM pessoa');
   sql.Add(' WHERE CODIGO_PESSOA = ' + IntToStrSenaoZero(FCodigo));
+  sql.Add('   AND CODIGO_TIPO_PESSOA = ' + IntToStrSenaoZero(FTipoCadastro.id));
   sql.Add(' LIMIT 1');
 
   query := FConexao.executarComandoDQL(sql.Text);
@@ -516,6 +517,7 @@ begin
     sql.Clear;
     sql.Add('DELETE FROM `pessoa`');
     sql.Add(' WHERE `pessoa`.CODIGO_PESSOA = ' + IntToStrSenaoZero(FCodigo));
+    sql.Add('   AND CODIGO_TIPO_PESSOA = ' + IntToStrSenaoZero(FTipoCadastro.id));
     FConexao.executarComandoDML(sql.Text);
     resposta := True;
   except
@@ -588,6 +590,7 @@ begin
   sql.Add('   SET `STATUS` = ''I'' ');
   sql.Add('     , CODIGO_SESSAO_ALTERACAO = ' + IntToStrSenaoZero(FConexao.codigoSessao));
   sql.Add(' WHERE CODIGO_PESSOA = ' + IntToStrSenaoZero(FCodigo));
+  sql.Add('   AND CODIGO_TIPO_PESSOA = ' + IntToStrSenaoZero(FTipoCadastro.id));
 
   FConexao.executarComandoDML(sql.Text);
   FreeAndNil(sql);

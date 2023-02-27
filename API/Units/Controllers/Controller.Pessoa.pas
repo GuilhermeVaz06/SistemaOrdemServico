@@ -156,7 +156,7 @@ begin
       if (tipoPessoa in[tpFuncionario, tpUsuario]) then
       begin
         pessoa.tipoDocumento.id := pessoa.tipoDocumento.buscarRegistroCadastrar('CPF', '999.999.999-99', 11);
-        pessoa.tipoDocumento.descricao := Req.Query['tipoDocumento'];
+        pessoa.tipoDocumento.descricao := 'CPF';
         pessoa.razaoSocial := Req.Query['nome'];
         pessoa.nomeFantasia := Req.Query['nome'];
       end
@@ -544,8 +544,8 @@ begin
       begin
         pessoa.tipoDocumento.id := pessoa.tipoDocumento.buscarRegistroCadastrar('CPF', '999.999.999-99', 11);
         pessoa.documento := body.GetValue<string>('documento', '');
-        pessoa.razaoSocial := body.GetValue<string>('nome');
-        pessoa.nomeFantasia := body.GetValue<string>('nome');
+        pessoa.razaoSocial := body.GetValue<string>('nome', '');
+        pessoa.nomeFantasia := body.GetValue<string>('nome', '');
 
         if (tipoPessoa = tpUsuario) then
         begin
@@ -793,6 +793,7 @@ begin
   try
     token := Req.Headers['token'];
     pessoa.id := strToIntZero(Req.Params['id']);
+    pessoa.tipoPessoa.id := tipoPessoa;
   except
     on E: Exception do
     begin
@@ -893,6 +894,7 @@ begin
   try
     token := Req.Headers['token'];
     pessoa.id := strToIntZero(Req.Params['id']);
+    pessoa.tipoPessoa.id := tipoPessoa;
   except
     on E: Exception do
     begin
@@ -950,7 +952,7 @@ begin
       end
       else
       begin
-        mensagem := 'Erro não tratado ao excluir um ' + classe + '!';
+        mensagem := 'Não foi possivel excluir esse ' + classe + ', pois o mesmo está sendo usado em outro registro!';
         resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro(UpperCase(classe) + '017', mensagem))));
         Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
       end;
