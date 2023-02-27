@@ -1048,6 +1048,31 @@ begin
   excluirPessoa(Req, Res, Next, 'excluirUsuario', 'Usuario', tpUsuario);
 end;
 
+procedure buscarFuncionario(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+begin
+  buscarPessoa(Req, Res, Next, 'buscarFuncionario', 'Funcionario', tpFuncionario);
+end;
+
+procedure cadastrarFuncionario(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+begin
+  cadastrarPessoa(Req, Res, Next, 'cadastrarFuncionario', 'Funcionario', tpFuncionario);
+end;
+
+procedure alterarFuncionario(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+begin
+  alterarPessoa(Req, Res, Next, 'alterarFuncionario', 'Funcionario', tpFuncionario);
+end;
+
+procedure inativarFuncionario(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+begin
+  inativarPessoa(Req, Res, Next, 'inativarFuncionario', 'Funcionario', tpFuncionario);
+end;
+
+procedure excluirFuncionario(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+begin
+  excluirPessoa(Req, Res, Next, 'excluirFuncionario', 'Funcionario', tpFuncionario);
+end;
+
 procedure Registry;
 begin
   criarConexao;
@@ -1068,6 +1093,12 @@ begin
   THorse.Put('/usuario/:id', alterarUsuario);
   THorse.Delete('/usuario/:id', inativarUsuario);
   THorse.Delete('/usuarioExcluir/:id', excluirUsuario);
+
+  THorse.Get('/funcionario', buscarFuncionario);
+  THorse.Post('/funcionario', cadastrarFuncionario);
+  THorse.Put('/funcionario/:id', alterarFuncionario);
+  THorse.Delete('/funcionario/:id', inativarFuncionario);
+  THorse.Delete('/funcionarioExcluir/:id', excluirFuncionario);
 end;
 
 end.
