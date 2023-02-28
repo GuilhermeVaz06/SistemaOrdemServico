@@ -24,7 +24,9 @@ uses
   Controller.Pessoa in '..\Units\Controllers\Controller.Pessoa.pas',
   Controller.Pessoa.Endereco in '..\Units\Controllers\Controller.Pessoa.Endereco.pas',
   Model.Pessoa.Endereco in '..\Units\Models\Model.Pessoa.Endereco.pas',
-  Controller.Pessoa.Contato in '..\Units\Controllers\Controller.Pessoa.Contato.pas';
+  Controller.Pessoa.Contato in '..\Units\Controllers\Controller.Pessoa.Contato.pas',
+  Model.Funcao in '..\Units\Models\Model.Funcao.pas',
+  Controller.Funcao in '..\Units\Controllers\Controller.Funcao.pas';
 
 {$R *.res}
 

@@ -502,7 +502,7 @@ begin
 
       if not (Assigned(tipoEnderecoConsultado)) then
       begin
-        erros.Add('Nenhuma tipo de Endereço encontrado com o codigo [' + IntToStrSenaoZero(tipoEndereco.id) + ']!');
+        erros.Add('Nenhum tipo de Endereço encontrado com o codigo [' + IntToStrSenaoZero(tipoEndereco.id) + ']!');
       end
       else
       begin

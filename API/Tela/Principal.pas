@@ -48,7 +48,8 @@ implementation
 uses Controller.Pais, Controller.Estado, Controller.Cidade,
      Controller.TipoDocumento, Controller.TipoEndereco, UFuncao,
      Controller.Pessoa, Controller.Pessoa.OutroDocumento,
-     Controller.Pessoa.Endereco, Controller.Pessoa.Contato;
+     Controller.Pessoa.Endereco, Controller.Pessoa.Contato,
+     Controller.Funcao;
 
 {$R *.dfm}
 
@@ -90,6 +91,7 @@ begin
     Controller.pessoa.OutroDocumento.Registry;
     Controller.pessoa.Endereco.Registry;
     Controller.pessoa.Contato.Registry;
+    Controller.Funcao.Registry;
 
     if (Trim(UpperCase(EIP.Text)) = 'LOCALHOST') then
     begin
@@ -137,6 +139,7 @@ begin
     Controller.pessoa.OutroDocumento.destruirConexao;
     Controller.pessoa.Endereco.destruirConexao;
     Controller.pessoa.Contato.destruirConexao;
+    Controller.Funcao.destruirConexao;
 
     PStatus.Caption := 'Status: Parado';
     PStatus.Font.Color := clRed;

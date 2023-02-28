@@ -123,6 +123,8 @@
         <DCCReference Include="..\Units\Controllers\Controller.Pessoa.Endereco.pas"/>
         <DCCReference Include="..\Units\Models\Model.Pessoa.Endereco.pas"/>
         <DCCReference Include="..\Units\Controllers\Controller.Pessoa.Contato.pas"/>
+        <DCCReference Include="..\Units\Models\Model.Funcao.pas"/>
+        <DCCReference Include="..\Units\Controllers\Controller.Funcao.pas"/>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>
