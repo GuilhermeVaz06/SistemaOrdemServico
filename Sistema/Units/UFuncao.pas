@@ -33,6 +33,7 @@ procedure desativaBotoes(form: TForm);
 procedure abreTelaCliente;
 procedure abreTelaFornecedor;
 procedure abreTelaUsuario;
+procedure abreTelaFuncionario;
 procedure ordenarGrid(Coluna: TColumn);
 procedure copiarItemJsonArray(arrayOrigem: TJSONArray; out arrayDestino : TJSONArray);
 procedure converterArrayJsonQuery(json: IRESTResponseJSON; out dataSet: TFDMemTable); overload;
@@ -96,6 +97,30 @@ begin
     Application.CreateForm(TFPessoa, FPessoa);
     FPessoa.Caption := 'Cadastro de Fornecedor';
     FDMPessoa.tipoCadastro := 'fornecedor';
+    FPessoa.ShowModal;
+  finally
+    FreeAndNil(FPessoa);
+  end;
+end;
+
+procedure abreTelaFuncionario;
+begin
+  try
+    Application.CreateForm(TFPessoa, FPessoa);
+    FPessoa.Caption := 'Cadastro de Funcionario';
+    FPessoa.DBLDocumento.Enabled := False;
+    FPessoa.LRazaoSocial.Caption := 'Nome';
+    FPessoa.DBRazaoSocial.DataField := 'nome';
+    FPessoa.LConsultaRazaoSocial.Caption := 'Nome';
+    FPessoa.DBRazaoSocial.Width := 374;
+    FPessoa.LNomeFantasia.Visible := False;
+    FPessoa.DBNomeFantasia.Visible := False;
+    FPessoa.TBOutrosDocumentos.TabVisible := False;
+    FPessoa.TBContato.TabVisible := False;
+    FPessoa.LConsultaNomeFantasia.Visible := False;
+    FPessoa.ENomeFantasia.Visible := False;
+    FPessoa.ERazaoSocial.Width := 374;
+    FDMPessoa.tipoCadastro := 'funcionario';
     FPessoa.ShowModal;
   finally
     FreeAndNil(FPessoa);

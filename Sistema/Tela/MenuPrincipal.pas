@@ -21,6 +21,7 @@ type
     LMensagemPrincipal: TLabel;
     LRodape: TLabel;
     ImageList1: TImageList;
+    Funcionario1: TMenuItem;
     procedure sair1Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure pais1Click(Sender: TObject);
@@ -32,6 +33,7 @@ type
     procedure cliente1Click(Sender: TObject);
     procedure fornecedor1Click(Sender: TObject);
     procedure usuario1Click(Sender: TObject);
+    procedure Funcionario1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -88,6 +90,11 @@ end;
 procedure TFMenuPrincipal.fornecedor1Click(Sender: TObject);
 begin
   abreTelaFornecedor;
+end;
+
+procedure TFMenuPrincipal.Funcionario1Click(Sender: TObject);
+begin
+  abreTelaFuncionario;
 end;
 
 procedure TFMenuPrincipal.pais1Click(Sender: TObject);

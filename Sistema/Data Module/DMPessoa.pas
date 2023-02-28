@@ -317,15 +317,19 @@ begin
   Conexao.AtribuirBody('codigoTipoDocumento', IntToStrSenaoZero(TPessoacodigoTipoDocumento.Value));
   Conexao.AtribuirBody('documento', TPessoadocumento.Value);
 
-  if (tipoCadastro <> 'usuario') then
+  if (tipoCadastro <> 'usuario') and (tipoCadastro <> 'funcionario') then
   begin
     Conexao.AtribuirBody('razaoSocial', TPessoarazaoSocial.Value);
     Conexao.AtribuirBody('nomeFantasia', TPessoanomeFantasia.Value);
   end
   else
   begin
+    if (FDMPessoa.tipoCadastro = 'usuario') then
+    begin
+      Conexao.AtribuirBody('senha', TPessoasenha.Value);
+    end;
+
     Conexao.AtribuirBody('nome', TPessoanome.Value);
-    Conexao.AtribuirBody('senha', TPessoasenha.Value);
   end;
 
   Conexao.AtribuirBody('telefone', TPessoatelefone.Value);
@@ -527,15 +531,19 @@ begin
   Conexao.AtribuirBody('codigoTipoDocumento', IntToStrSenaoZero(TPessoacodigoTipoDocumento.Value));
   Conexao.AtribuirBody('documento', TPessoadocumento.Value);
 
-  if (tipoCadastro <> 'usuario') then
+  if (tipoCadastro <> 'usuario') and (tipoCadastro <> 'funcionario')  then
   begin
     Conexao.AtribuirBody('razaoSocial', TPessoarazaoSocial.Value);
     Conexao.AtribuirBody('nomeFantasia', TPessoanomeFantasia.Value);
   end
   else
   begin
+    if (tipoCadastro = 'usuario') then
+    begin
+      Conexao.AtribuirBody('senha', TPessoasenha.Value);
+    end;
+
     Conexao.AtribuirBody('nome', TPessoanome.Value);
-    Conexao.AtribuirBody('senha', TPessoasenha.Value);
   end;
 
   Conexao.AtribuirBody('telefone', TPessoatelefone.Value);
@@ -585,19 +593,24 @@ begin
 
   if (Assigned(FPessoa)) then
   begin
-    if (FPessoa.ERazaoSocial.Text <> '') and (tipoCadastro <> 'usuario') then
+    if (tipoCadastro <> 'usuario') and (tipoCadastro <> 'funcionario')  then
     begin
-      Conexao.AtribuirParametro('razaoSocial', FPessoa.ERazaoSocial.Text);
-    end;
+      if (FPessoa.ERazaoSocial.Text <> '') then
+      begin
+        Conexao.AtribuirParametro('razaoSocial', FPessoa.ERazaoSocial.Text);
+      end;
 
-    if (FPessoa.ENomeFantasia.Text <> '') and (tipoCadastro <> 'usuario') then
+      if (FPessoa.ENomeFantasia.Text <> '') then
+      begin
+        Conexao.AtribuirParametro('nomeFantasia', FPessoa.ENomeFantasia.Text);
+      end;
+    end
+    else
     begin
-      Conexao.AtribuirParametro('nomeFantasia', FPessoa.ENomeFantasia.Text);
-    end;
-
-    if (FPessoa.ERazaoSocial.Text <> '') and (tipoCadastro = 'usuario') then
-    begin
-      Conexao.AtribuirParametro('nome', FPessoa.ERazaoSocial.Text);
+      if (FPessoa.ERazaoSocial.Text <> '') then
+      begin
+        Conexao.AtribuirParametro('nome', FPessoa.ERazaoSocial.Text);
+      end;
     end;
 
     if FPessoa.CBMostrarInativo.Checked then

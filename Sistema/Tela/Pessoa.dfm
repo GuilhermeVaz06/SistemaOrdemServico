@@ -243,7 +243,6 @@ object FPessoa: TFPessoa
         ActivePage = TBEndereco
         Align = alClient
         TabOrder = 2
-        ExplicitTop = 169
         object TBOutrosDocumentos: TTabSheet
           Caption = 'Outros Documentos'
           object Panel2: TPanel
@@ -1065,7 +1064,6 @@ object FPessoa: TFPessoa
             FieldName = 'nome'
             Title.Alignment = taCenter
             Title.Caption = 'Nome'
-            Width = -1
             Visible = False
           end
           item

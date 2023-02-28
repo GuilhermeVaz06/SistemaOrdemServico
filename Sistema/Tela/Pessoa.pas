@@ -133,7 +133,8 @@ begin
     UFuncao.desativaBotoes(self);
     FDMPessoa.TPessoa.Edit;
 
-    if (FDMPessoa.tipoCadastro = 'usuario') then
+    if (FDMPessoa.tipoCadastro = 'usuario') or
+       (FDMPessoa.tipoCadastro = 'funcionario') then
     begin
       PCDados.ActivePage := TBEndereco;
     end
@@ -152,7 +153,8 @@ begin
   begin
     TPessoa.Append;
 
-    if (tipoCadastro = 'usuario') then
+    if (tipoCadastro = 'usuario') or
+       (tipoCadastro = 'funcionario') then
     begin
       PCDados.ActivePage := TBEndereco;
 
@@ -422,7 +424,8 @@ begin
       resposta := FDMPessoa.alterarPessoa;
     end;
 
-    if (FDMPessoa.tipoCadastro <> 'usuario') then
+    if (FDMPessoa.tipoCadastro <> 'usuario') and
+       (FDMPessoa.tipoCadastro <> 'funcionario') then
     begin
       mensagem := 'Nenhum item (endereço, outro documento ou contato)';
     end
@@ -496,7 +499,8 @@ var
 begin
   PCTela.ActivePage := TBConsulta;
 
-  if (FDMPessoa.tipoCadastro = 'usuario') then
+  if (FDMPessoa.tipoCadastro = 'usuario') or
+     (FDMPessoa.tipoCadastro = 'funcionario') then
   begin
     PCDados.ActivePage := TBEndereco;
 
@@ -610,7 +614,8 @@ var
 begin
   mensagem := TStringList.Create;
 
-  if (FDMPessoa.tipoCadastro <> 'usuario') then
+  if (FDMPessoa.tipoCadastro <> 'usuario') and
+     (FDMPessoa.tipoCadastro <> 'funcionario') then
   begin
     if (FDMPessoa.TPessoarazaoSocial.Value = '') then
     begin
@@ -653,17 +658,20 @@ begin
       mensagem.Add('O nome deve conter no maximo 150 caracteres validos!');
     end;
 
-    if (FDMPessoa.TPessoasenha.Value = '') then
+    if (FDMPessoa.tipoCadastro = 'usuario') then
     begin
-      mensagem.Add('A senha deve ser informada!');
-    end
-    else if (Length(Trim(FDMPessoa.TPessoasenha.Value)) <= 2) then
-    begin
-      mensagem.Add('A senha deve conter no minimo 2 caracteres validos!');
-    end
-    else if (Length(Trim(FDMPessoa.TPessoasenha.Value)) > 250) then
-    begin
-      mensagem.Add('A senha deve conter no maximo 250 caracteres validos!');
+      if (FDMPessoa.TPessoasenha.Value = '') then
+      begin
+        mensagem.Add('A senha deve ser informada!');
+      end
+      else if (Length(Trim(FDMPessoa.TPessoasenha.Value)) <= 2) then
+      begin
+        mensagem.Add('A senha deve conter no minimo 2 caracteres validos!');
+      end
+      else if (Length(Trim(FDMPessoa.TPessoasenha.Value)) > 250) then
+      begin
+        mensagem.Add('A senha deve conter no maximo 250 caracteres validos!');
+      end;
     end;
   end;
 
