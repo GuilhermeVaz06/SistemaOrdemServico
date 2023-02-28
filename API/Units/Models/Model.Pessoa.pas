@@ -93,6 +93,7 @@ begin
   sql.Add('     , CODIGO_SESSAO_ALTERACAO = ' + IntToStrSenaoZero(FConexao.codigoSessao));
   sql.Add('     , STATUS = ' + QuotedStr(FStatus));
   sql.Add(' WHERE CODIGO_PESSOA = ' + IntToStrSenaoZero(FCodigo));
+  sql.Add('   AND CODIGO_TIPO_PESSOA = ' + IntToStrSenaoZero(FTipoCadastro.id));
 
   FConexao.executarComandoDML(sql.Text);
   FreeAndNil(sql);
