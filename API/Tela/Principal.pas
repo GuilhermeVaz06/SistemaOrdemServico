@@ -82,6 +82,7 @@ begin
     ativar(true);
 
     FConexao := TConexao.Create;
+    Controller.Funcao.Registry;
     Controller.Pais.Registry;
     Controller.Estado.Registry;
     Controller.Cidade.Registry;
@@ -91,7 +92,6 @@ begin
     Controller.pessoa.OutroDocumento.Registry;
     Controller.pessoa.Endereco.Registry;
     Controller.pessoa.Contato.Registry;
-    Controller.Funcao.Registry;
 
     if (Trim(UpperCase(EIP.Text)) = 'LOCALHOST') then
     begin

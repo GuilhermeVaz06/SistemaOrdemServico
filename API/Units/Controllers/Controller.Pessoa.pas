@@ -39,13 +39,19 @@ begin
     resposta.AddPair('razaoSocial', pessoaItem.razaoSocial);
     resposta.AddPair('nomeFantasia', pessoaItem.nomeFantasia);
   end
-  else
+  else if pessoaItem.tipoPessoa.id in [tpUsuario, tpFuncionario] then
   begin
     resposta.AddPair('nome', pessoaItem.razaoSocial);
   end;
 
   resposta.AddPair('telefone', pessoaItem.telefone);
   resposta.AddPair('email', pessoaItem.email);
+
+  if pessoaItem.tipoPessoa.id = tpFuncionario then
+  begin
+    resposta.AddPair('codigoFuncao', TJSONNumber.Create(pessoaItem.funcao.id));
+    resposta.AddPair('funcao', pessoaItem.funcao.descricao);
+  end;
 
   if pessoaItem.tipoPessoa.id = tpUsuario then
   begin
@@ -159,9 +165,20 @@ begin
         pessoa.tipoDocumento.descricao := 'CPF';
         pessoa.razaoSocial := Req.Query['nome'];
         pessoa.nomeFantasia := Req.Query['nome'];
+
+        if (tipoPessoa = tpUsuario) then
+        begin
+          pessoa.funcao.id := pessoa.funcao.buscarRegistroCadastrar('NENHUM');
+        end
+        else if (tipoPessoa = tpFuncionario) then
+        begin
+          pessoa.funcao.id := strToIntZero(Req.Query['codigoFuncao']);
+          pessoa.funcao.descricao := Req.Query['funcao'];
+        end;
       end
-      else
+      else if (tipoPessoa in[tpCliente, tpFornecedor]) then
       begin
+        pessoa.funcao.id := pessoa.funcao.buscarRegistroCadastrar('NENHUM');
         pessoa.tipoDocumento.id := strToIntZero(Req.Query['codigoTipoDocumento']);
         pessoa.tipoDocumento.descricao := Req.Query['tipoDocumento'];
         pessoa.razaoSocial := Req.Query['razaoSocial'];
@@ -311,14 +328,17 @@ begin
         if (tipoPessoa = tpUsuario) then
         begin
           pessoa.senha := body.GetValue<string>('senha', '');
+          pessoa.funcao.id := pessoa.funcao.buscarRegistroCadastrar('NENHUM');
         end
-        else
+        else if (tipoPessoa = tpFuncionario) then
         begin
+          pessoa.funcao.id := body.GetValue<integer>('codigoFuncao', 0);
           pessoa.senha := '';
         end;
       end
-      else
+      else if (tipoPessoa in[tpCliente, tpFornecedor]) then
       begin
+        pessoa.funcao.id := pessoa.funcao.buscarRegistroCadastrar('NENHUM');
         pessoa.tipoDocumento.id := body.GetValue<integer>('codigoTipoDocumento', 0);
         pessoa.documento := body.GetValue<string>('documento', '');
         pessoa.razaoSocial := body.GetValue<string>('razaoSocial', '');
@@ -382,7 +402,7 @@ begin
         erros.Add('O Nome fantasia deve conter no maximo 150 caracteres validos!');
       end;
     end
-    else
+    else if (tipoPessoa in[tpUsuario, tpFuncionario]) then
     begin
       if (pessoa.razaoSocial = '') then
       begin
@@ -410,6 +430,13 @@ begin
         else if (Length(pessoa.senha) > 250) then
         begin
           erros.Add('A senha deve conter no maximo 250 caracteres validos!');
+        end;
+      end
+      else if (tipoPessoa = tpUsuario) then
+      begin
+        if not (pessoa.funcao.id > 0) then
+        begin
+          erros.Add('A função do funcionario deve ser selecionada!');
         end;
       end;
     end;
@@ -463,6 +490,16 @@ begin
         else if (Length(Trim(soNumeros(pessoa.documento))) <> pessoaConsultado.tipoDocumento.qtdeCaracteres) then
         begin
           erros.Add('O Numero do documento é invalido, deve conter ' + IntToStrSenaoZero(pessoaConsultado.tipoDocumento.qtdeCaracteres) + ' numericos e validos!');
+        end
+        else
+        begin
+          pessoaConsultado.funcao.Destroy;
+          pessoaConsultado.funcao := pessoa.funcao.consultarChave();
+
+          if not (Assigned(pessoaConsultado.funcao)) then
+          begin
+            erros.Add('Nenhuma função encontrada com o codigo [' + IntToStrSenaoZero(pessoa.funcao.id) + ']!');
+          end;
         end;
 
         pessoaConsultado.Destroy;
@@ -549,15 +586,18 @@ begin
 
         if (tipoPessoa = tpUsuario) then
         begin
+          pessoa.funcao.id := pessoa.funcao.buscarRegistroCadastrar('NENHUM');
           pessoa.senha := body.GetValue<string>('senha', '');
         end
-        else
+        else if (tipoPessoa = tpFuncionario) then
         begin
+          pessoa.funcao.id := body.GetValue<integer>('codigoFuncao', 0);
           pessoa.senha := '';
         end;
       end
-      else
+      else if (tipoPessoa in[tpCliente, tpFornecedor]) then
       begin
+        pessoa.funcao.id := pessoa.funcao.buscarRegistroCadastrar('NENHUM');
         pessoa.tipoDocumento.id := body.GetValue<integer>('codigoTipoDocumento', 0);
         pessoa.documento := body.GetValue<string>('documento', '');
         pessoa.razaoSocial := body.GetValue<string>('razaoSocial', '');
@@ -627,7 +667,7 @@ begin
         erros.Add('O Nome fantasia deve conter no maximo 150 caracteres validos!');
       end;
     end
-    else
+    else if (tipoPessoa in[tpFuncionario, tpUsuario]) then
     begin
       if (pessoa.razaoSocial = '') then
       begin
@@ -655,6 +695,13 @@ begin
         else if (Length(pessoa.senha) > 250) then
         begin
           erros.Add('A senha deve conter no maximo 250 caracteres validos!');
+        end;
+      end
+      else if (tipoPessoa = tpFuncionario) then
+      begin
+        if not (pessoa.funcao.id > 0) then
+        begin
+          erros.Add('A função do funcionario deve ser selecionada!');
         end;
       end;
     end;
@@ -710,7 +757,7 @@ begin
         end
         else
         begin
-           pessoaConsultado := TPessoa.Create;
+          pessoaConsultado := TPessoa.Create;
           pessoaConsultado.tipoDocumento.Destroy;
           pessoaConsultado.tipoDocumento := pessoa.tipoDocumento.consultarChave();
 
@@ -721,7 +768,17 @@ begin
           else if (Length(Trim(soNumeros(pessoa.documento))) <> pessoaConsultado.tipoDocumento.qtdeCaracteres) then
           begin
             erros.Add('O Numero do documento é invalido, deve conter ' + IntToStrSenaoZero(pessoaConsultado.tipoDocumento.qtdeCaracteres) + ' numericos e validos!');
+          end
+          else
+        begin
+          pessoaConsultado.funcao.Destroy;
+          pessoaConsultado.funcao := pessoa.funcao.consultarChave();
+
+          if not (Assigned(pessoaConsultado.funcao)) then
+          begin
+            erros.Add('Nenhuma função encontrada com o codigo [' + IntToStrSenaoZero(pessoa.funcao.id) + ']!');
           end;
+        end;
 
           pessoaConsultado.Destroy;
         end;

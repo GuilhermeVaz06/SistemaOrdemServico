@@ -3,7 +3,7 @@ unit Model.Pessoa;
 interface
 
 uses Model.Sessao, Model.TipoPessoa, Model.TipoDocumento, System.SysUtils,
-     ZDataset, System.Classes;
+     ZDataset, System.Classes, Model.Funcao;
 
 type TPessoa = class
 
@@ -11,6 +11,7 @@ type TPessoa = class
     FCodigo: integer;
     FTipoCadastro: TTipoPessoa;
     FTipoDocumento: TTipoDocumento;
+    FFuncao: TFuncao;
     FDocumento: string;
     FRazaoSocial: string;
     FNomeFantasia: string;
@@ -39,6 +40,7 @@ type TPessoa = class
     property id:Integer read FCodigo write FCodigo;
     property tipoPessoa: TTipoPessoa read FTipoCadastro write FTipoCadastro;
     property tipoDocumento: TTipoDocumento read FTipoDocumento write FTipoDocumento;
+    property funcao: TFuncao read FFuncao write FFuncao;
     property documento: string read FDocumento write FDocumento;
     property razaoSocial: string read FRazaoSocial write FRazaoSocial;
     property nomeFantasia: string read FNomeFantasia write FNomeFantasia;
@@ -83,6 +85,7 @@ begin
   sql := TStringList.Create;
   sql.Add('UPDATE `pessoa`');
   sql.Add('   SET CODIGO_TIPO_DOCUMENTO = ' + IntToStrSenaoZero(FTipoDocumento.id));
+  sql.Add('     , CODIGO_FUNCAO = ' + IntToStrSenaoZero(FFuncao.id));
   sql.Add('     , DOCUMENTO = ' + QuotedStr(trim(soNumeros(FDocumento))));
   sql.Add('     , RAZAO_SOCIAL = ' + QuotedStr(FRazaoSocial));
   sql.Add('     , NOME_FANTASIA = ' + QuotedStr(FNomeFantasia));
@@ -115,7 +118,7 @@ begin
   sql := TStringList.Create;
   sql.Add('INSERT INTO `pessoa` (CODIGO_PESSOA, CODIGO_TIPO_PESSOA, CODIGO_TIPO_DOCUMENTO');
   sql.Add(', DOCUMENTO, RAZAO_SOCIAL, NOME_FANTASIA, TELEFONE, EMAIL, SENHA, OBSERVACAO');
-  sql.Add(', CODIGO_SESSAO_CADASTRO, CODIGO_SESSAO_ALTERACAO) VALUES (');
+  sql.Add(', CODIGO_SESSAO_CADASTRO, CODIGO_SESSAO_ALTERACAO, CODIGO_FUNCAO) VALUES (');
   sql.Add(' ' + IntToStrSenaoZero(codigo));                                     //CODIGO_PESSOA
   sql.Add(',' + IntToStrSenaoZero(FTipoCadastro.id));                           //CODIGO_TIPO_PESSOA
   sql.Add(',' + IntToStrSenaoZero(FTipoDocumento.id));                          //CODIGO_TIPO_DOCUMENTO
@@ -128,6 +131,7 @@ begin
   sql.Add(',' + QuotedStr(FObservacao));                                        //OBSERVACAO
   sql.Add(',' + IntToStrSenaoZero(FConexao.codigoSessao));                      //CODIGO_SESSAO_CADASTRO
   sql.Add(',' + IntToStrSenaoZero(FConexao.codigoSessao));                      //CODIGO_SESSAO_ALTERACAO
+  sql.Add(',' + IntToStrSenaoZero(FFuncao.id));                                 //CODIGO_FUNCAO
   sql.Add(')');
 
   FConexao.executarComandoDML(sql.Text);
@@ -165,6 +169,7 @@ begin
     sql.Add(', pessoa.RAZAO_SOCIAL, pessoa.NOME_FANTASIA, pessoa.TELEFONE, pessoa.EMAIL, pessoa.SENHA, pessoa.OBSERVACAO');
     sql.Add(', pessoa.CODIGO_SESSAO_CADASTRO, pessoa.CODIGO_SESSAO_ALTERACAO, pessoa.DATA_CADASTRO, pessoa.DATA_ULTIMA_ALTERACAO');
     sql.Add(', pessoa.`STATUS`, tipo_documento.DESCRICAO, tipo_documento.QTDE_CARACTERES, tipo_documento.MASCARA_CARACTERES');
+    sql.Add(', pessoa.CODIGO_FUNCAO, funcao.DESCRICAO nomeFuncao');
     sql.Add('');
     sql.Add(', (SELECT p2.RAZAO_SOCIAL');
     sql.Add('     FROM pessoa p2, sessao ');
@@ -176,8 +181,9 @@ begin
     sql.Add('    WHERE p2.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
     sql.Add('      AND sessao.CODIGO_SESSAO = pessoa.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
     sql.Add('');
-    sql.Add('  FROM pessoa, tipo_documento');
+    sql.Add('  FROM pessoa, tipo_documento, funcao');
     sql.Add(' WHERE pessoa.CODIGO_TIPO_DOCUMENTO = tipo_documento.CODIGO_TIPO_DOCUMENTO');
+    sql.Add('   AND pessoa.CODIGO_FUNCAO = funcao.CODIGO_FUNCAO');
     sql.Add('   AND pessoa.`STATUS` = ' + QuotedStr(FStatus));
 
     if  (FCodigo > 0) then
@@ -188,6 +194,16 @@ begin
     if  (FTipoCadastro.id > 0) then
     begin
       sql.Add('   AND pessoa.CODIGO_TIPO_PESSOA = ' + IntToStrSenaoZero(FTipoCadastro.id));
+    end;
+
+    if  (FFuncao.id > 0) then
+    begin
+      sql.Add('   AND pessoa.CODIGO_FUNCAO = ' + IntToStrSenaoZero(FFuncao.id));
+    end;
+
+    if  (FFuncao.descricao <> '') then
+    begin
+      sql.Add('   AND funcao.DESCRICAO LIKE ' + QuotedStr('%' + FFuncao.descricao + '%'));
     end;
 
     if  (FTipoDocumento.id > 0) then
@@ -314,6 +330,7 @@ begin
   sql.Add(', pessoa.RAZAO_SOCIAL, pessoa.NOME_FANTASIA, pessoa.TELEFONE, pessoa.EMAIL, pessoa.SENHA, pessoa.OBSERVACAO');
   sql.Add(', pessoa.CODIGO_SESSAO_CADASTRO, pessoa.CODIGO_SESSAO_ALTERACAO, pessoa.DATA_CADASTRO, pessoa.DATA_ULTIMA_ALTERACAO');
   sql.Add(', pessoa.`STATUS`, tipo_documento.DESCRICAO, tipo_documento.QTDE_CARACTERES, tipo_documento.MASCARA_CARACTERES');
+  sql.Add(', pessoa.CODIGO_FUNCAO, funcao.DESCRICAO nomeFuncao');
   sql.Add('');
   sql.Add(', (SELECT p2.RAZAO_SOCIAL');
   sql.Add('     FROM pessoa p2, sessao ');
@@ -325,8 +342,9 @@ begin
   sql.Add('    WHERE p2.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
   sql.Add('      AND sessao.CODIGO_SESSAO = pessoa.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
   sql.Add('');
-  sql.Add('  FROM pessoa, tipo_documento');
+  sql.Add('  FROM pessoa, tipo_documento, funcao');
   sql.Add(' WHERE pessoa.CODIGO_TIPO_DOCUMENTO = tipo_documento.CODIGO_TIPO_DOCUMENTO');
+  sql.Add('   AND pessoa.CODIGO_FUNCAO = funcao.CODIGO_FUNCAO');
   sql.Add('   AND pessoa.CODIGO_PESSOA = ' + IntToStrSenaoZero(codigo));
 
   query := FConexao.executarComandoDQL(sql.Text);
@@ -355,8 +373,9 @@ var
 begin
   sql := TStringList.Create;
   sql.Add('SELECT COUNT(pessoa.CODIGO_PESSOA) TOTAL');
-  sql.Add('  FROM pessoa, tipo_documento');
+  sql.Add('  FROM pessoa, tipo_documento, funcao');
   sql.Add(' WHERE pessoa.CODIGO_TIPO_DOCUMENTO = tipo_documento.CODIGO_TIPO_DOCUMENTO ');
+  sql.Add('   AND pessoa.CODIGO_FUNCAO = funcao.CODIGO_FUNCAO');
 
   if  (FCodigo > 0) then
   begin
@@ -366,6 +385,16 @@ begin
   if  (FTipoCadastro.id > 0) then
   begin
     sql.Add('   AND pessoa.CODIGO_TIPO_PESSOA = ' + IntToStrSenaoZero(FTipoCadastro.id));
+  end;
+
+  if  (FFuncao.id > 0) then
+  begin
+    sql.Add('   AND pessoa.CODIGO_FUNCAO = ' + IntToStrSenaoZero(FFuncao.id));
+  end;
+
+  if  (FFuncao.descricao <> '') then
+  begin
+    sql.Add('   AND funcao.DESCRICAO LIKE ' + QuotedStr('%' + FFuncao.descricao + '%'));
   end;
 
   if  (FTipoDocumento.id > 0) then
@@ -430,6 +459,7 @@ constructor TPessoa.Create;
 begin
   FTipoCadastro := TTipoPessoa.Create;
   FTipoDocumento := TTipoDocumento.Create;
+  FFuncao := TFuncao.Create;
   FCadastradoPor := TSessao.Create;
   FAlteradoPor := TSessao.Create;
   inherited;
@@ -440,6 +470,11 @@ begin
   if Assigned(FTipoCadastro) then
   begin
     FTipoCadastro.Destroy;
+  end;
+
+  if Assigned(FFuncao) then
+  begin
+    FFuncao.Destroy;
   end;
 
   if Assigned(FTipoDocumento) then
@@ -603,6 +638,7 @@ begin
   FCodigo := 0;
   FTipoCadastro.limpar;
   FTipoDocumento.limpar;
+  FFuncao.limpar;
   FDocumento := '';
   FRazaoSocial := '';
   FNomeFantasia := '';
@@ -632,6 +668,8 @@ begin
     data.FTipoCadastro.id := query.FieldByName('CODIGO_TIPO_PESSOA').Value;
     data.FTipoDocumento.id := query.FieldByName('CODIGO_TIPO_DOCUMENTO').Value;
     data.FTipoDocumento.descricao := query.FieldByName('DESCRICAO').Value;
+    data.FFuncao.id := query.FieldByName('CODIGO_FUNCAO').Value;
+    data.FFuncao.descricao := query.FieldByName('nomeFuncao').Value;
     data.FTipoDocumento.qtdeCaracteres := query.FieldByName('QTDE_CARACTERES').Value;
     data.FTipoDocumento.mascara := query.FieldByName('MASCARA_CARACTERES').Value;
     data.FDocumento := query.FieldByName('DOCUMENTO').Value;
