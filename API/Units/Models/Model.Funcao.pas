@@ -50,7 +50,7 @@ type TFuncao = class
     function inativarFuncao: TFuncao;
     function verificarToken(token: string): Boolean;
     function GerarLog(classe, procedimento, requisicao: string): integer;
-
+    function buscarRegistroCadastrar(descricao: string): integer;
 end;
 
 implementation
@@ -78,6 +78,26 @@ end;
 procedure TFuncao.atualizarLog(codigo, status: Integer; resposta: string);
 begin
   FConexao.atualizarLog(codigo, status, resposta);
+end;
+
+function TFuncao.buscarRegistroCadastrar(descricao: string): integer;
+var
+  funcaoConsultado: TFuncao;
+begin
+  FDescricao := descricao;
+  funcaoConsultado := existeRegistro;
+
+  if Assigned(funcaoConsultado) then
+  begin
+    Result := funcaoConsultado.id;
+    funcaoConsultado.Destroy;
+  end
+  else
+  begin
+    funcaoConsultado := cadastrarFuncao;
+    Result := funcaoConsultado.id;
+    funcaoConsultado.Destroy;
+  end;
 end;
 
 function TFuncao.cadastrarFuncao: TFuncao;
