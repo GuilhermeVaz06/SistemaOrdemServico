@@ -55,8 +55,8 @@ object FMenuPrincipal: TFMenuPrincipal
     ExplicitWidth = 591
   end
   object MainMenu1: TMainMenu
-    Left = 298
-    Top = 28
+    Left = 299
+    Top = 27
     object cadastro1: TMenuItem
       Caption = 'Cadastro'
       object cliente1: TMenuItem
@@ -94,6 +94,10 @@ object FMenuPrincipal: TFMenuPrincipal
       object tipoEndereco1: TMenuItem
         Caption = 'Tipo de Endere'#231'o'
         OnClick = tipoEndereco1Click
+      end
+      object Funcao1: TMenuItem
+        Caption = 'Fun'#231#227'o'
+        OnClick = Funcao1Click
       end
     end
     object sair1: TMenuItem

@@ -113,11 +113,6 @@
             <FormType>dfm</FormType>
             <DesignClass>TDataModule</DesignClass>
         </DCCReference>
-        <DCCReference Include="..\Data Module\DMPais.pas">
-            <Form>FDMPais</Form>
-            <FormType>dfm</FormType>
-            <DesignClass>TDataModule</DesignClass>
-        </DCCReference>
         <DCCReference Include="..\Tela\Estado.pas">
             <Form>FEstado</Form>
             <FormType>dfm</FormType>
@@ -153,14 +148,12 @@
             <Form>FOutroDocumento</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="..\Data Module\DMClienteFornecedor.pas">
-            <Form>FDMClienteFornecedor</Form>
-            <FormType>dfm</FormType>
+        <DCCReference Include="..\Data Module\DMPessoa.pas">
+            <Form>FDMPessoa</Form>
             <DesignClass>TDataModule</DesignClass>
         </DCCReference>
-        <DCCReference Include="..\Tela\ClienteFornecedor.pas">
-            <Form>FClienteFornecedor</Form>
-            <FormType>dfm</FormType>
+        <DCCReference Include="..\Tela\Pessoa.pas">
+            <Form>FPessoa</Form>
         </DCCReference>
         <DCCReference Include="..\Tela\Endereco.pas">
             <Form>FEndereco</Form>
@@ -168,6 +161,20 @@
         </DCCReference>
         <DCCReference Include="..\Tela\Contato.pas">
             <Form>FContato</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="..\Data Module\DMPais.pas">
+            <Form>FDMPais</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TDataModule</DesignClass>
+        </DCCReference>
+        <DCCReference Include="..\Data Module\DMFuncao.pas">
+            <Form>FDMFuncao</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TDataModule</DesignClass>
+        </DCCReference>
+        <DCCReference Include="..\Tela\Funcao.pas">
+            <Form>FFuncao</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Release">

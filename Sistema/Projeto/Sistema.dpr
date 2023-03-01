@@ -7,7 +7,6 @@ uses
   Pais in '..\Tela\Pais.pas' {FPais},
   UConexao in '..\Units\UConexao.pas',
   DMEstado in '..\Data Module\DMEstado.pas' {FDMEstado: TDataModule},
-  DMPais in '..\Data Module\DMPais.pas' {FDMPais: TDataModule},
   Estado in '..\Tela\Estado.pas' {FEstado},
   DMCidade in '..\Data Module\DMCidade.pas' {FDMCidade: TDataModule},
   Cidade in '..\Tela\Cidade.pas' {FCidade},
@@ -19,7 +18,10 @@ uses
   DMPessoa in '..\Data Module\DMPessoa.pas' {FDMPessoa: TDataModule},
   Pessoa in '..\Tela\Pessoa.pas' {FPessoa},
   Endereco in '..\Tela\Endereco.pas' {FEndereco},
-  Contato in '..\Tela\Contato.pas' {FContato};
+  Contato in '..\Tela\Contato.pas' {FContato},
+  DMPais in '..\Data Module\DMPais.pas' {FDMPais: TDataModule},
+  DMFuncao in '..\Data Module\DMFuncao.pas' {FDMFuncao: TDataModule},
+  Funcao in '..\Tela\Funcao.pas' {FFuncao};
 
 {$R *.res}
 
@@ -36,5 +38,7 @@ begin
   Application.CreateForm(TFOutroDocumento, FOutroDocumento);
   Application.CreateForm(TFDMPessoa, FDMPessoa);
   Application.CreateForm(TFContato, FContato);
+  Application.CreateForm(TFDMPais, FDMPais);
+  Application.CreateForm(TFDMFuncao, FDMFuncao);
   Application.Run;
 end.

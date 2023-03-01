@@ -22,6 +22,7 @@ type
     LRodape: TLabel;
     ImageList1: TImageList;
     Funcionario1: TMenuItem;
+    Funcao1: TMenuItem;
     procedure sair1Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure pais1Click(Sender: TObject);
@@ -34,6 +35,7 @@ type
     procedure fornecedor1Click(Sender: TObject);
     procedure usuario1Click(Sender: TObject);
     procedure Funcionario1Click(Sender: TObject);
+    procedure Funcao1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -45,7 +47,7 @@ var
 
 implementation
 
-uses UFuncao, Pais, Estado, Cidade, TipoDocumento, TipoEndereco;
+uses UFuncao, Pais, Estado, Cidade, TipoDocumento, TipoEndereco, Funcao;
 
 {$R *.dfm}
 
@@ -90,6 +92,16 @@ end;
 procedure TFMenuPrincipal.fornecedor1Click(Sender: TObject);
 begin
   abreTelaFornecedor;
+end;
+
+procedure TFMenuPrincipal.Funcao1Click(Sender: TObject);
+begin
+  try
+    Application.CreateForm(TFFuncao, FFuncao);
+    FFuncao.ShowModal;
+  finally
+    FreeAndNil(FFuncao);
+  end;
 end;
 
 procedure TFMenuPrincipal.Funcionario1Click(Sender: TObject);
