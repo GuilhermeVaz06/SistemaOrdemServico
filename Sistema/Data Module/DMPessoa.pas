@@ -9,7 +9,7 @@ uses FireDAC.Stan.Intf, FireDAC.Stan.Option, FireDAC.Stan.Param, REST.Types,
 
 type
   TFDMPessoa = class(TDataModule)
-    DClienteFornecedor: TDataSource;
+    DPessoa: TDataSource;
     TPessoa: TFDMemTable;
     TPessoacodigo: TIntegerField;
     TPessoacadastradoPor: TStringField;
@@ -101,6 +101,8 @@ type
     TContatoobservacao: TMemoField;
     TPessoasenha: TStringField;
     TPessoanome: TStringField;
+    TPessoacodigoFuncao: TIntegerField;
+    TPessoafuncao: TStringField;
     procedure MemoGetText(Sender: TField; var Text: string;
       DisplayText: Boolean);
     procedure TPessoadocumentoGetText(Sender: TField; var Text: string;
@@ -322,11 +324,15 @@ begin
     Conexao.AtribuirBody('razaoSocial', TPessoarazaoSocial.Value);
     Conexao.AtribuirBody('nomeFantasia', TPessoanomeFantasia.Value);
   end
-  else
+  else if (tipoCadastro = 'usuario') or (tipoCadastro = 'funcionario') then
   begin
     if (FDMPessoa.tipoCadastro = 'usuario') then
     begin
       Conexao.AtribuirBody('senha', TPessoasenha.Value);
+    end
+    else if (FDMPessoa.tipoCadastro = 'funcionario') then
+    begin
+      Conexao.AtribuirBody('codigoFuncao', IntToStrSenaoZero(TPessoacodigoFuncao.Value));
     end;
 
     Conexao.AtribuirBody('nome', TPessoanome.Value);
@@ -536,11 +542,15 @@ begin
     Conexao.AtribuirBody('razaoSocial', TPessoarazaoSocial.Value);
     Conexao.AtribuirBody('nomeFantasia', TPessoanomeFantasia.Value);
   end
-  else
+  else if (tipoCadastro = 'usuario') or (tipoCadastro = 'funcionario')  then
   begin
     if (tipoCadastro = 'usuario') then
     begin
       Conexao.AtribuirBody('senha', TPessoasenha.Value);
+    end
+    else if (FDMPessoa.tipoCadastro = 'funcionario') then
+    begin
+      Conexao.AtribuirBody('codigoFuncao', IntToStrSenaoZero(TPessoacodigoFuncao.Value));
     end;
 
     Conexao.AtribuirBody('nome', TPessoanome.Value);

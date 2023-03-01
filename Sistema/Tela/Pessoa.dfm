@@ -129,7 +129,7 @@ object FPessoa: TFPessoa
           Top = 0
           Width = 147
           Height = 29
-          DataSource = FDMPessoa.DClienteFornecedor
+          DataSource = FDMPessoa.DPessoa
           VisibleButtons = [nbFirst, nbPrior, nbNext, nbLast]
           Align = alLeft
           TabOrder = 0
@@ -143,7 +143,7 @@ object FPessoa: TFPessoa
         Align = alBottom
         BevelOuter = bvNone
         Enabled = False
-        TabOrder = 4
+        TabOrder = 3
         object Label4: TLabel
           Left = 9
           Top = 3
@@ -180,7 +180,7 @@ object FPessoa: TFPessoa
           TabStop = False
           Color = clBtnFace
           DataField = 'cadastradoPor'
-          DataSource = FDMPessoa.DClienteFornecedor
+          DataSource = FDMPessoa.DPessoa
           ReadOnly = True
           TabOrder = 0
         end
@@ -192,7 +192,7 @@ object FPessoa: TFPessoa
           TabStop = False
           Color = clBtnFace
           DataField = 'alteradoPor'
-          DataSource = FDMPessoa.DClienteFornecedor
+          DataSource = FDMPessoa.DPessoa
           ReadOnly = True
           TabOrder = 1
         end
@@ -204,7 +204,7 @@ object FPessoa: TFPessoa
           TabStop = False
           Color = clBtnFace
           DataField = 'dataCadastro'
-          DataSource = FDMPessoa.DClienteFornecedor
+          DataSource = FDMPessoa.DPessoa
           ReadOnly = True
           TabOrder = 2
         end
@@ -216,7 +216,7 @@ object FPessoa: TFPessoa
           TabStop = False
           Color = clBtnFace
           DataField = 'dataAlteracao'
-          DataSource = FDMPessoa.DClienteFornecedor
+          DataSource = FDMPessoa.DPessoa
           ReadOnly = True
           TabOrder = 3
         end
@@ -229,22 +229,22 @@ object FPessoa: TFPessoa
         Align = alBottom
         Caption = 'Ativo'
         DataField = 'status'
-        DataSource = FDMPessoa.DClienteFornecedor
+        DataSource = FDMPessoa.DPessoa
         Enabled = False
-        TabOrder = 3
+        TabOrder = 4
         ValueChecked = 'A'
         ValueUnchecked = 'I'
       end
       object PCDados: TPageControl
         Left = 0
-        Top = 159
+        Top = 201
         Width = 1355
-        Height = 354
+        Height = 312
         ActivePage = TBEndereco
         Align = alClient
         TabOrder = 2
-        ExplicitTop = 172
-        ExplicitHeight = 341
+        ExplicitTop = 159
+        ExplicitHeight = 354
         object TBOutrosDocumentos: TTabSheet
           Caption = 'Outros Documentos'
           object Panel2: TPanel
@@ -289,7 +289,7 @@ object FPessoa: TFPessoa
             Left = 0
             Top = 29
             Width = 1347
-            Height = 277
+            Height = 235
             Align = alClient
             DataSource = FDMPessoa.DOutroDocumento
             Enabled = False
@@ -396,7 +396,7 @@ object FPessoa: TFPessoa
           end
           object CBInativoOutroDocumento: TCheckBox
             Left = 0
-            Top = 306
+            Top = 264
             Width = 1347
             Height = 17
             Align = alBottom
@@ -404,7 +404,7 @@ object FPessoa: TFPessoa
             Enabled = False
             TabOrder = 2
             OnClick = CBInativoOutroDocumentoClick
-            ExplicitTop = 293
+            ExplicitTop = 306
           end
         end
         object TBEndereco: TTabSheet
@@ -452,7 +452,7 @@ object FPessoa: TFPessoa
             Left = 0
             Top = 29
             Width = 1347
-            Height = 277
+            Height = 235
             Align = alClient
             DataSource = FDMPessoa.DEndereco
             Enabled = False
@@ -599,7 +599,7 @@ object FPessoa: TFPessoa
           end
           object CBInativoEndereco: TCheckBox
             Left = 0
-            Top = 306
+            Top = 264
             Width = 1347
             Height = 17
             Align = alBottom
@@ -607,7 +607,7 @@ object FPessoa: TFPessoa
             Enabled = False
             TabOrder = 2
             OnClick = CBInativoEnderecoClick
-            ExplicitTop = 293
+            ExplicitTop = 306
           end
         end
         object TBContato: TTabSheet
@@ -655,7 +655,7 @@ object FPessoa: TFPessoa
             Left = 0
             Top = 29
             Width = 1347
-            Height = 277
+            Height = 235
             Align = alClient
             DataSource = FDMPessoa.DContato
             Enabled = False
@@ -785,7 +785,7 @@ object FPessoa: TFPessoa
           end
           object CBInativoContato: TCheckBox
             Left = 0
-            Top = 306
+            Top = 264
             Width = 1347
             Height = 17
             Align = alBottom
@@ -793,7 +793,7 @@ object FPessoa: TFPessoa
             Enabled = False
             TabOrder = 2
             OnClick = CBInativoContatoClick
-            ExplicitTop = 293
+            ExplicitTop = 306
           end
         end
       end
@@ -801,7 +801,7 @@ object FPessoa: TFPessoa
         Left = 0
         Top = 29
         Width = 1355
-        Height = 130
+        Height = 172
         Align = alTop
         BevelOuter = bvNone
         Enabled = False
@@ -870,7 +870,7 @@ object FPessoa: TFPessoa
           TabStop = False
           Color = clBtnFace
           DataField = 'codigo'
-          DataSource = FDMPessoa.DClienteFornecedor
+          DataSource = FDMPessoa.DPessoa
           ReadOnly = True
           TabOrder = 0
         end
@@ -880,7 +880,7 @@ object FPessoa: TFPessoa
           Width = 183
           Height = 24
           DataField = 'documento'
-          DataSource = FDMPessoa.DClienteFornecedor
+          DataSource = FDMPessoa.DPessoa
           TabOrder = 2
           OnExit = DBDocumentoExit
         end
@@ -890,7 +890,7 @@ object FPessoa: TFPessoa
           Width = 102
           Height = 24
           DataField = 'codigoTipoDocumento'
-          DataSource = FDMPessoa.DClienteFornecedor
+          DataSource = FDMPessoa.DPessoa
           KeyField = 'codigo'
           ListField = 'descricao'
           ListSource = FDMPessoa.DTipoDocumento
@@ -903,7 +903,7 @@ object FPessoa: TFPessoa
           Width = 184
           Height = 24
           DataField = 'razaoSocial'
-          DataSource = FDMPessoa.DClienteFornecedor
+          DataSource = FDMPessoa.DPessoa
           TabOrder = 4
         end
         object DBNomeFantasia: TDBEdit
@@ -912,7 +912,7 @@ object FPessoa: TFPessoa
           Width = 184
           Height = 24
           DataField = 'nomeFantasia'
-          DataSource = FDMPessoa.DClienteFornecedor
+          DataSource = FDMPessoa.DPessoa
           TabOrder = 5
         end
         object DBEdit3: TDBEdit
@@ -921,7 +921,7 @@ object FPessoa: TFPessoa
           Width = 184
           Height = 24
           DataField = 'telefone'
-          DataSource = FDMPessoa.DClienteFornecedor
+          DataSource = FDMPessoa.DPessoa
           TabOrder = 6
         end
         object DBEdit4: TDBEdit
@@ -930,7 +930,7 @@ object FPessoa: TFPessoa
           Width = 184
           Height = 24
           DataField = 'email'
-          DataSource = FDMPessoa.DClienteFornecedor
+          DataSource = FDMPessoa.DPessoa
           TabOrder = 7
         end
         object DBMemo1: TDBMemo
@@ -939,9 +939,46 @@ object FPessoa: TFPessoa
           Width = 373
           Height = 108
           DataField = 'observacao'
-          DataSource = FDMPessoa.DClienteFornecedor
+          DataSource = FDMPessoa.DPessoa
           ScrollBars = ssVertical
           TabOrder = 3
+        end
+        object PFuncao: TPanel
+          Left = 0
+          Top = 125
+          Width = 383
+          Height = 46
+          BevelOuter = bvNone
+          TabOrder = 8
+          object Label8: TLabel
+            Left = 9
+            Top = 1
+            Width = 41
+            Height = 16
+            Caption = 'Fun'#231#227'o'
+          end
+          object DBDescricao: TDBEdit
+            Left = 9
+            Top = 19
+            Width = 67
+            Height = 24
+            DataField = 'codigoFuncao'
+            DataSource = FDMPessoa.DPessoa
+            TabOrder = 0
+            OnDblClick = DBDescricaoDblClick
+            OnExit = DBDescricaoExit
+          end
+          object DBEdit1: TDBEdit
+            Left = 80
+            Top = 19
+            Width = 303
+            Height = 24
+            TabStop = False
+            DataField = 'funcao'
+            DataSource = FDMPessoa.DPessoa
+            ReadOnly = True
+            TabOrder = 1
+          end
         end
       end
     end
@@ -1011,7 +1048,7 @@ object FPessoa: TFPessoa
         Width = 1355
         Height = 514
         Align = alClient
-        DataSource = FDMPessoa.DClienteFornecedor
+        DataSource = FDMPessoa.DPessoa
         Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
         ReadOnly = True
         TabOrder = 1
@@ -1070,6 +1107,14 @@ object FPessoa: TFPessoa
             Title.Alignment = taCenter
             Title.Caption = 'Nome'
             Visible = False
+          end
+          item
+            Expanded = False
+            FieldName = 'funcao'
+            Title.Alignment = taCenter
+            Title.Caption = 'Fun'#231#227'o'
+            Width = 147
+            Visible = True
           end
           item
             Expanded = False

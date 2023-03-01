@@ -3,7 +3,7 @@ object FDMPessoa: TFDMPessoa
   OnCreate = DataModuleCreate
   Height = 343
   Width = 475
-  object DClienteFornecedor: TDataSource
+  object DPessoa: TDataSource
     DataSet = TPessoa
     Left = 60
     Top = 67
@@ -41,6 +41,13 @@ object FDMPessoa: TFDMPessoa
     object TPessoadocumento: TStringField
       FieldName = 'documento'
       OnGetText = TPessoadocumentoGetText
+    end
+    object TPessoacodigoFuncao: TIntegerField
+      FieldName = 'codigoFuncao'
+    end
+    object TPessoafuncao: TStringField
+      FieldName = 'funcao'
+      Size = 150
     end
     object TPessoarazaoSocial: TStringField
       FieldName = 'razaoSocial'

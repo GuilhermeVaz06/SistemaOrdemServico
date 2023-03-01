@@ -85,6 +85,8 @@ begin
     Application.CreateForm(TFPessoa, FPessoa);
     FPessoa.Caption := 'Cadastro de Cliente';
     FDMPessoa.tipoCadastro := 'cliente';
+    FPessoa.PDados.Height := 128;
+    FPessoa.PFuncao.Visible := False;
     FPessoa.ShowModal;
   finally
     FreeAndNil(FPessoa);
@@ -97,6 +99,8 @@ begin
     Application.CreateForm(TFPessoa, FPessoa);
     FPessoa.Caption := 'Cadastro de Fornecedor';
     FDMPessoa.tipoCadastro := 'fornecedor';
+    FPessoa.PDados.Height := 128;
+    FPessoa.PFuncao.Visible := False;
     FPessoa.ShowModal;
   finally
     FreeAndNil(FPessoa);
@@ -108,6 +112,8 @@ begin
   try
     Application.CreateForm(TFPessoa, FPessoa);
     FPessoa.Caption := 'Cadastro de Funcionario';
+    FPessoa.PDados.Height := 171;
+    FPessoa.PFuncao.Visible := True;
     FPessoa.DBLDocumento.Enabled := False;
     FPessoa.LRazaoSocial.Caption := 'Nome';
     FPessoa.DBRazaoSocial.DataField := 'nome';
@@ -132,6 +138,8 @@ begin
   try
     Application.CreateForm(TFPessoa, FPessoa);
     FPessoa.Caption := 'Cadastro de Usuario';
+    FPessoa.PDados.Height := 128;
+    FPessoa.PFuncao.Visible := False;
     FPessoa.DBLDocumento.Enabled := False;
     FPessoa.LRazaoSocial.Caption := 'Nome';
     FPessoa.DBRazaoSocial.DataField := 'nome';

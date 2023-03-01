@@ -74,6 +74,10 @@ type
     BExcluirContato: TSpeedButton;
     GContato: TDBGrid;
     CBInativoContato: TCheckBox;
+    PFuncao: TPanel;
+    Label8: TLabel;
+    DBDescricao: TDBEdit;
+    DBEdit1: TDBEdit;
     procedure BFecharClick(Sender: TObject);
     procedure BCadastrarClick(Sender: TObject);
     procedure BAlterarClick(Sender: TObject);
@@ -104,6 +108,8 @@ type
     procedure BExcluirContatoClick(Sender: TObject);
     procedure BCadastrarContatoClick(Sender: TObject);
     procedure CBInativoContatoClick(Sender: TObject);
+    procedure DBDescricaoDblClick(Sender: TObject);
+    procedure DBDescricaoExit(Sender: TObject);
   private
     { Private declarations }
     function validarCampos: boolean;
@@ -118,7 +124,7 @@ var
 
 implementation
 
-uses UFuncao, DMPessoa, OutroDocumento, Endereco, Contato;
+uses UFuncao, DMPessoa, OutroDocumento, Endereco, Contato, Funcao, DMFuncao;
 
 {$R *.dfm}
 
@@ -166,6 +172,19 @@ begin
       else
       begin
         informar('Tipo documento "CPF" não localizado, contate o suporte!');
+      end;
+
+      if (tipoCadastro = 'funcionario') then
+      begin
+        if (FDMFuncao.TFuncao.Locate('descricao', 'NENHUM', [loCaseInsensitive])) then
+        begin
+          TPessoacodigoFuncao.Value := FDMFuncao.TFuncaocodigo.Value;
+          DBDescricaoExit(nil);
+        end
+        else
+        begin
+          informar('Função "NENHUM" não localizado, contate o suporte!');
+        end;
       end;
     end
     else
@@ -454,6 +473,41 @@ begin
   Result := resposta;
 end;
 
+procedure TFPessoa.DBDescricaoDblClick(Sender: TObject);
+begin
+  try
+    Application.CreateForm(TFFuncao, FFuncao);
+    FFuncao.consulta := True;
+    FFuncao.ShowModal;
+  finally
+    FDMPessoa.TPessoacodigoFuncao.Value := FDMFuncao.TFuncaocodigo.Value;
+    FreeAndNil(FFuncao);
+    DBDescricaoExit(nil);
+  end;
+end;
+
+procedure TFPessoa.DBDescricaoExit(Sender: TObject);
+begin
+  if (FDMPessoa.TPessoacodigoFuncao.Value > 0) then
+  begin
+    FDMFuncao.consultarDados(FDMPessoa.TPessoacodigoFuncao.Value);
+
+    if (FDMFuncao.TFuncao.RecordCount > 0) then
+    begin
+      FDMPessoa.TPessoacodigoFuncao.Value := FDMFuncao.TFuncaocodigo.Value;
+      FDMPessoa.TPessoafuncao.Value := FDMFuncao.TFuncaodescricao.Value;
+    end
+    else
+    begin
+      DBDescricaoDblClick(nil);
+    end;
+  end
+  else
+  begin
+    DBDescricaoDblClick(nil);
+  end;
+end;
+
 procedure TFPessoa.DBDocumentoExit(Sender: TObject);
 begin
   with FDMPessoa do
@@ -511,7 +565,8 @@ begin
       begin
         GDados.Columns.Items[i].Visible := False;
       end
-      else if (GDados.Columns.Items[i].FieldName = 'nome') then
+      else if (GDados.Columns.Items[i].FieldName = 'nome') or
+              (GDados.Columns.Items[i].FieldName = 'funcao') then
       begin
         GDados.Columns.Items[i].Visible := True;
         GDados.Columns.Items[i].Width := 117;
@@ -523,7 +578,7 @@ begin
     PCDados.ActivePage := TBOutrosDocumentos;
   end;
 
-
+  FDMFuncao.consultarDados(0);
   FDMPessoa.consultarTipoDocumento;
   BConsultarClick(nil);
 end;
@@ -643,7 +698,8 @@ begin
       mensagem.Add('O Nome fantasia deve conter no maximo 150 caracteres validos!');
     end;
   end
-  else
+  else if (FDMPessoa.tipoCadastro = 'usuario') or
+          (FDMPessoa.tipoCadastro = 'funcionario') then
   begin
     if (FDMPessoa.TPessoanome.Value = '') then
     begin
@@ -671,6 +727,13 @@ begin
       else if (Length(Trim(FDMPessoa.TPessoasenha.Value)) > 250) then
       begin
         mensagem.Add('A senha deve conter no maximo 250 caracteres validos!');
+      end;
+    end
+    else if (FDMPessoa.tipoCadastro = 'funcionario') then
+    begin
+      if not (FDMPessoa.TPessoacodigoFuncao.Value > 0) then
+      begin
+        mensagem.Add('A função deve ser selecionada!');
       end;
     end;
   end;
