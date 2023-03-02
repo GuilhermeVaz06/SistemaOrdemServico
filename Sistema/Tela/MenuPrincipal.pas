@@ -23,6 +23,7 @@ type
     ImageList1: TImageList;
     Funcionario1: TMenuItem;
     Funcao1: TMenuItem;
+    EmpresaFaturamento1: TMenuItem;
     procedure sair1Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure pais1Click(Sender: TObject);
@@ -36,6 +37,7 @@ type
     procedure usuario1Click(Sender: TObject);
     procedure Funcionario1Click(Sender: TObject);
     procedure Funcao1Click(Sender: TObject);
+    procedure EmpresaFaturamento1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -64,6 +66,11 @@ end;
 procedure TFMenuPrincipal.cliente1Click(Sender: TObject);
 begin
   abreTelaCliente;
+end;
+
+procedure TFMenuPrincipal.EmpresaFaturamento1Click(Sender: TObject);
+begin
+  abreTelaEmpresa;
 end;
 
 procedure TFMenuPrincipal.estado1Click(Sender: TObject);

@@ -529,6 +529,7 @@ begin
       TPessoatipoDocumento.Value := QTipoDocumentodescricao.Value;
       TPessoaqtdeCaracteres.Value := QTipoDocumentoqtdeCaracteres.Value;
       TPessoamascaraCaracteres.Value := QTipoDocumentomascara.Value;
+      DBDocumento.MaxLength := QTipoDocumentoqtdeCaracteres.Value;
       DBDocumento.SetFocus;
     end;
   end;

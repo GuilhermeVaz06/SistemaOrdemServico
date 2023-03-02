@@ -31,6 +31,7 @@ function converterJsonTextoJsonValue(jsonText: string): TJSONValue;
 function converterJsonValueJsonArray(json: TJSONValue; nome: string): TJSONArray;
 procedure desativaBotoes(form: TForm);
 procedure abreTelaCliente;
+procedure abreTelaEmpresa;
 procedure abreTelaFornecedor;
 procedure abreTelaUsuario;
 procedure abreTelaFuncionario;
@@ -85,6 +86,20 @@ begin
     Application.CreateForm(TFPessoa, FPessoa);
     FPessoa.Caption := 'Cadastro de Cliente';
     FDMPessoa.tipoCadastro := 'cliente';
+    FPessoa.PDados.Height := 128;
+    FPessoa.PFuncao.Visible := False;
+    FPessoa.ShowModal;
+  finally
+    FreeAndNil(FPessoa);
+  end;
+end;
+
+procedure abreTelaEmpresa;
+begin
+  try
+    Application.CreateForm(TFPessoa, FPessoa);
+    FPessoa.Caption := 'Cadastro de Empresa Faturamento';
+    FDMPessoa.tipoCadastro := 'empresa';
     FPessoa.PDados.Height := 128;
     FPessoa.PFuncao.Visible := False;
     FPessoa.ShowModal;

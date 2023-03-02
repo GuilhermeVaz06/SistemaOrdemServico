@@ -243,8 +243,6 @@ object FPessoa: TFPessoa
         ActivePage = TBEndereco
         Align = alClient
         TabOrder = 2
-        ExplicitTop = 159
-        ExplicitHeight = 354
         object TBOutrosDocumentos: TTabSheet
           Caption = 'Outros Documentos'
           object Panel2: TPanel
@@ -404,7 +402,6 @@ object FPessoa: TFPessoa
             Enabled = False
             TabOrder = 2
             OnClick = CBInativoOutroDocumentoClick
-            ExplicitTop = 306
           end
         end
         object TBEndereco: TTabSheet
@@ -607,7 +604,6 @@ object FPessoa: TFPessoa
             Enabled = False
             TabOrder = 2
             OnClick = CBInativoEnderecoClick
-            ExplicitTop = 306
           end
         end
         object TBContato: TTabSheet
@@ -793,7 +789,6 @@ object FPessoa: TFPessoa
             Enabled = False
             TabOrder = 2
             OnClick = CBInativoContatoClick
-            ExplicitTop = 306
           end
         end
       end

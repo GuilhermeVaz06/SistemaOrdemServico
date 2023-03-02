@@ -35,7 +35,7 @@ begin
   resposta.AddPair('mascaraCaracteres', pessoaItem.tipoDocumento.mascara);
   resposta.AddPair('documento', pessoaItem.documento);
 
-  if pessoaItem.tipoPessoa.id in [tpCliente, tpFornecedor] then
+  if pessoaItem.tipoPessoa.id in [tpCliente, tpFornecedor, tpEmpresa] then
   begin
     resposta.AddPair('razaoSocial', pessoaItem.razaoSocial);
     resposta.AddPair('nomeFantasia', pessoaItem.nomeFantasia);
@@ -177,7 +177,7 @@ begin
           pessoa.funcao.descricao := Req.Query['funcao'];
         end;
       end
-      else if (tipoPessoa in[tpCliente, tpFornecedor]) then
+      else if (tipoPessoa in[tpCliente, tpFornecedor, tpEmpresa]) then
       begin
         pessoa.funcao.id := pessoa.funcao.buscarRegistroCadastrar('NENHUM');
         pessoa.tipoDocumento.id := strToIntZero(Req.Query['codigoTipoDocumento']);
@@ -337,7 +337,7 @@ begin
           pessoa.senha := '';
         end;
       end
-      else if (tipoPessoa in[tpCliente, tpFornecedor]) then
+      else if (tipoPessoa in[tpCliente, tpFornecedor, tpEmpresa]) then
       begin
         pessoa.funcao.id := pessoa.funcao.buscarRegistroCadastrar('NENHUM');
         pessoa.tipoDocumento.id := body.GetValue<integer>('codigoTipoDocumento', 0);
@@ -375,7 +375,7 @@ begin
     erros := TStringList.Create;
     arrayResposta := TJSONArray.Create;
 
-    if (tipoPessoa in[tpCliente, tpFornecedor]) then
+    if (tipoPessoa in[tpCliente, tpFornecedor, tpEmpresa]) then
     begin
       if (pessoa.razaoSocial = '') then
       begin
@@ -596,7 +596,7 @@ begin
           pessoa.senha := '';
         end;
       end
-      else if (tipoPessoa in[tpCliente, tpFornecedor]) then
+      else if (tipoPessoa in[tpCliente, tpFornecedor, tpEmpresa]) then
       begin
         pessoa.funcao.id := pessoa.funcao.buscarRegistroCadastrar('NENHUM');
         pessoa.tipoDocumento.id := body.GetValue<integer>('codigoTipoDocumento', 0);
@@ -640,7 +640,7 @@ begin
       erros.Add('O Codigo do ' + classe  + ' deve ser informado, ou deve ser um numero inteiro valido!');
     end;
 
-    if (tipoPessoa in[tpCliente, tpFornecedor]) then
+    if (tipoPessoa in[tpCliente, tpFornecedor, tpEmpresa]) then
     begin
       if (pessoa.razaoSocial = '') then
       begin
