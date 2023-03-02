@@ -13,6 +13,7 @@ var
   const tpFornecedor = 2;
   const tpFuncionario = 3;
   const tpUsuario = 4;
+  const tpEmpresa = 5;
 
 procedure Registry;
 procedure destruirConexao;
@@ -1130,6 +1131,31 @@ begin
   excluirPessoa(Req, Res, Next, 'excluirFuncionario', 'Funcionario', tpFuncionario);
 end;
 
+procedure buscarEmpresa(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+begin
+  buscarPessoa(Req, Res, Next, 'buscarEmpresa', 'Empresa', tpEmpresa);
+end;
+
+procedure cadastrarEmpresa(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+begin
+  cadastrarPessoa(Req, Res, Next, 'cadastrarEmpresa', 'Empresa', tpEmpresa);
+end;
+
+procedure alterarEmpresa(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+begin
+  alterarPessoa(Req, Res, Next, 'alterarEmpresa', 'Empresa', tpEmpresa);
+end;
+
+procedure inativarEmpresa(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+begin
+  inativarPessoa(Req, Res, Next, 'inativarEmpresa', 'Empresa', tpEmpresa);
+end;
+
+procedure excluirEmpresa(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+begin
+  excluirPessoa(Req, Res, Next, 'excluirEmpresa', 'Empresa', tpEmpresa);
+end;
+
 procedure Registry;
 begin
   criarConexao;
@@ -1156,6 +1182,12 @@ begin
   THorse.Put('/funcionario/:id', alterarFuncionario);
   THorse.Delete('/funcionario/:id', inativarFuncionario);
   THorse.Delete('/funcionarioExcluir/:id', excluirFuncionario);
+
+  THorse.Get('/empresa', buscarEmpresa);
+  THorse.Post('/empresa', cadastrarEmpresa);
+  THorse.Put('/empresa/:id', alterarEmpresa);
+  THorse.Delete('/empresa/:id', inativarEmpresa);
+  THorse.Delete('/empresa/:id', excluirEmpresa);
 end;
 
 end.
