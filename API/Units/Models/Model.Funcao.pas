@@ -9,6 +9,10 @@ type TFuncao = class
   private
     FCodigo: integer;
     FDescricao: string;
+    FValorHoraNormal: Double;
+    FValorHora50: Double;
+    FValorHora100: Double;
+    FValorAdicionalNoturno: Double;
     FCadastradoPor: TSessao;
     FAlteradoPor: TSessao;
     FDataCadastro: TDateTime;
@@ -29,6 +33,10 @@ type TFuncao = class
 
     property id:Integer read FCodigo write FCodigo;
     property descricao: string read FDescricao write FDescricao;
+    property valorHoraNormal: Double read FValorHoraNormal write FValorHoraNormal;
+    property valorHora50: Double read FValorHora50 write FValorHora50;
+    property valorHora100: Double read FValorHora100 write FValorHora100;
+    property valorAdicionalNoturno: Double read FValorAdicionalNoturno write FValorAdicionalNoturno;
     property cadastradoPor: TSessao read FCadastradoPor write FCadastradoPor;
     property alteradoPor: TSessao read FAlteradoPor write FAlteradoPor;
     property dataCadastro: TDateTime read FDataCadastro write FDataCadastro;
@@ -66,6 +74,10 @@ begin
   sql := TStringList.Create;
   sql.Add('UPDATE `funcao`');
   sql.Add('   SET DESCRICAO = ' + QuotedStr(FDescricao));
+  sql.Add('     , `VALOR_HORA_NORMAL` = ' + VirgulaPonto(FValorHoraNormal));
+  sql.Add('     , `VALOR_HORA_50` = ' + VirgulaPonto(FValorHora50));
+  sql.Add('     , `VALOR_HORA_100` = ' + VirgulaPonto(FValorHora100));
+  sql.Add('     , `VALOR_AD_NOTURNO` = ' + VirgulaPonto(FValorAdicionalNoturno));
   sql.Add('     , `STATUS` = ' + QuotedStr(FStatus));
   sql.Add('     , CODIGO_SESSAO_ALTERACAO = ' + IntToStrSenaoZero(FConexao.codigoSessao));
   sql.Add(' WHERE CODIGO_FUNCAO = ' + IntToStrSenaoZero(FCodigo));
@@ -109,11 +121,17 @@ begin
 
   sql := TStringList.Create;
   sql.Add('INSERT INTO `funcao` (`CODIGO_FUNCAO`, `DESCRICAO`');
-  sql.Add(',`CODIGO_SESSAO_CADASTRO`, `CODIGO_SESSAO_ALTERACAO`) VALUES (');
+  sql.Add(',`CODIGO_SESSAO_CADASTRO`, `CODIGO_SESSAO_ALTERACAO`');
+  sql.Add(', `VALOR_HORA_NORMAL`, `VALOR_HORA_50`, `VALOR_HORA_100`');
+  sql.Add(', `VALOR_AD_NOTURNO`) VALUES (');
   sql.Add(' ' + IntToStrSenaoZero(codigo));                                     //CODIGO_FUNCAO
   sql.Add(',' + QuotedStr(FDescricao));                                         //DESCRICAO
   sql.Add(',' + IntToStrSenaoZero(FConexao.codigoSessao));                      //CODIGO_SESSAO_CADASTRO
   sql.Add(',' + IntToStrSenaoZero(FConexao.codigoSessao));                      //CODIGO_SESSAO_ALTERACAO
+  sql.Add(',' + VirgulaPonto(FValorHoraNormal));                                //VALOR_HORA_NORMAL
+  sql.Add(',' + VirgulaPonto(FValorHora50));                                    //VALOR_HORA_50
+  sql.Add(',' + VirgulaPonto(FValorHora100));                                   //VALOR_HORA_100
+  sql.Add(',' + VirgulaPonto(FValorAdicionalNoturno));                          //VALOR_AD_NOTURNO
   sql.Add(')');
 
   FConexao.executarComandoDML(sql.Text);
@@ -149,7 +167,8 @@ begin
     sql := TStringList.Create;
     sql.Add('SELECT funcao.CODIGO_FUNCAO, funcao.DESCRICAO, funcao.CODIGO_SESSAO_CADASTRO');
     sql.Add(', funcao.CODIGO_SESSAO_ALTERACAO, funcao.DATA_CADASTRO, funcao.DATA_ULTIMA_ALTERACAO');
-    sql.Add(', funcao.`STATUS`');
+    sql.Add(', funcao.`STATUS`, funcao.`VALOR_HORA_NORMAL`, funcao.`VALOR_HORA_50`, funcao.`VALOR_HORA_100`');
+    sql.Add(', funcao.`VALOR_AD_NOTURNO`');
     sql.Add('');
     sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
     sql.Add('     FROM pessoa, sessao ');
@@ -172,6 +191,26 @@ begin
     if  (FCodigo > 0) then
     begin
       sql.Add('   AND funcao.CODIGO_FUNCAO = ' + IntToStrSenaoZero(FCodigo));
+    end;
+
+    if  (FValorHoraNormal > 0) then
+    begin
+      sql.Add('   AND funcao.VALOR_HORA_NORMAL = ' + VirgulaPonto(FValorHoraNormal));
+    end;
+
+    if  (FValorHora50 > 0) then
+    begin
+      sql.Add('   AND funcao.VALOR_HORA_50 = ' + VirgulaPonto(FValorHora50));
+    end;
+
+    if  (FValorHora100 > 0) then
+    begin
+      sql.Add('   AND funcao.VALOR_HORA_100 = ' + VirgulaPonto(FValorHora100));
+    end;
+
+    if  (FValorAdicionalNoturno > 0) then
+    begin
+      sql.Add('   AND funcao.VALOR_AD_NOTURNO = ' + VirgulaPonto(FValorAdicionalNoturno));
     end;
 
     sql.Add(' LIMIT ' + IntToStrSenaoZero(FOffset) + ', ' + IntToStrSenaoZero(FLimite));
@@ -257,7 +296,8 @@ begin
   sql := TStringList.Create;
   sql.Add('SELECT funcao.CODIGO_FUNCAO, funcao.DESCRICAO, funcao.CODIGO_SESSAO_CADASTRO');
   sql.Add(', funcao.CODIGO_SESSAO_ALTERACAO, funcao.DATA_CADASTRO, funcao.DATA_ULTIMA_ALTERACAO');
-  sql.Add(', funcao.`STATUS`');
+  sql.Add(', funcao.`STATUS`, funcao.`VALOR_HORA_NORMAL`, funcao.`VALOR_HORA_50`, funcao.`VALOR_HORA_100`');
+  sql.Add(', funcao.`VALOR_AD_NOTURNO`');
   sql.Add('');
   sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
   sql.Add('     FROM pessoa, sessao ');
@@ -309,6 +349,26 @@ begin
   if  (FCodigo > 0) then
   begin
     sql.Add('   AND funcao.CODIGO_FUNCAO = ' + IntToStrSenaoZero(FCodigo));
+  end;
+
+  if  (FValorHoraNormal > 0) then
+  begin
+    sql.Add('   AND funcao.VALOR_HORA_NORMAL = ' + VirgulaPonto(FValorHoraNormal));
+  end;
+
+  if  (FValorHora50 > 0) then
+  begin
+    sql.Add('   AND funcao.VALOR_HORA_50 = ' + VirgulaPonto(FValorHora50));
+  end;
+
+  if  (FValorHora100 > 0) then
+  begin
+    sql.Add('   AND funcao.VALOR_HORA_100 = ' + VirgulaPonto(FValorHora100));
+  end;
+
+  if  (FValorAdicionalNoturno > 0) then
+  begin
+    sql.Add('   AND funcao.VALOR_AD_NOTURNO = ' + VirgulaPonto(FValorAdicionalNoturno));
   end;
 
   query := FConexao.executarComandoDQL(sql.Text);
@@ -425,6 +485,10 @@ begin
   FStatus := 'A';
   FLimite := 0;
   FOffset := 0;
+  FValorHoraNormal := 0;
+  FValorHora50 := 0;
+  FValorHora100 := 0;
+  FValorAdicionalNoturno := 0;
   FRegistrosAfetados := 0;
   FMaisRegistro := False;
 end;
@@ -438,6 +502,10 @@ begin
 
     data.FCodigo := query.FieldByName('CODIGO_FUNCAO').Value;
     data.FDescricao := query.FieldByName('DESCRICAO').Value;
+    data.FValorHoraNormal := query.FieldByName('VALOR_HORA_NORMAL').Value;
+    data.FValorHora50 := query.FieldByName('VALOR_HORA_50').Value;
+    data.FValorHora100 := query.FieldByName('VALOR_HORA_100').Value;
+    data.FValorAdicionalNoturno := query.FieldByName('VALOR_AD_NOTURNO').Value;
     data.FCadastradoPor.usuario := query.FieldByName('usuarioCadastro').Value;
     data.FAlteradoPor.usuario := query.FieldByName('usuarioAlteracao').Value;
     data.FDataCadastro := query.FieldByName('DATA_CADASTRO').Value;

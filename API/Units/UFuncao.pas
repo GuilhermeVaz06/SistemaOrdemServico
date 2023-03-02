@@ -34,8 +34,35 @@ function DataBD(data: tdate): string; overload;
 function DataBD(data: string): string; overload;
 procedure desativaBotoes(form: TForm);
 procedure colorirGrid(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
+function VirgulaPonto(valor: double): string; overload;
+function VirgulaPonto(valor: string): string; overload;
 
 implementation
+
+function VirgulaPonto(valor: double): string;
+begin
+  if trim(FloatToStr(valor)) = '' then
+  begin
+    valor := 0;
+  end;
+
+  Result := StringReplace(FloatToStr(valor), ',', '.', [rfReplaceAll, rfIgnoreCase]);
+end;
+
+function VirgulaPonto(valor: string): string;
+begin
+  if trim(valor) = '' then
+  begin
+    valor := '0';
+  end;
+
+  if pos(',', valor) > 0 then
+  begin
+    valor := StringReplace(valor, '.', '', [rfReplaceAll, rfIgnoreCase]);
+  end;
+
+  Result := StringReplace(valor, ',', '.', [rfReplaceAll, rfIgnoreCase]);
+end;
 
 function DataBD(data: tdate): string; overload;
 begin
