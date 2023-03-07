@@ -39,6 +39,14 @@ type
     EDataAlteracao: TDBEdit;
     ELocalizarDescricao: TEdit;
     Label10: TLabel;
+    Label3: TLabel;
+    DBEdit1: TDBEdit;
+    DBEdit2: TDBEdit;
+    Label8: TLabel;
+    Label9: TLabel;
+    DBEdit3: TDBEdit;
+    DBEdit4: TDBEdit;
+    Label11: TLabel;
     procedure BFecharClick(Sender: TObject);
     procedure BCadastrarClick(Sender: TObject);
     procedure BAlterarClick(Sender: TObject);

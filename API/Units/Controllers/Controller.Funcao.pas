@@ -25,6 +25,10 @@ procedure montarFuncao(funcaoItem: TFuncao; out resposta: TJSONObject);
 begin
   resposta.AddPair('codigo',TJSONNumber.Create(funcaoItem.id));
   resposta.AddPair('descricao',funcaoItem.descricao);
+  resposta.AddPair('valorHoraNormal',TJSONNumber.Create(funcaoItem.valorHoraNormal));
+  resposta.AddPair('valorHora50',TJSONNumber.Create(funcaoItem.valorHora50));
+  resposta.AddPair('valorHora100',TJSONNumber.Create(funcaoItem.valorHora100));
+  resposta.AddPair('valorAdicionalNoturno',TJSONNumber.Create(funcaoItem.valorAdicionalNoturno));
   resposta.AddPair('cadastradoPor',funcaoItem.cadastradoPor.usuario);
   resposta.AddPair('alteradoPor',funcaoItem.alteradoPor.usuario);
   resposta.AddPair('dataCadastro',DateTimeToStr(funcaoItem.dataCadastro));
@@ -119,6 +123,10 @@ begin
   try
     token := Req.Headers['token'];
     funcao.id := strToIntZero(Req.Query['codigo']);
+    funcao.valorHoraNormal := PontoVirgula(Req.Query['valorHoraNormal']);
+    funcao.valorHora50 := PontoVirgula(Req.Query['valorHora50']);
+    funcao.valorHora100 := PontoVirgula(Req.Query['valorHora100']);
+    funcao.valorAdicionalNoturno := PontoVirgula(Req.Query['valorAdicionalNoturno']);
     funcao.descricao := Req.Query['descricao'];
     funcao.status := Req.Query['status'];
     funcao.limite := strToIntZero(Req.Query['limite']);
@@ -234,6 +242,10 @@ begin
 
     token := Req.Headers['token'];
     funcao.descricao := body.GetValue<string>('descricao', '');
+    funcao.valorHoraNormal := body.GetValue<Double>('valorHoraNormal', 0);
+    funcao.valorHora50 := body.GetValue<Double>('valorHora50', 0);
+    funcao.valorHora100 := body.GetValue<Double>('valorHora100', 0);
+    funcao.valorAdicionalNoturno := body.GetValue<Double>('valorAdicionalNoturno', 0);
     funcao.id := 0;
   except
     on E: Exception do
@@ -346,6 +358,10 @@ begin
 
     token := Req.Headers['token'];
     funcao.descricao := body.GetValue<string>('descricao', '');
+    funcao.valorHoraNormal := body.GetValue<Double>('valorHoraNormal', 0);
+    funcao.valorHora50 := body.GetValue<Double>('valorHora50', 0);
+    funcao.valorHora100 := body.GetValue<Double>('valorHora100', 0);
+    funcao.valorAdicionalNoturno := body.GetValue<Double>('valorAdicionalNoturno', 0);
     funcao.status := body.GetValue<string>('status', 'A');
     funcao.id := strToIntZero(Req.Params['id']);
   except
@@ -560,10 +576,10 @@ end;
 procedure Registry;
 begin
   criarConexao;
-  THorse.Get('/funcao', buscarfuncao);
-  THorse.Post('/funcao', cadastrarfuncao);
-  THorse.Put('/funcao/:id', alterarfuncao);
-  THorse.Delete('/funcao/:id', inativarfuncao);
+  THorse.Get('/funcao', buscarFuncao);
+  THorse.Post('/funcao', cadastrarFuncao);
+  THorse.Put('/funcao/:id', alterarFuncao);
+  THorse.Delete('/funcao/:id', inativarFuncao);
 end;
 
 end.

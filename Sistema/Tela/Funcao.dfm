@@ -126,11 +126,13 @@ object FFuncao: TFFuncao
   object PDados: TPanel
     Left = 0
     Top = 29
-    Width = 283
+    Width = 299
     Height = 502
     Align = alLeft
     Enabled = False
     TabOrder = 1
+    ExplicitLeft = 4
+    ExplicitTop = -2
     object Label1: TLabel
       Left = 9
       Top = 3
@@ -144,6 +146,34 @@ object FFuncao: TFFuncao
       Width = 55
       Height = 16
       Caption = 'Descri'#231#227'o'
+    end
+    object Label3: TLabel
+      Left = 9
+      Top = 46
+      Width = 106
+      Height = 16
+      Caption = 'Valor Hora Normal'
+    end
+    object Label8: TLabel
+      Left = 153
+      Top = 46
+      Width = 124
+      Height = 16
+      Caption = 'Valor Hora Extra 50%'
+    end
+    object Label9: TLabel
+      Left = 9
+      Top = 89
+      Width = 131
+      Height = 16
+      Caption = 'Valor Hora Extra 100%'
+    end
+    object Label11: TLabel
+      Left = 153
+      Top = 89
+      Width = 144
+      Height = 16
+      Caption = 'Valor Adicional Noturno'
     end
     object ECodigo: TDBEdit
       Left = 9
@@ -160,7 +190,7 @@ object FFuncao: TFFuncao
     object EDescricao: TDBEdit
       Left = 91
       Top = 20
-      Width = 184
+      Width = 201
       Height = 24
       DataField = 'descricao'
       DataSource = FDMFuncao.DFuncao
@@ -169,24 +199,26 @@ object FFuncao: TFFuncao
     object CBAtivo: TDBCheckBox
       Left = 1
       Top = 484
-      Width = 281
+      Width = 297
       Height = 17
       Align = alBottom
       Caption = 'Ativo'
       DataField = 'status'
       DataSource = FDMFuncao.DFuncao
-      TabOrder = 3
+      TabOrder = 7
       ValueChecked = 'A'
       ValueUnchecked = 'I'
+      ExplicitWidth = 281
     end
     object Panel4: TPanel
       Left = 1
       Top = 381
-      Width = 281
+      Width = 297
       Height = 103
       Align = alBottom
       BevelOuter = bvNone
-      TabOrder = 2
+      TabOrder = 6
+      ExplicitWidth = 281
       object Label4: TLabel
         Left = 9
         Top = 3
@@ -264,21 +296,60 @@ object FFuncao: TFFuncao
         TabOrder = 3
       end
     end
+    object DBEdit1: TDBEdit
+      Left = 9
+      Top = 63
+      Width = 138
+      Height = 24
+      DataField = 'valorHoraNormal'
+      DataSource = FDMFuncao.DFuncao
+      TabOrder = 2
+    end
+    object DBEdit2: TDBEdit
+      Left = 153
+      Top = 63
+      Width = 139
+      Height = 24
+      DataField = 'valorHora50'
+      DataSource = FDMFuncao.DFuncao
+      TabOrder = 3
+    end
+    object DBEdit3: TDBEdit
+      Left = 9
+      Top = 106
+      Width = 138
+      Height = 24
+      DataField = 'valorHora100'
+      DataSource = FDMFuncao.DFuncao
+      TabOrder = 4
+    end
+    object DBEdit4: TDBEdit
+      Left = 153
+      Top = 106
+      Width = 139
+      Height = 24
+      DataField = 'valorAdicionalNoturno'
+      DataSource = FDMFuncao.DFuncao
+      TabOrder = 5
+    end
   end
   object PGrid: TPanel
-    Left = 283
+    Left = 299
     Top = 29
-    Width = 1080
+    Width = 1064
     Height = 502
     Align = alClient
     TabOrder = 2
+    ExplicitLeft = 283
+    ExplicitWidth = 1080
     object Panel2: TPanel
       Left = 1
       Top = 471
-      Width = 1078
+      Width = 1062
       Height = 30
       Align = alBottom
       TabOrder = 2
+      ExplicitWidth = 1078
       object CBMostrarInativo: TCheckBox
         Left = 9
         Top = 6
@@ -292,10 +363,11 @@ object FFuncao: TFFuncao
     object Panel3: TPanel
       Left = 1
       Top = 1
-      Width = 1078
+      Width = 1062
       Height = 52
       Align = alTop
       TabOrder = 0
+      ExplicitWidth = 1078
       object BConsultar: TSpeedButton
         Left = 413
         Top = 14
@@ -324,7 +396,7 @@ object FFuncao: TFFuncao
     object GDados: TDBGrid
       Left = 1
       Top = 53
-      Width = 1078
+      Width = 1062
       Height = 418
       Align = alClient
       DataSource = FDMFuncao.DFuncao
@@ -354,6 +426,38 @@ object FFuncao: TFFuncao
           Title.Alignment = taCenter
           Title.Caption = 'Descri'#231#227'o'
           Width = 154
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'valorHoraNormal'
+          Title.Alignment = taCenter
+          Title.Caption = 'Valor Hora Normal'
+          Width = 117
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'valorHora50'
+          Title.Alignment = taCenter
+          Title.Caption = 'Valor Hora Extra 50%'
+          Width = 138
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'valorHora100'
+          Title.Alignment = taCenter
+          Title.Caption = 'Valor Hora Extra 100%'
+          Width = 142
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'valorAdicionalNoturno'
+          Title.Alignment = taCenter
+          Title.Caption = 'Valor Adicional Noturno'
+          Width = 156
           Visible = True
         end
         item

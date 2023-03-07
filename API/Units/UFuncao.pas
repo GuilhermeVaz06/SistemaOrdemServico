@@ -32,10 +32,11 @@ function imprimirResposta(status: Integer; resposta: TJSONObject): string;
 function metodoString(metodo: TMethodType): string;
 function DataBD(data: tdate): string; overload;
 function DataBD(data: string): string; overload;
-procedure desativaBotoes(form: TForm);
-procedure colorirGrid(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
 function VirgulaPonto(valor: double): string; overload;
 function VirgulaPonto(valor: string): string; overload;
+function PontoVirgula(valor: string): Double;
+procedure desativaBotoes(form: TForm);
+procedure colorirGrid(Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
 
 implementation
 
@@ -47,6 +48,21 @@ begin
   end;
 
   Result := StringReplace(FloatToStr(valor), ',', '.', [rfReplaceAll, rfIgnoreCase]);
+end;
+
+function PontoVirgula(valor: string): Double;
+begin
+  if trim(valor) = '' then
+  begin
+    valor := '0';
+  end;
+
+  if pos('.', valor) > 0 then
+  begin
+    valor := StringReplace(valor, '.', ',', [rfReplaceAll, rfIgnoreCase]);
+  end;
+
+  Result := strToDoubleZero(valor);
 end;
 
 function VirgulaPonto(valor: string): string;

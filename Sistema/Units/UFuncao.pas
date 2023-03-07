@@ -29,6 +29,9 @@ function removerCasaDecimal(valor: Double): Double;
 function converterJsonArrayRestResponse(json: TJSONArray): IRESTResponseJSON;
 function converterJsonTextoJsonValue(jsonText: string): TJSONValue;
 function converterJsonValueJsonArray(json: TJSONValue; nome: string): TJSONArray;
+function VirgulaPonto(valor: double): string; overload;
+function VirgulaPonto(valor: string): string; overload;
+function PontoVirgula(valor: string): Double;
 procedure desativaBotoes(form: TForm);
 procedure abreTelaCliente;
 procedure abreTelaEmpresa;
@@ -51,6 +54,46 @@ var
 implementation
 
 uses Pessoa, DMPessoa;
+
+function VirgulaPonto(valor: double): string;
+begin
+  if trim(FloatToStr(valor)) = '' then
+  begin
+    valor := 0;
+  end;
+
+  Result := StringReplace(FloatToStr(valor), ',', '.', [rfReplaceAll, rfIgnoreCase]);
+end;
+
+function PontoVirgula(valor: string): Double;
+begin
+  if trim(valor) = '' then
+  begin
+    valor := '0';
+  end;
+
+  if pos('.', valor) > 0 then
+  begin
+    valor := StringReplace(valor, '.', ',', [rfReplaceAll, rfIgnoreCase]);
+  end;
+
+  Result := strToDoubleZero(valor);
+end;
+
+function VirgulaPonto(valor: string): string;
+begin
+  if trim(valor) = '' then
+  begin
+    valor := '0';
+  end;
+
+  if pos(',', valor) > 0 then
+  begin
+    valor := StringReplace(valor, '.', '', [rfReplaceAll, rfIgnoreCase]);
+  end;
+
+  Result := StringReplace(valor, ',', '.', [rfReplaceAll, rfIgnoreCase]);
+end;
 
 function mascaraTelefone(telefone: string): string;
 begin

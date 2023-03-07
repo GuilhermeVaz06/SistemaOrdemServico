@@ -49,7 +49,7 @@ uses Controller.Pais, Controller.Estado, Controller.Cidade,
      Controller.TipoDocumento, Controller.TipoEndereco, UFuncao,
      Controller.Pessoa, Controller.Pessoa.OutroDocumento,
      Controller.Pessoa.Endereco, Controller.Pessoa.Contato,
-     Controller.Funcao;
+     Controller.Funcao, Controller.Grupo;
 
 {$R *.dfm}
 
@@ -92,6 +92,7 @@ begin
     Controller.pessoa.OutroDocumento.Registry;
     Controller.pessoa.Endereco.Registry;
     Controller.pessoa.Contato.Registry;
+    Controller.Grupo.Registry;
 
     if (Trim(UpperCase(EIP.Text)) = 'LOCALHOST') then
     begin
@@ -140,6 +141,7 @@ begin
     Controller.pessoa.Endereco.destruirConexao;
     Controller.pessoa.Contato.destruirConexao;
     Controller.Funcao.destruirConexao;
+    Controller.Grupo.destruirConexao;
 
     PStatus.Caption := 'Status: Parado';
     PStatus.Font.Color := clRed;
@@ -187,8 +189,8 @@ end;
 
 procedure TFPrincipal.FormShow(Sender: TObject);
 begin
-  EIP.Text := '192.168.1.30';
-  EPorta.Text := '9000';
+  EIP.Text := '10.40.15.226';
+  EPorta.Text := '25000';
   FStatus := false;
   BReiniciar.Enabled := False;
   BParar.Enabled := False;

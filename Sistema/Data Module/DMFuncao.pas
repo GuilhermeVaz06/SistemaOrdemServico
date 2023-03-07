@@ -18,6 +18,10 @@ type
     TFuncaodataAlteracao: TStringField;
     TFuncaostatus: TStringField;
     TFuncaodescricao: TStringField;
+    TFuncaovalorHoraNormal: TFloatField;
+    TFuncaovalorHora50: TFloatField;
+    TFuncaovalorHora100: TFloatField;
+    TFuncaovalorAdicionalNoturno: TFloatField;
   private
 
   public
@@ -46,6 +50,10 @@ begin
   Conexao.metodo := rmPOST;
   Conexao.url := 'funcao';
   Conexao.AtribuirBody('descricao', TFuncaodescricao.Value);
+  Conexao.AtribuirBody('valorHoraNormal', VirgulaPonto(TFuncaovalorHoraNormal.Value));
+  Conexao.AtribuirBody('valorHora50', VirgulaPonto(TFuncaovalorHora50.Value));
+  Conexao.AtribuirBody('valorHora100', VirgulaPonto(TFuncaovalorHora100.Value));
+  Conexao.AtribuirBody('valorAdicionalNoturno', VirgulaPonto(TFuncaovalorAdicionalNoturno.Value));
   Conexao.Enviar;
 
   if not (Conexao.status in[200..202]) then
@@ -87,6 +95,10 @@ begin
   Conexao.metodo := rmPUT;
   Conexao.url := 'funcao/' + IntToStrSenaoZero(TFuncaocodigo.Value);
   Conexao.AtribuirBody('descricao', TFuncaodescricao.Value);
+  Conexao.AtribuirBody('valorHoraNormal', VirgulaPonto(TFuncaovalorHoraNormal.Value));
+  Conexao.AtribuirBody('valorHora50', VirgulaPonto(TFuncaovalorHora50.Value));
+  Conexao.AtribuirBody('valorHora100', VirgulaPonto(TFuncaovalorHora100.Value));
+  Conexao.AtribuirBody('valorAdicionalNoturno', VirgulaPonto(TFuncaovalorAdicionalNoturno.Value));
   Conexao.AtribuirBody('status', TFuncaostatus.Value);
   Conexao.Enviar;
 
