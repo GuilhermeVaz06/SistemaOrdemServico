@@ -21,7 +21,9 @@ uses
   Contato in '..\Tela\Contato.pas' {FContato},
   DMPais in '..\Data Module\DMPais.pas' {FDMPais: TDataModule},
   DMFuncao in '..\Data Module\DMFuncao.pas' {FDMFuncao: TDataModule},
-  Funcao in '..\Tela\Funcao.pas' {FFuncao};
+  Funcao in '..\Tela\Funcao.pas' {FFuncao},
+  DMGrupo in '..\Data Module\DMGrupo.pas' {FDMGrupo: TDataModule},
+  Grupo in '..\Tela\Grupo.pas' {FGrupo};
 
 {$R *.res}
 
@@ -37,8 +39,8 @@ begin
   Application.CreateForm(TFDMTipoEndereco, FDMTipoEndereco);
   Application.CreateForm(TFOutroDocumento, FOutroDocumento);
   Application.CreateForm(TFDMPessoa, FDMPessoa);
-  Application.CreateForm(TFContato, FContato);
   Application.CreateForm(TFDMPais, FDMPais);
   Application.CreateForm(TFDMFuncao, FDMFuncao);
+  Application.CreateForm(TFDMGrupo, FDMGrupo);
   Application.Run;
 end.

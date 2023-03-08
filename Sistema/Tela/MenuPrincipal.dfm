@@ -103,6 +103,10 @@ object FMenuPrincipal: TFMenuPrincipal
         Caption = 'Fun'#231#227'o'
         OnClick = Funcao1Click
       end
+      object Grupo1: TMenuItem
+        Caption = 'Grupo'
+        OnClick = Grupo1Click
+      end
     end
     object sair1: TMenuItem
       Caption = 'Sair'

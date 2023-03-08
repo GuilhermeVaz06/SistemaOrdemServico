@@ -189,8 +189,8 @@ end;
 
 procedure TFPrincipal.FormShow(Sender: TObject);
 begin
-  EIP.Text := '10.40.15.226';
-  EPorta.Text := '25000';
+  EIP.Text := '192.168.1.30';
+  EPorta.Text := '9000';
   FStatus := false;
   BReiniciar.Enabled := False;
   BParar.Enabled := False;

@@ -24,6 +24,7 @@ type
     Funcionario1: TMenuItem;
     Funcao1: TMenuItem;
     EmpresaFaturamento1: TMenuItem;
+    Grupo1: TMenuItem;
     procedure sair1Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure pais1Click(Sender: TObject);
@@ -38,6 +39,7 @@ type
     procedure Funcionario1Click(Sender: TObject);
     procedure Funcao1Click(Sender: TObject);
     procedure EmpresaFaturamento1Click(Sender: TObject);
+    procedure Grupo1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -49,7 +51,7 @@ var
 
 implementation
 
-uses UFuncao, Pais, Estado, Cidade, TipoDocumento, TipoEndereco, Funcao;
+uses UFuncao, Pais, Estado, Cidade, TipoDocumento, TipoEndereco, Funcao, Grupo;
 
 {$R *.dfm}
 
@@ -114,6 +116,16 @@ end;
 procedure TFMenuPrincipal.Funcionario1Click(Sender: TObject);
 begin
   abreTelaFuncionario;
+end;
+
+procedure TFMenuPrincipal.Grupo1Click(Sender: TObject);
+begin
+  try
+    Application.CreateForm(TFGrupo, FGrupo);
+    FGrupo.ShowModal;
+  finally
+    FreeAndNil(FGrupo);
+  end;
 end;
 
 procedure TFMenuPrincipal.pais1Click(Sender: TObject);
