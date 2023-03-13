@@ -198,6 +198,7 @@ object FEstado: TFEstado
       Caption = 'Ativo'
       DataField = 'status'
       DataSource = FDMEstado.DEstado
+      Enabled = False
       TabOrder = 6
       ValueChecked = 'A'
       ValueUnchecked = 'I'

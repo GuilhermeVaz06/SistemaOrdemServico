@@ -131,8 +131,6 @@ object FFuncao: TFFuncao
     Align = alLeft
     Enabled = False
     TabOrder = 1
-    ExplicitLeft = 4
-    ExplicitTop = -2
     object Label1: TLabel
       Left = 9
       Top = 3
@@ -171,7 +169,7 @@ object FFuncao: TFFuncao
     object Label11: TLabel
       Left = 153
       Top = 89
-      Width = 144
+      Width = 134
       Height = 16
       Caption = 'Valor Adicional Noturno'
     end
@@ -205,10 +203,10 @@ object FFuncao: TFFuncao
       Caption = 'Ativo'
       DataField = 'status'
       DataSource = FDMFuncao.DFuncao
+      Enabled = False
       TabOrder = 7
       ValueChecked = 'A'
       ValueUnchecked = 'I'
-      ExplicitWidth = 281
     end
     object Panel4: TPanel
       Left = 1
@@ -218,7 +216,6 @@ object FFuncao: TFFuncao
       Align = alBottom
       BevelOuter = bvNone
       TabOrder = 6
-      ExplicitWidth = 281
       object Label4: TLabel
         Left = 9
         Top = 3
@@ -340,8 +337,6 @@ object FFuncao: TFFuncao
     Height = 502
     Align = alClient
     TabOrder = 2
-    ExplicitLeft = 283
-    ExplicitWidth = 1080
     object Panel2: TPanel
       Left = 1
       Top = 471
@@ -349,7 +344,6 @@ object FFuncao: TFFuncao
       Height = 30
       Align = alBottom
       TabOrder = 2
-      ExplicitWidth = 1078
       object CBMostrarInativo: TCheckBox
         Left = 9
         Top = 6
@@ -367,7 +361,6 @@ object FFuncao: TFFuncao
       Height = 52
       Align = alTop
       TabOrder = 0
-      ExplicitWidth = 1078
       object BConsultar: TSpeedButton
         Left = 413
         Top = 14

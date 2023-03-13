@@ -205,6 +205,7 @@ object FCidade: TFCidade
       Caption = 'Ativo'
       DataField = 'status'
       DataSource = FDMCidade.DCidade
+      Enabled = False
       TabOrder = 6
       ValueChecked = 'A'
       ValueUnchecked = 'I'

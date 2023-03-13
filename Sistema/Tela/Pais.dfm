@@ -191,6 +191,7 @@ object FPais: TFPais
       Caption = 'Ativo'
       DataField = 'status'
       DataSource = FDMPais.DPais
+      Enabled = False
       TabOrder = 3
       ValueChecked = 'A'
       ValueUnchecked = 'I'

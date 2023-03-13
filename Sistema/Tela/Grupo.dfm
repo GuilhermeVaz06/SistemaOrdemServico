@@ -175,6 +175,7 @@ object FGrupo: TFGrupo
       Caption = 'Ativo'
       DataField = 'status'
       DataSource = FDMGrupo.DGrupo
+      Enabled = False
       TabOrder = 3
       ValueChecked = 'A'
       ValueUnchecked = 'I'

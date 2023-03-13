@@ -194,7 +194,7 @@ begin
   FStatus := false;
   BReiniciar.Enabled := False;
   BParar.Enabled := False;
-  BIniciarClick(nil);
+//  BIniciarClick(nil);
 end;
 
 function TFPrincipal.validarPorta(porta: string): boolean;

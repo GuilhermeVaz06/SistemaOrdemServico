@@ -175,6 +175,7 @@ object FTipoEndereco: TFTipoEndereco
       Caption = 'Ativo'
       DataField = 'status'
       DataSource = FDMTipoDocumento.DTipoDocumento
+      Enabled = False
       TabOrder = 3
       ValueChecked = 'A'
       ValueUnchecked = 'I'

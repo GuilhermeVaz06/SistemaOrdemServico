@@ -198,6 +198,7 @@ object FTipoDocumento: TFTipoDocumento
       Caption = 'Ativo'
       DataField = 'status'
       DataSource = FDMTipoDocumento.DTipoDocumento
+      Enabled = False
       TabOrder = 5
       ValueChecked = 'A'
       ValueUnchecked = 'I'
