@@ -103,7 +103,7 @@ end;
 function TGrupo.consultar: TArray<TGrupo>;
 var
   query: TZQuery;
-  Funcoes: TArray<TGrupo>;
+  grupos: TArray<TGrupo>;
   contador: Integer;
   sql: TStringList;
   restante: Integer;
@@ -167,17 +167,17 @@ begin
     begin
       query.First;
       FRegistrosAfetados := FConexao.registrosAfetados;
-      SetLength(Funcoes, query.RecordCount);
+      SetLength(grupos, query.RecordCount);
       contador := 0;
 
       while not query.Eof do
       begin
-        Funcoes[contador] := montarGrupo(query);
+        grupos[contador] := montarGrupo(query);
         query.Next;
         inc(contador);
       end;
 
-      Result := Funcoes;
+      Result := grupos;
     end;
 
     FreeAndNil(sql);
