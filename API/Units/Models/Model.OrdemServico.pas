@@ -18,7 +18,9 @@ type TOrdemServico = class
     FDetalhamento: string;
     FObservacao: string;
     FDataEntrega: TDate;
+    FDataEntregafinal: TDate;
     FDataOrdem: Tdate;
+    FDataOrdemFinal: Tdate;
     FDesconto: Double;
     FCadastradoPor: TSessao;
     FAlteradoPor: TSessao;
@@ -48,7 +50,9 @@ type TOrdemServico = class
     property detalhamento: string read FDetalhamento write FDetalhamento;
     property observacao: string read FObservacao write FObservacao;
     property dataEntrega: TDate read FDataEntrega write FDataEntrega;
+    property dataEntregaFinal: TDate read FDataEntregaFinal write FDataEntregaFinal;
     property dataOrdem: TDate read FDataOrdem write FDataOrdem;
+    property dataOrdemFinal: TDate read FDataOrdemFinal write FDataOrdemFinal;
     property desconto: Double read FDesconto write FDesconto;
     property cadastradoPor: TSessao read FCadastradoPor write FCadastradoPor;
     property alteradoPor: TSessao read FAlteradoPor write FAlteradoPor;
@@ -169,26 +173,150 @@ begin
     end;
 
     sql := TStringList.Create;
-    sql.Add('SELECT grupo.CODIGO_GRUPO, grupo.DESCRICAO, grupo.CODIGO_SESSAO_CADASTRO');
-    sql.Add(', grupo.CODIGO_SESSAO_ALTERACAO, grupo.DATA_CADASTRO, grupo.DATA_ULTIMA_ALTERACAO');
-    sql.Add(', grupo.`STATUS`');
+    sql.Add('SELECT ordem_servico.CODIGO_OS, ordem_servico.CODIGO_EMPRESA, ordem_servico.CODIGO_CLIENTE');
+    sql.Add(', ordem_servico.CODIGO_ENDERECO, ordem_servico.CODIGO_TRANSPORTADORA, ordem_servico.FINALIDADE');
+    sql.Add(', ordem_servico.TIPO_FRETE, ordem_servico.DETALHAMENTO, ordem_servico.OBSERVACAO');
+    sql.Add(', ordem_servico.DATA_PRAZO_ENTREGA, ordem_servico.DATA_OS, ordem_servico.DESCONTO');
+    sql.Add(', ordem_servico.CODIGO_SESSAO_CADASTRO, ordem_servico.CODIGO_SESSAO_ALTERACAO');
+    sql.Add(', ordem_servico.DATA_CADASTRO, ordem_servico.DATA_ULTIMA_ALTERACAO, ordem_servico.`STATUS`');
+    sql.Add('');
+    sql.Add(', (SELECT pessoa_endereco.CEP');
+    sql.Add('     FROM pessoa_endereco, pessoa');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA ');
+    sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA) enderecoCep');
+    sql.Add('');
+    sql.Add(', (SELECT pessoa_endereco.LONGRADOURO');
+    sql.Add('     FROM pessoa_endereco, pessoa');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+    sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA) enderecoLongradouro');
+    sql.Add('');
+    sql.Add(', (SELECT pessoa_endereco.NUMERO');
+    sql.Add('     FROM pessoa_endereco, pessoa');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+    sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA) enderecoNumero');
+    sql.Add('');
+    sql.Add(', (SELECT pessoa_endereco.BAIRRO');
+    sql.Add('     FROM pessoa_endereco, pessoa');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+    sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA) enderecoBairro ');
+    sql.Add('');
+    sql.Add(', (SELECT pessoa_endereco.COMPLEMENTO');
+    sql.Add('     FROM pessoa_endereco, pessoa');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA ');
+    sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA) enderecoComplemento');
+    sql.Add('');
+    sql.Add(', (SELECT pessoa_endereco.OBSERVACAO');
+    sql.Add('     FROM pessoa_endereco, pessoa');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+    sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA) enderecoObservacao');
+    sql.Add('');
+    sql.Add(', (SELECT cidade.NOME');
+    sql.Add('     FROM pessoa_endereco, pessoa, cidade ');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+    sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA ');
+    sql.Add('		AND pessoa_endereco.CODIGO_CIDADE = cidade.CODIGO_CIDADE) enderecoCidade');
+    sql.Add('');
+    sql.Add(', (SELECT estado.NOME');
+    sql.Add('     FROM pessoa_endereco, pessoa, cidade, estado');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+    sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA');
+    sql.Add('		AND pessoa_endereco.CODIGO_CIDADE = cidade.CODIGO_CIDADE');
+    sql.Add('		AND cidade.CODIGO_ESTADO = estado.CODIGO_ESTADO) enderecoEstado');
+    sql.Add('');
+    sql.Add(', (SELECT pais.NOME');
+    sql.Add('     FROM pessoa_endereco, pessoa, cidade, estado, pais');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+    sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA');
+    sql.Add('		AND pessoa_endereco.CODIGO_CIDADE = cidade.CODIGO_CIDADE');
+    sql.Add('		AND cidade.CODIGO_ESTADO = estado.CODIGO_ESTADO');
+    sql.Add('		AND estado.CODIGO_PAIS = pais.CODIGO_PAIS) enderecoPais');
+    sql.Add('');
+    sql.Add(', (SELECT tipo_endereco.DESCRICAO ');
+    sql.Add('     FROM pessoa_endereco, pessoa, tipo_endereco');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+    sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA');
+    sql.Add('		AND pessoa_endereco.CODIGO_TIPO_ENDERECO = tipo_endereco.CODIGO_TIPO_ENDERECO) enderecoTipo');
     sql.Add('');
     sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
-    sql.Add('     FROM pessoa, sessao ');
-    sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
-    sql.Add('      AND sessao.CODIGO_SESSAO = grupo.CODIGO_SESSAO_CADASTRO) usuarioCadastro');
+    sql.Add('     FROM pessoa');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA) empresa');
     sql.Add('');
     sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
-    sql.Add('     FROM pessoa, sessao ');
-    sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
-    sql.Add('      AND sessao.CODIGO_SESSAO = grupo.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
+    sql.Add('     FROM pessoa');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_CLIENTE) cliente');
     sql.Add('');
-    sql.Add('  FROM grupo');
-    sql.Add(' WHERE grupo.`STATUS` = ' + QuotedStr(FStatus));
+    sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
+    sql.Add('     FROM pessoa');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_TRANSPORTADORA) transportadora');
+    sql.Add('');
+    sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
+    sql.Add('     FROM pessoa, sessao');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
+    sql.Add('     AND sessao.CODIGO_SESSAO = ordem_servico.CODIGO_SESSAO_CADASTRO) usuarioCadastro');
+    sql.Add('');
+    sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
+    sql.Add('     FROM pessoa, sessao');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
+    sql.Add('      AND sessao.CODIGO_SESSAO = ordem_servico.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
+    sql.Add('');
+    sql.Add('	FROM ordem_servico');
+    sql.Add(' WHERE ordem_servico.`STATUS` = ' + QuotedStr(FStatus));
 
     if  (FCodigo > 0) then
     begin
-      sql.Add('   AND grupo.CODIGO_GRUPO = ' + IntToStrSenaoZero(FCodigo));
+      sql.Add('   AND ordem_servico.CODIGO_OS = ' + IntToStrSenaoZero(FCodigo));
+    end;
+
+    if (FFinalidade <> '') then
+    begin
+      sql.Add('   AND ordem_servico.FINALIDADE LIKE ' + QuotedStr('%' + FFinalidade + '%'));
+    end;
+
+    if (FEmpresa.id > 0) then
+    begin
+      sql.Add('   AND ordem_servico.CODIGO_EMPRESA = ' + IntToStrSenaoZero(FEmpresa.id));
+    end;
+
+    if (FCLiente.id > 0) then
+    begin
+      sql.Add('   AND ordem_servico.CODIGO_CLIENTE = ' + IntToStrSenaoZero(FCLiente.id));
+    end;
+
+    if (FEndereco.id > 0) then
+    begin
+      sql.Add('   AND ordem_servico.CODIGO_ENDERECO = ' + IntToStrSenaoZero(FEndereco.id));
+    end;
+
+    if (FTransportador.id > 0) then
+    begin
+      sql.Add('   AND ordem_servico.CODIGO_TRANSPORTADORA = ' + IntToStrSenaoZero(FTransportador.id));
+    end;
+
+    if (FTipoFrete <> '') then
+    begin
+      sql.Add('   AND ordem_servico.TIPO_FRETE LIKE ' + QuotedStr('%' + FTipoFrete + '%'));
+    end;
+
+    if (FDetalhamento <> '') then
+    begin
+      sql.Add('   AND ordem_servico.DETALHAMENTO LIKE ' + QuotedStr('%' + FDetalhamento + '%'));
+    end;
+
+    if (FObservacao <> '') then
+    begin
+      sql.Add('   AND ordem_servico.OBSERVACAO LIKE ' + QuotedStr('%' + FObservacao + '%'));
+    end;
+
+    if (FDataEntrega > 0) and (FDataEntregafinal > 0) then
+    begin
+      sql.Add('   AND ordem_servico.DATA_PRAZO_ENTREGA >= ' + DataBD(FDataEntrega));
+      sql.Add('   AND ordem_servico.DATA_PRAZO_ENTREGA <= ' + DataBD(FDataEntregafinal));
+    end;
+
+    if (FDataOrdem > 0) and (FDataOrdemFinal > 0) then
+    begin
+      sql.Add('   AND ordem_servico.DATA_OS >= ' + DataBD(FDataOrdem));
+      sql.Add('   AND ordem_servico.DATA_OS <= ' + DataBD(FDataEntregafinal));
     end;
 
     sql.Add(' LIMIT ' + IntToStrSenaoZero(FOffset) + ', ' + IntToStrSenaoZero(FLimite));
@@ -232,80 +360,152 @@ end;
 function TOrdemServico.consultarChave: TOrdemServico;
 var
   query: TZQuery;
-//  grupoConsultado: TOrdemServico;
+  ordemConsultado: TOrdemServico;
   sql: TStringList;
 begin
-//  grupoConsultado := TOrdemServico.Create;
-//  sql := TStringList.Create;
-//  sql.Add('SELECT CODIGO_GRUPO, DESCRICAO');
-//  sql.Add('  FROM grupo');
-//  sql.Add(' WHERE CODIGO_GRUPO = ' + IntToStrSenaoZero(FCodigo));
-//  sql.Add(' LIMIT 1');
-//
-//  query := FConexao.executarComandoDQL(sql.Text);
-//
-//  if not Assigned(query)
-//  or (query = nil)
-//  or (query.RecordCount = 0) then
-//  begin
-//    grupoConsultado.Destroy;
-//    grupoConsultado := nil;
-//  end
-//  else
-//  begin
-//    query.First;
-//    FRegistrosAfetados := FConexao.registrosAfetados;
-//
-//    grupoConsultado.FCodigo := query.FieldByName('CODIGO_GRUPO').Value;
-//    grupoConsultado.FDescricao := query.FieldByName('DESCRICAO').Value;
-//  end;
-//
-//  Result := grupoConsultado;
-//
-//  FreeAndNil(sql);
+  ordemConsultado := TOrdemServico.Create;
+  sql := TStringList.Create;
+  sql.Add('SELECT CODIGO_OS, FINALIDADE');
+  sql.Add('  FROM ordem_servico');
+  sql.Add(' WHERE CODIGO_OS = ' + IntToStrSenaoZero(FCodigo));
+  sql.Add(' LIMIT 1');
+
+  query := FConexao.executarComandoDQL(sql.Text);
+
+  if not Assigned(query)
+  or (query = nil)
+  or (query.RecordCount = 0) then
+  begin
+    ordemConsultado.Destroy;
+    ordemConsultado := nil;
+  end
+  else
+  begin
+    query.First;
+    FRegistrosAfetados := FConexao.registrosAfetados;
+
+    ordemConsultado.FCodigo := query.FieldByName('CODIGO_OS').Value;
+    ordemConsultado.FFinalidade := query.FieldByName('FINALIDADE').Value;
+  end;
+
+  Result := ordemConsultado;
+
+  FreeAndNil(sql);
 end;
 
 function TOrdemServico.consultarCodigo(codigo: integer): TOrdemServico;
 var
   query: TZQuery;
   sql: TStringList;
-//  grupoConsultado: TOrdemServico;
+  ordemConsultado: TOrdemServico;
 begin
-//  sql := TStringList.Create;
-//  sql.Add('SELECT grupo.CODIGO_GRUPO, grupo.DESCRICAO, grupo.CODIGO_SESSAO_CADASTRO');
-//  sql.Add(', grupo.CODIGO_SESSAO_ALTERACAO, grupo.DATA_CADASTRO, grupo.DATA_ULTIMA_ALTERACAO');
-//  sql.Add(', grupo.`STATUS`');
-//  sql.Add('');
-//  sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
-//  sql.Add('     FROM pessoa, sessao ');
-//  sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
-//  sql.Add('      AND sessao.CODIGO_SESSAO = grupo.CODIGO_SESSAO_CADASTRO) usuarioCadastro');
-//  sql.Add('');
-//  sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
-//  sql.Add('     FROM pessoa, sessao ');
-//  sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
-//  sql.Add('      AND sessao.CODIGO_SESSAO = grupo.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
-//  sql.Add('');
-//  sql.Add('  FROM grupo');
-//  sql.Add(' WHERE grupo.CODIGO_GRUPO = ' + IntToStrSenaoZero(codigo));
-//
-//  query := FConexao.executarComandoDQL(sql.Text);
-//
-//  if not Assigned(query)
-//  or (query = nil)
-//  or (query.RecordCount = 0) then
-//  begin
-//    grupoConsultado := nil;
-//  end
-//  else
-//  begin
-//    query.First;
-//    FRegistrosAfetados := FConexao.registrosAfetados;
-//    grupoConsultado := montarGrupo(query);
-//  end;
-//
-//  Result := grupoConsultado;
-//  FreeAndNil(sql);
+  sql := TStringList.Create;
+  sql.Add('SELECT ordem_servico.CODIGO_OS, ordem_servico.CODIGO_EMPRESA, ordem_servico.CODIGO_CLIENTE');
+  sql.Add(', ordem_servico.CODIGO_ENDERECO, ordem_servico.CODIGO_TRANSPORTADORA, ordem_servico.FINALIDADE');
+  sql.Add(', ordem_servico.TIPO_FRETE, ordem_servico.DETALHAMENTO, ordem_servico.OBSERVACAO');
+  sql.Add(', ordem_servico.DATA_PRAZO_ENTREGA, ordem_servico.DATA_OS, ordem_servico.DESCONTO');
+  sql.Add(', ordem_servico.CODIGO_SESSAO_CADASTRO, ordem_servico.CODIGO_SESSAO_ALTERACAO');
+  sql.Add(', ordem_servico.DATA_CADASTRO, ordem_servico.DATA_ULTIMA_ALTERACAO, ordem_servico.`STATUS`');
+  sql.Add('');
+  sql.Add(', (SELECT pessoa_endereco.CEP');
+  sql.Add('     FROM pessoa_endereco, pessoa');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA ');
+  sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA) enderecoCep');
+  sql.Add('');
+  sql.Add(', (SELECT pessoa_endereco.LONGRADOURO');
+  sql.Add('     FROM pessoa_endereco, pessoa');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+  sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA) enderecoLongradouro');
+  sql.Add('');
+  sql.Add(', (SELECT pessoa_endereco.NUMERO');
+  sql.Add('     FROM pessoa_endereco, pessoa');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+  sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA) enderecoNumero');
+  sql.Add('');
+  sql.Add(', (SELECT pessoa_endereco.BAIRRO');
+  sql.Add('     FROM pessoa_endereco, pessoa');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+  sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA) enderecoBairro ');
+  sql.Add('');
+  sql.Add(', (SELECT pessoa_endereco.COMPLEMENTO');
+  sql.Add('     FROM pessoa_endereco, pessoa');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA ');
+  sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA) enderecoComplemento');
+  sql.Add('');
+  sql.Add(', (SELECT pessoa_endereco.OBSERVACAO');
+  sql.Add('     FROM pessoa_endereco, pessoa');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+  sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA) enderecoObservacao');
+  sql.Add('');
+  sql.Add(', (SELECT cidade.NOME');
+  sql.Add('     FROM pessoa_endereco, pessoa, cidade ');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+  sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA ');
+  sql.Add('		AND pessoa_endereco.CODIGO_CIDADE = cidade.CODIGO_CIDADE) enderecoCidade');
+  sql.Add('');
+  sql.Add(', (SELECT estado.NOME');
+  sql.Add('     FROM pessoa_endereco, pessoa, cidade, estado');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+  sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA');
+  sql.Add('		AND pessoa_endereco.CODIGO_CIDADE = cidade.CODIGO_CIDADE');
+  sql.Add('		AND cidade.CODIGO_ESTADO = estado.CODIGO_ESTADO) enderecoEstado');
+  sql.Add('');
+  sql.Add(', (SELECT pais.NOME');
+  sql.Add('     FROM pessoa_endereco, pessoa, cidade, estado, pais');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+  sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA');
+  sql.Add('		AND pessoa_endereco.CODIGO_CIDADE = cidade.CODIGO_CIDADE');
+  sql.Add('		AND cidade.CODIGO_ESTADO = estado.CODIGO_ESTADO');
+  sql.Add('		AND estado.CODIGO_PAIS = pais.CODIGO_PAIS) enderecoPais');
+  sql.Add('');
+  sql.Add(', (SELECT tipo_endereco.DESCRICAO ');
+  sql.Add('     FROM pessoa_endereco, pessoa, tipo_endereco');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+  sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA');
+  sql.Add('		AND pessoa_endereco.CODIGO_TIPO_ENDERECO = tipo_endereco.CODIGO_TIPO_ENDERECO) enderecoTipo');
+  sql.Add('');
+  sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
+  sql.Add('     FROM pessoa');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA) empresa');
+  sql.Add('');
+  sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
+  sql.Add('     FROM pessoa');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_CLIENTE) cliente');
+  sql.Add('');
+  sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
+  sql.Add('     FROM pessoa');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_TRANSPORTADORA) transportadora');
+  sql.Add('');
+  sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
+  sql.Add('     FROM pessoa, sessao');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
+  sql.Add('     AND sessao.CODIGO_SESSAO = ordem_servico.CODIGO_SESSAO_CADASTRO) usuarioCadastro');
+  sql.Add('');
+  sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
+  sql.Add('     FROM pessoa, sessao');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
+  sql.Add('      AND sessao.CODIGO_SESSAO = ordem_servico.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
+  sql.Add('');
+  sql.Add('	FROM ordem_servico');
+  sql.Add(' WHERE ordem_servico.CODIGO_OS = ' + IntToStrSenaoZero(codigo));
+
+  query := FConexao.executarComandoDQL(sql.Text);
+
+  if not Assigned(query)
+  or (query = nil)
+  or (query.RecordCount = 0) then
+  begin
+    ordemConsultado := nil;
+  end
+  else
+  begin
+    query.First;
+    FRegistrosAfetados := FConexao.registrosAfetados;
+    ordemConsultado := montarOrdemServico(query);
+  end;
+
+  Result := ordemConsultado;
+  FreeAndNil(sql);
 end;
 
 function TOrdemServico.contar: integer;
@@ -313,33 +513,80 @@ var
   query: TZQuery;
   sql: TStringList;
 begin
-//  sql := TStringList.Create;
-//  sql.Add('SELECT COUNT(grupo.CODIGO_GRUPO) TOTAL');
-//  sql.Add('  FROM grupo');
-//  sql.Add(' WHERE grupo.`STATUS` = ' + QuotedStr(FStatus));
-//
-//  if (FDescricao <> '') then
-//  begin
-//    sql.Add('   AND grupo.DESCRICAO LIKE ' + QuotedStr('%' + FDescricao + '%'));
-//  end;
-//
-//  if  (FCodigo > 0) then
-//  begin
-//    sql.Add('   AND grupo.CODIGO_GRUPO = ' + IntToStrSenaoZero(FCodigo));
-//  end;
-//
-//  query := FConexao.executarComandoDQL(sql.Text);
-//
-//  if not Assigned(query)
-//  or (query = nil)
-//  or (query.RecordCount = 0) then
-//  begin
-//    Result := 0;
-//  end
-//  else
-//  begin
-//    Result := query.FieldByName('TOTAL').Value;
-//  end;
+  sql := TStringList.Create;
+  sql.Add('SELECT COUNT(ordem_servico.CODIGO_OS) TOTAL');
+  sql.Add('  FROM ordem_servico');
+  sql.Add(' WHERE ordem_servico.`STATUS` = ' + QuotedStr(FStatus));
+
+  if  (FCodigo > 0) then
+  begin
+    sql.Add('   AND ordem_servico.CODIGO_OS = ' + IntToStrSenaoZero(FCodigo));
+  end;
+
+  if (FFinalidade <> '') then
+  begin
+    sql.Add('   AND ordem_servico.FINALIDADE LIKE ' + QuotedStr('%' + FFinalidade + '%'));
+  end;
+
+  if (FEmpresa.id > 0) then
+  begin
+    sql.Add('   AND ordem_servico.CODIGO_EMPRESA = ' + IntToStrSenaoZero(FEmpresa.id));
+  end;
+
+  if (FCLiente.id > 0) then
+  begin
+    sql.Add('   AND ordem_servico.CODIGO_CLIENTE = ' + IntToStrSenaoZero(FCLiente.id));
+  end;
+
+  if (FEndereco.id > 0) then
+  begin
+    sql.Add('   AND ordem_servico.CODIGO_ENDERECO = ' + IntToStrSenaoZero(FEndereco.id));
+  end;
+
+  if (FTransportador.id > 0) then
+  begin
+    sql.Add('   AND ordem_servico.CODIGO_TRANSPORTADORA = ' + IntToStrSenaoZero(FTransportador.id));
+  end;
+
+  if (FTipoFrete <> '') then
+  begin
+    sql.Add('   AND ordem_servico.TIPO_FRETE LIKE ' + QuotedStr('%' + FTipoFrete + '%'));
+  end;
+
+  if (FDetalhamento <> '') then
+  begin
+    sql.Add('   AND ordem_servico.DETALHAMENTO LIKE ' + QuotedStr('%' + FDetalhamento + '%'));
+  end;
+
+  if (FObservacao <> '') then
+  begin
+    sql.Add('   AND ordem_servico.OBSERVACAO LIKE ' + QuotedStr('%' + FObservacao + '%'));
+  end;
+
+  if (FDataEntrega > 0) and (FDataEntregafinal > 0) then
+  begin
+    sql.Add('   AND ordem_servico.DATA_PRAZO_ENTREGA >= ' + DataBD(FDataEntrega));
+    sql.Add('   AND ordem_servico.DATA_PRAZO_ENTREGA <= ' + DataBD(FDataEntregafinal));
+  end;
+
+  if (FDataOrdem > 0) and (FDataOrdemFinal > 0) then
+  begin
+    sql.Add('   AND ordem_servico.DATA_OS >= ' + DataBD(FDataOrdem));
+    sql.Add('   AND ordem_servico.DATA_OS <= ' + DataBD(FDataEntregafinal));
+  end;
+
+  query := FConexao.executarComandoDQL(sql.Text);
+
+  if not Assigned(query)
+  or (query = nil)
+  or (query.RecordCount = 0) then
+  begin
+    Result := 0;
+  end
+  else
+  begin
+    Result := query.FieldByName('TOTAL').Value;
+  end;
 
   FreeAndNil(sql);
 end;
@@ -348,6 +595,10 @@ constructor TOrdemServico.Create;
 begin
   FCadastradoPor := TSessao.Create;
   FAlteradoPor := TSessao.Create;
+  FEmpresa := TPessoa.Create;
+  FCLiente := TPessoa.Create;
+  FEndereco := TEndereco.Create;
+  FTransportador := TPessoa.Create;
 
   inherited;
 end;
@@ -364,50 +615,70 @@ begin
     FAlteradoPor.Destroy;
   end;
 
+  if Assigned(FEmpresa) then
+  begin
+    FEmpresa.Destroy;
+  end;
+
+  if Assigned(FCLiente) then
+  begin
+    FCLiente.Destroy;
+  end;
+
+  if Assigned(FEndereco) then
+  begin
+    FEndereco.Destroy;
+  end;
+
+  if Assigned(FTransportador) then
+  begin
+    FTransportador.Destroy;
+  end;
+
   inherited;
 end;
 
 function TOrdemServico.existeRegistro: TOrdemServico;
 var
   query: TZQuery;
-//  grupoConsultado: TOrdemServico;
+  ordemConsultado: TOrdemServico;
   sql: TStringList;
 begin
-//  grupoConsultado := TOrdemServico.Create;
-//  sql := TStringList.Create;
-//  sql.Add('SELECT CODIGO_GRUPO, DESCRICAO, `STATUS`');
-//  sql.Add('  FROM grupo');
-//  sql.Add(' WHERE DESCRICAO = ' + QuotedStr(FDescricao));
-//
-//  if (FCodigo > 0) then
-//  begin
-//    sql.Add('   AND CODIGO_GRUPO <> ' + IntToStrSenaoZero(FCodigo));
-//  end;
-//
-//  sql.Add(' LIMIT 1');
-//
-//  query := FConexao.executarComandoDQL(sql.Text);
-//
-//  if not Assigned(query)
-//  or (query = nil)
-//  or (query.RecordCount = 0) then
-//  begin
-//    grupoConsultado.Destroy;
-//    grupoConsultado := nil;
-//  end
-//  else
-//  begin
-//    query.First;
-//    FRegistrosAfetados := FConexao.registrosAfetados;
-//
-//    grupoConsultado.FCodigo := query.FieldByName('CODIGO_GRUPO').Value;
-//    grupoConsultado.FDescricao := query.FieldByName('DESCRICAO').Value;
-//    grupoConsultado.FStatus := query.FieldByName('STATUS').Value;
-//  end;
-//
-//  Result := grupoConsultado;
-//
-//  FreeAndNil(sql);
+  ordemConsultado := TOrdemServico.Create;
+  sql := TStringList.Create;
+  sql.Add('SELECT CODIGO_OS, FINALIDADE, `STATUS`');
+  sql.Add('  FROM ordem_servico');
+  sql.Add(' WHERE FINALIDADE = ' + QuotedStr(FFinalidade));
+
+  if (FCodigo > 0) then
+  begin
+    sql.Add('   AND CODIGO_OS <> ' + IntToStrSenaoZero(FCodigo));
+  end;
+
+  sql.Add(' LIMIT 1');
+
+  query := FConexao.executarComandoDQL(sql.Text);
+
+  if not Assigned(query)
+  or (query = nil)
+  or (query.RecordCount = 0) then
+  begin
+    ordemConsultado.Destroy;
+    ordemConsultado := nil;
+  end
+  else
+  begin
+    query.First;
+    FRegistrosAfetados := FConexao.registrosAfetados;
+
+    ordemConsultado.FCodigo := query.FieldByName('CODIGO_OS').Value;
+    ordemConsultado.FFinalidade := query.FieldByName('FINALIDADE').Value;
+    ordemConsultado.FStatus := query.FieldByName('STATUS').Value;
+  end;
+
+  Result := ordemConsultado;
+
+  FreeAndNil(sql);
 end;
 
 function TOrdemServico.GerarLog(classe, procedimento,
@@ -420,55 +691,90 @@ function TOrdemServico.inativarOrdemServico: TOrdemServico;
 var
   sql: TStringList;
 begin
-//  sql := TStringList.Create;
-//  sql.Add('UPDATE `grupo`');
-//  sql.Add('   SET `STATUS` = ''I'' ');
-//  sql.Add('     , CODIGO_SESSAO_ALTERACAO = ' + IntToStrSenaoZero(FConexao.codigoSessao));
-//  sql.Add(' WHERE CODIGO_GRUPO = ' + IntToStrSenaoZero(FCodigo));
-//
-//  FConexao.executarComandoDML(sql.Text);
-//  FreeAndNil(sql);
-//  Result := consultarCodigo(FCodigo);
+  sql := TStringList.Create;
+  sql.Add('UPDATE `ordem_servico`');
+  sql.Add('   SET `STATUS` = ''I'' ');
+  sql.Add('     , CODIGO_SESSAO_ALTERACAO = ' + IntToStrSenaoZero(FConexao.codigoSessao));
+  sql.Add(' WHERE CODIGO_OS = ' + IntToStrSenaoZero(FCodigo));
+
+  FConexao.executarComandoDML(sql.Text);
+  FreeAndNil(sql);
+  Result := consultarCodigo(FCodigo);
 end;
 
 procedure TOrdemServico.limpar;
 begin
-//  FCodigo := 0;
-//  FDescricao := '';
-//  FCadastradoPor.limpar;
-//  FAlteradoPor.limpar;
-//  FDataCadastro := Now;
-//  FUltimaAlteracao := Now;
-//  FStatus := 'A';
-//  FLimite := 0;
-//  FOffset := 0;
-//  FRegistrosAfetados := 0;
-//  FMaisRegistro := False;
+  FCodigo := 0;
+  FEmpresa.limpar;
+  FCLiente.limpar;
+  FEndereco.limpar;
+  FTransportador.limpar;
+  FFinalidade := '';
+  FTipoFrete := 'CIF';
+  FDetalhamento := '';
+  FObservacao := '';
+  FDataEntrega := 0;
+  FDataEntregafinal := 0;
+  FDataOrdem := 0;
+  FDataOrdemFinal := 0;
+  FDesconto := 0;
+  FCadastradoPor.limpar;
+  FAlteradoPor.limpar;
+  FDataCadastro := Now;
+  FUltimaAlteracao := Now;
+  FStatus := 'A';
+  FLimite := 0;
+  FOffset := 0;
+  FRegistrosAfetados := 0;
+  FMaisRegistro := False;
 end;
 
 function TOrdemServico.montarOrdemServico(query: TZQuery): TOrdemServico;
 var
   data: TOrdemServico;
 begin
-//  try
-//    data := TOrdemServico.Create;
-//
-//    data.FCodigo := query.FieldByName('CODIGO_GRUPO').Value;
-//    data.FDescricao := query.FieldByName('DESCRICAO').Value;
-//    data.FCadastradoPor.usuario := query.FieldByName('usuarioCadastro').Value;
-//    data.FAlteradoPor.usuario := query.FieldByName('usuarioAlteracao').Value;
-//    data.FDataCadastro := query.FieldByName('DATA_CADASTRO').Value;
-//    data.FUltimaAlteracao := query.FieldByName('DATA_ULTIMA_ALTERACAO').Value;
-//    data.FStatus := query.FieldByName('STATUS').Value;
-//
-//    Result := data;
-//  except
-//    on E: Exception do
-//    begin
-//      raise Exception.Create('Erro ao montar Grupo ' + e.Message);
-//      Result := nil;
-//    end;
-//  end;
+  try
+    data := TOrdemServico.Create;
+
+    data.FCodigo := query.FieldByName('CODIGO_OS').Value;
+    data.FEmpresa.id := query.FieldByName('CODIGO_EMPRESA').Value;
+    data.FCLiente.id := query.FieldByName('CODIGO_CLIENTE').Value;
+    data.FEndereco.id := query.FieldByName('CODIGO_ENDERECO').Value;
+    data.FTransportador.id := query.FieldByName('CODIGO_TRANSPORTADORA').Value;
+    data.FFinalidade := query.FieldByName('FINALIDADE').Value;
+    data.FTipoFrete := query.FieldByName('TIPO_FRETE').Value;
+    data.FDetalhamento := query.FieldByName('DETALHAMENTO').Value;
+    data.observacao := query.FieldByName('OBSERVACAO').Value;
+    data.FDataEntrega := query.FieldByName('DATA_PRAZO_ENTREGA').Value;
+    data.FDataOrdem := query.FieldByName('DATA_OS').Value;
+    data.FDesconto := query.FieldByName('DESCONTO').Value;
+    data.FEndereco.cep := query.FieldByName('enderecoCep').Value;
+    data.FEndereco.longradouro := query.FieldByName('enderecoLongradouro').Value;
+    data.FEndereco.numero := query.FieldByName('enderecoNumero').Value;
+    data.FEndereco.bairro := query.FieldByName('enderecoBairro').Value;
+    data.FEndereco.complemento := query.FieldByName('enderecoComplemento').Value;
+    data.FEndereco.observacao := query.FieldByName('enderecoObservacao').Value;
+    data.FEndereco.cidade.nome := query.FieldByName('enderecoCidade').Value;
+    data.FEndereco.cidade.estado.nome := query.FieldByName('enderecoEstado').Value;
+    data.FEndereco.cidade.estado.pais.nome := query.FieldByName('enderecoPais').Value;
+    data.FEndereco.tipoEndereco.descricao := query.FieldByName('enderecoTipo').Value;
+    data.FEmpresa.razaoSocial := query.FieldByName('empresa').Value;
+    data.FCLiente.razaoSocial := query.FieldByName('cliente').Value;
+    data.FTransportador.razaoSocial := query.FieldByName('transportadora').Value;
+    data.FCadastradoPor.usuario := query.FieldByName('usuarioCadastro').Value;
+    data.FAlteradoPor.usuario := query.FieldByName('usuarioAlteracao').Value;
+    data.FDataCadastro := query.FieldByName('DATA_CADASTRO').Value;
+    data.FUltimaAlteracao := query.FieldByName('DATA_ULTIMA_ALTERACAO').Value;
+    data.FStatus := query.FieldByName('STATUS').Value;
+
+    Result := data;
+  except
+    on E: Exception do
+    begin
+      raise Exception.Create('Erro ao montar Ordem de Serviço ' + e.Message);
+      Result := nil;
+    end;
+  end;
 end;
 
 function TOrdemServico.verificarToken(token: string): Boolean;
