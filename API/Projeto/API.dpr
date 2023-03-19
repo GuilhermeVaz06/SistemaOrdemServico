@@ -29,7 +29,8 @@ uses
   Controller.Funcao in '..\Units\Controllers\Controller.Funcao.pas',
   Model.Grupo in '..\Units\Models\Model.Grupo.pas',
   Controller.Grupo in '..\Units\Controllers\Controller.Grupo.pas',
-  Model.OrdemServico in '..\Units\Models\Model.OrdemServico.pas';
+  Model.OrdemServico in '..\Units\Models\Model.OrdemServico.pas',
+  Controller.OrdemServico in '..\Units\Controllers\Controller.OrdemServico.pas';
 
 {$R *.res}
 

@@ -14,6 +14,7 @@ type TOrdemServico = class
     FEndereco: TEndereco;
     FTransportador: Tpessoa;
     FFinalidade: string;
+    FSituacao: string;
     FTipoFrete: string;
     FDetalhamento: string;
     FObservacao: string;
@@ -46,6 +47,7 @@ type TOrdemServico = class
     property endereco: TEndereco read FEndereco write FEndereco;
     property transportador: Tpessoa read FTransportador write FTransportador;
     property finalidade: string read FFinalidade write FFinalidade;
+    property situacao: string read FSituacao write FSituacao;
     property tipoFrete: string read FTipoFrete write FTipoFrete;
     property detalhamento: string read FDetalhamento write FDetalhamento;
     property observacao: string read FObservacao write FObservacao;
@@ -94,6 +96,7 @@ begin
   sql.Add('     , `CODIGO_ENDERECO` = ' + IntToStrSenaoZero(FEndereco.id));
   sql.Add('     , `CODIGO_TRANSPORTADORA` = ' + IntToStrSenaoZero(FTransportador.id));
   sql.Add('     , `FINALIDADE` = ' + QuotedStr(FFinalidade));
+  sql.Add('     , `SITUACAO` = ' + QuotedStr(FSituacao));
   sql.Add('     , `TIPO_FRETE` = ' + QuotedStr(FTipoFrete));
   sql.Add('     , `DETALHAMENTO` = ' + QuotedStr(FDetalhamento));
   sql.Add('     , `OBSERVACAO` = ' + QuotedStr(FObservacao));
@@ -124,7 +127,7 @@ begin
   sql := TStringList.Create;
   sql.Add('INSERT INTO `ordem_servico` (`CODIGO_OS`, `CODIGO_EMPRESA`, `CODIGO_CLIENTE`, `CODIGO_ENDERECO`');
   sql.Add(', `CODIGO_TRANSPORTADORA`, `FINALIDADE`, `TIPO_FRETE`, `DETALHAMENTO`, `OBSERVACAO`');
-  sql.Add(', `DATA_PRAZO_ENTREGA`, `DATA_OS`');
+  sql.Add(', `DATA_PRAZO_ENTREGA`, `DATA_OS`, `SITUACAO`');
   sql.Add(', `DESCONTO`, `CODIGO_SESSAO_CADASTRO`, `CODIGO_SESSAO_ALTERACAO`) VALUES (');
   sql.Add(' ' + IntToStrSenaoZero(codigo));                                     //CODIGO_OS
   sql.Add(',' + IntToStrSenaoZero(FEmpresa.id));                                //CODIGO_EMPRESA
@@ -137,6 +140,7 @@ begin
   sql.Add(',' + QuotedStr(FObservacao));                                        //OBSERVACAO
   sql.Add(',' + DataBD(FDataEntrega));                                          //DATA_PRAZO_ENTREGA
   sql.Add(',' + DataBD(FDataOrdem));                                            //DATA_OS
+  sql.Add(',' + QuotedStr(FSituacao));                                          //SITUACAO
   sql.Add(',' + VirgulaPonto(FDesconto));                                       //DESCONTO
   sql.Add(',' + IntToStrSenaoZero(FConexao.codigoSessao));                      //CODIGO_SESSAO_CADASTRO
   sql.Add(',' + IntToStrSenaoZero(FConexao.codigoSessao));                      //CODIGO_SESSAO_ALTERACAO
@@ -179,6 +183,7 @@ begin
     sql.Add(', ordem_servico.DATA_PRAZO_ENTREGA, ordem_servico.DATA_OS, ordem_servico.DESCONTO');
     sql.Add(', ordem_servico.CODIGO_SESSAO_CADASTRO, ordem_servico.CODIGO_SESSAO_ALTERACAO');
     sql.Add(', ordem_servico.DATA_CADASTRO, ordem_servico.DATA_ULTIMA_ALTERACAO, ordem_servico.`STATUS`');
+    sql.Add(', ordem_servico.SITUACAO');
     sql.Add('');
     sql.Add(', (SELECT pessoa_endereco.CEP');
     sql.Add('     FROM pessoa_endereco, pessoa');
@@ -272,6 +277,11 @@ begin
       sql.Add('   AND ordem_servico.FINALIDADE LIKE ' + QuotedStr('%' + FFinalidade + '%'));
     end;
 
+    if (FSituacao <> '') then
+    begin
+      sql.Add('   AND ordem_servico.SITUACAO = ' + QuotedStr(FSituacao));
+    end;
+
     if (FEmpresa.id > 0) then
     begin
       sql.Add('   AND ordem_servico.CODIGO_EMPRESA = ' + IntToStrSenaoZero(FEmpresa.id));
@@ -307,13 +317,13 @@ begin
       sql.Add('   AND ordem_servico.OBSERVACAO LIKE ' + QuotedStr('%' + FObservacao + '%'));
     end;
 
-    if (FDataEntrega > 0) and (FDataEntregafinal > 0) then
+    if (FDataEntrega > StrToDate('31/12/1989')) and (FDataEntregafinal > StrToDate('31/12/1989')) then
     begin
       sql.Add('   AND ordem_servico.DATA_PRAZO_ENTREGA >= ' + DataBD(FDataEntrega));
       sql.Add('   AND ordem_servico.DATA_PRAZO_ENTREGA <= ' + DataBD(FDataEntregafinal));
     end;
 
-    if (FDataOrdem > 0) and (FDataOrdemFinal > 0) then
+    if (FDataOrdem > StrToDate('31/12/1989')) and (FDataOrdemFinal > StrToDate('31/12/1989')) then
     begin
       sql.Add('   AND ordem_servico.DATA_OS >= ' + DataBD(FDataOrdem));
       sql.Add('   AND ordem_servico.DATA_OS <= ' + DataBD(FDataEntregafinal));
@@ -365,7 +375,7 @@ var
 begin
   ordemConsultado := TOrdemServico.Create;
   sql := TStringList.Create;
-  sql.Add('SELECT CODIGO_OS, FINALIDADE');
+  sql.Add('SELECT CODIGO_OS, SITUACAO');
   sql.Add('  FROM ordem_servico');
   sql.Add(' WHERE CODIGO_OS = ' + IntToStrSenaoZero(FCodigo));
   sql.Add(' LIMIT 1');
@@ -385,7 +395,7 @@ begin
     FRegistrosAfetados := FConexao.registrosAfetados;
 
     ordemConsultado.FCodigo := query.FieldByName('CODIGO_OS').Value;
-    ordemConsultado.FFinalidade := query.FieldByName('FINALIDADE').Value;
+    ordemConsultado.FSituacao := query.FieldByName('SITUACAO').Value;
   end;
 
   Result := ordemConsultado;
@@ -406,6 +416,7 @@ begin
   sql.Add(', ordem_servico.DATA_PRAZO_ENTREGA, ordem_servico.DATA_OS, ordem_servico.DESCONTO');
   sql.Add(', ordem_servico.CODIGO_SESSAO_CADASTRO, ordem_servico.CODIGO_SESSAO_ALTERACAO');
   sql.Add(', ordem_servico.DATA_CADASTRO, ordem_servico.DATA_ULTIMA_ALTERACAO, ordem_servico.`STATUS`');
+  sql.Add(', ordem_servico.SITUACAO');
   sql.Add('');
   sql.Add(', (SELECT pessoa_endereco.CEP');
   sql.Add('     FROM pessoa_endereco, pessoa');
@@ -528,6 +539,11 @@ begin
     sql.Add('   AND ordem_servico.FINALIDADE LIKE ' + QuotedStr('%' + FFinalidade + '%'));
   end;
 
+  if (FFinalidade <> '') then
+  begin
+    sql.Add('   AND ordem_servico.SITUACAO IN(' + QuotedStr(FFinalidade) + ')');
+  end;
+
   if (FEmpresa.id > 0) then
   begin
     sql.Add('   AND ordem_servico.CODIGO_EMPRESA = ' + IntToStrSenaoZero(FEmpresa.id));
@@ -646,9 +662,9 @@ var
 begin
   ordemConsultado := TOrdemServico.Create;
   sql := TStringList.Create;
-  sql.Add('SELECT CODIGO_OS, FINALIDADE, `STATUS`');
+  sql.Add('SELECT CODIGO_OS, SITUACAO, `STATUS`');
   sql.Add('  FROM ordem_servico');
-  sql.Add(' WHERE FINALIDADE = ' + QuotedStr(FFinalidade));
+  sql.Add(' WHERE SITUACAO = ' + QuotedStr(FSituacao));
 
   if (FCodigo > 0) then
   begin
@@ -672,7 +688,7 @@ begin
     FRegistrosAfetados := FConexao.registrosAfetados;
 
     ordemConsultado.FCodigo := query.FieldByName('CODIGO_OS').Value;
-    ordemConsultado.FFinalidade := query.FieldByName('FINALIDADE').Value;
+    ordemConsultado.FSituacao := query.FieldByName('SITUACAO').Value;
     ordemConsultado.FStatus := query.FieldByName('STATUS').Value;
   end;
 
@@ -710,6 +726,7 @@ begin
   FEndereco.limpar;
   FTransportador.limpar;
   FFinalidade := '';
+  FSituacao := '';
   FTipoFrete := 'CIF';
   FDetalhamento := '';
   FObservacao := '';
@@ -742,6 +759,7 @@ begin
     data.FEndereco.id := query.FieldByName('CODIGO_ENDERECO').Value;
     data.FTransportador.id := query.FieldByName('CODIGO_TRANSPORTADORA').Value;
     data.FFinalidade := query.FieldByName('FINALIDADE').Value;
+    data.FSituacao := query.FieldByName('SITUACAO').Value;
     data.FTipoFrete := query.FieldByName('TIPO_FRETE').Value;
     data.FDetalhamento := query.FieldByName('DETALHAMENTO').Value;
     data.observacao := query.FieldByName('OBSERVACAO').Value;
