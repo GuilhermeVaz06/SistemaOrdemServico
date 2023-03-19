@@ -284,7 +284,16 @@ begin
     token := Req.Headers['token'];
 
     ordemServico.empresa.id := body.GetValue<Integer>('empresaCodigo', 0);
-    //continuar daqui
+    ordemServico.cliente.id := body.GetValue<Integer>('clienteCodigo', 0);
+    ordemServico.endereco.id := body.GetValue<Integer>('enderecoCodigo', 0);
+    ordemServico.transportador.id := body.GetValue<Integer>('transportadoraCodigo', 0);
+    ordemServico.finalidade := body.GetValue<string>('finalidade', '');
+    ordemServico.tipoFrete := body.GetValue<string>('tipoFrete', '');
+    ordemServico.detalhamento := body.GetValue<string>('detalhamento', '');
+    ordemServico.observacao := body.GetValue<string>('observacao', '');
+    ordemServico.dataEntrega := body.GetValue<TDate>('dataEntrega', StrToDate('31/12/1989'));
+    ordemServico.dataOrdem := body.GetValue<TDate>('dataOrdem', StrToDate('31/12/1989'));
+    ordemServico.desconto:= body.GetValue<Double>('desconto', 0);
     ordemServico.situacao := 'ORÇAMENTO';
     ordemServico.id := 0;
   except
@@ -298,6 +307,8 @@ begin
   end;
 
   FreeAndNil(body);
+
+  // continuar daqui
 
 //  if (continuar) and (verificarToken(res, resposta)) then
 //  try
