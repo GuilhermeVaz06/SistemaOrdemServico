@@ -9,11 +9,6 @@ var
   pessoa: TPessoa;
   token: string;
   continuar: Boolean;
-  const tpCliente = 1;
-  const tpFornecedor = 2;
-  const tpFuncionario = 3;
-  const tpUsuario = 4;
-  const tpEmpresa = 5;
 
 procedure Registry;
 procedure destruirConexao;

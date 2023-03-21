@@ -1,4 +1,4 @@
-object FPessoa: TFPessoa
+object FOrdemServico: TFOrdemServico
   Left = 0
   Top = 0
   BorderStyle = bsSingle
@@ -24,7 +24,7 @@ object FPessoa: TFPessoa
     Top = 0
     Width = 1363
     Height = 614
-    ActivePage = TBCadastro
+    ActivePage = TBConsulta
     Align = alClient
     TabOrder = 0
     object TBCadastro: TTabSheet
@@ -91,7 +91,6 @@ object FPessoa: TFPessoa
           Caption = 'Inativar'
           ImageIndex = 2
           Images = FMenuPrincipal.ImageList1
-          OnClick = BInativarClick
           ExplicitLeft = 327
           ExplicitTop = -4
           ExplicitHeight = 39
@@ -237,12 +236,14 @@ object FPessoa: TFPessoa
       end
       object PCDados: TPageControl
         Left = 0
-        Top = 201
+        Top = 161
         Width = 1355
-        Height = 312
-        ActivePage = TBContato
+        Height = 352
+        ActivePage = TBOutrosDocumentos
         Align = alClient
         TabOrder = 2
+        ExplicitTop = 201
+        ExplicitHeight = 312
         object TBOutrosDocumentos: TTabSheet
           Caption = 'Outros Documentos'
           object Panel2: TPanel
@@ -263,7 +264,6 @@ object FPessoa: TFPessoa
               ImageIndex = 0
               Images = FMenuPrincipal.ImageList1
               Enabled = False
-              OnClick = BCadastrarDocumentoClick
               ExplicitLeft = 8
               ExplicitHeight = 41
             end
@@ -277,30 +277,39 @@ object FPessoa: TFPessoa
               ImageIndex = 3
               Images = FMenuPrincipal.ImageList1
               Enabled = False
-              OnClick = BRemoverDocumentoClick
               ExplicitLeft = 1
               ExplicitTop = -1
               ExplicitHeight = 39
             end
           end
+          object CBInativoOutroDocumento: TCheckBox
+            Left = 0
+            Top = 304
+            Width = 1347
+            Height = 17
+            Align = alBottom
+            Caption = 'Mostrar Inativos'
+            Enabled = False
+            TabOrder = 1
+            ExplicitTop = 264
+          end
           object GDocumento: TDBGrid
             Left = 0
             Top = 29
             Width = 1347
-            Height = 235
+            Height = 275
             Align = alClient
             DataSource = FDMPessoa.DOutroDocumento
             Enabled = False
             Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
             ReadOnly = True
-            TabOrder = 1
+            TabOrder = 2
             TitleFont.Charset = DEFAULT_CHARSET
             TitleFont.Color = clWindowText
             TitleFont.Height = -13
             TitleFont.Name = 'Tahoma'
             TitleFont.Style = []
             OnDrawColumnCell = GDadosDrawColumnCell
-            OnDblClick = GDocumentoDblClick
             OnTitleClick = GDadosTitleClick
             Columns = <
               item
@@ -309,46 +318,6 @@ object FPessoa: TFPessoa
                 Title.Alignment = taCenter
                 Title.Caption = 'Codigo'
                 Width = 65
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'TipoDocumento'
-                Title.Alignment = taCenter
-                Title.Caption = 'Tipo Documento'
-                Width = 100
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'documento'
-                Title.Alignment = taCenter
-                Title.Caption = 'Documento'
-                Width = 134
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'dataEmissao'
-                Title.Alignment = taCenter
-                Title.Caption = 'Data Emiss'#227'o'
-                Width = 107
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'dataVencimento'
-                Title.Alignment = taCenter
-                Title.Caption = 'Data Vencimento'
-                Width = 120
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'observacao'
-                Title.Alignment = taCenter
-                Title.Caption = 'Observa'#231#227'o'
-                Width = 143
                 Visible = True
               end
               item
@@ -391,17 +360,6 @@ object FPessoa: TFPessoa
                 Width = 61
                 Visible = True
               end>
-          end
-          object CBInativoOutroDocumento: TCheckBox
-            Left = 0
-            Top = 264
-            Width = 1347
-            Height = 17
-            Align = alBottom
-            Caption = 'Mostrar Inativos'
-            Enabled = False
-            TabOrder = 2
-            OnClick = CBInativoOutroDocumentoClick
           end
         end
         object TBEndereco: TTabSheet
@@ -425,7 +383,6 @@ object FPessoa: TFPessoa
               ImageIndex = 0
               Images = FMenuPrincipal.ImageList1
               Enabled = False
-              OnClick = BCadastrarEnderecoClick
               ExplicitLeft = 8
               ExplicitHeight = 41
             end
@@ -439,30 +396,39 @@ object FPessoa: TFPessoa
               ImageIndex = 3
               Images = FMenuPrincipal.ImageList1
               Enabled = False
-              OnClick = BExcluirEnderecoClick
               ExplicitLeft = 1
               ExplicitTop = -1
               ExplicitHeight = 39
             end
           end
+          object CBInativoEndereco: TCheckBox
+            Left = 0
+            Top = 304
+            Width = 1347
+            Height = 17
+            Align = alBottom
+            Caption = 'Mostrar Inativos'
+            Enabled = False
+            TabOrder = 1
+            ExplicitTop = 264
+          end
           object GEndereco: TDBGrid
             Left = 0
             Top = 29
             Width = 1347
-            Height = 235
+            Height = 275
             Align = alClient
             DataSource = FDMPessoa.DEndereco
             Enabled = False
             Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
             ReadOnly = True
-            TabOrder = 1
+            TabOrder = 2
             TitleFont.Charset = DEFAULT_CHARSET
             TitleFont.Color = clWindowText
             TitleFont.Height = -13
             TitleFont.Name = 'Tahoma'
             TitleFont.Style = []
             OnDrawColumnCell = GDadosDrawColumnCell
-            OnDblClick = GEnderecoDblClick
             OnTitleClick = GDadosTitleClick
             Columns = <
               item
@@ -471,86 +437,6 @@ object FPessoa: TFPessoa
                 Title.Alignment = taCenter
                 Title.Caption = 'Codigo'
                 Width = 65
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'tipoEndereco'
-                Title.Alignment = taCenter
-                Title.Caption = 'Descri'#231#227'o'
-                Width = 100
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'cep'
-                Title.Alignment = taCenter
-                Title.Caption = 'CEP'
-                Width = 100
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'longradouro'
-                Title.Alignment = taCenter
-                Title.Caption = 'Longradouro'
-                Width = 100
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'numero'
-                Title.Alignment = taCenter
-                Title.Caption = 'Numero'
-                Width = 100
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'bairro'
-                Title.Alignment = taCenter
-                Title.Caption = 'Bairro'
-                Width = 100
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'complemento'
-                Title.Alignment = taCenter
-                Title.Caption = 'Complemento'
-                Width = 100
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'nomeCidade'
-                Title.Alignment = taCenter
-                Title.Caption = 'Cidade'
-                Width = 100
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'nomeEstado'
-                Title.Alignment = taCenter
-                Title.Caption = 'Estado'
-                Width = 100
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'nomePais'
-                Title.Alignment = taCenter
-                Title.Caption = 'Pais'
-                Width = 100
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'observacao'
-                Title.Alignment = taCenter
-                Title.Caption = 'Observa'#231#227'o'
-                Width = 100
                 Visible = True
               end
               item
@@ -594,17 +480,6 @@ object FPessoa: TFPessoa
                 Visible = True
               end>
           end
-          object CBInativoEndereco: TCheckBox
-            Left = 0
-            Top = 264
-            Width = 1347
-            Height = 17
-            Align = alBottom
-            Caption = 'Mostrar Inativos'
-            Enabled = False
-            TabOrder = 2
-            OnClick = CBInativoEnderecoClick
-          end
         end
         object TBContato: TTabSheet
           Caption = 'Outros Contatos'
@@ -627,7 +502,6 @@ object FPessoa: TFPessoa
               ImageIndex = 0
               Images = FMenuPrincipal.ImageList1
               Enabled = False
-              OnClick = BCadastrarContatoClick
               ExplicitLeft = 8
               ExplicitHeight = 41
             end
@@ -641,30 +515,39 @@ object FPessoa: TFPessoa
               ImageIndex = 3
               Images = FMenuPrincipal.ImageList1
               Enabled = False
-              OnClick = BExcluirContatoClick
               ExplicitLeft = 1
               ExplicitTop = -1
               ExplicitHeight = 39
             end
           end
+          object CBInativoContato: TCheckBox
+            Left = 0
+            Top = 304
+            Width = 1347
+            Height = 17
+            Align = alBottom
+            Caption = 'Mostrar Inativos'
+            Enabled = False
+            TabOrder = 1
+            ExplicitTop = 264
+          end
           object GContato: TDBGrid
             Left = 0
             Top = 29
             Width = 1347
-            Height = 235
+            Height = 275
             Align = alClient
             DataSource = FDMPessoa.DContato
             Enabled = False
             Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
             ReadOnly = True
-            TabOrder = 1
+            TabOrder = 2
             TitleFont.Charset = DEFAULT_CHARSET
             TitleFont.Color = clWindowText
             TitleFont.Height = -13
             TitleFont.Name = 'Tahoma'
             TitleFont.Style = []
             OnDrawColumnCell = GDadosDrawColumnCell
-            OnDblClick = GContatoDblClick
             OnTitleClick = GDadosTitleClick
             Columns = <
               item
@@ -673,61 +556,6 @@ object FPessoa: TFPessoa
                 Title.Alignment = taCenter
                 Title.Caption = 'Codigo'
                 Width = 65
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'tipoDocumento'
-                Title.Alignment = taCenter
-                Title.Caption = 'Tipo Documento'
-                Width = 100
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'documento'
-                Title.Alignment = taCenter
-                Title.Caption = 'Documento'
-                Width = 100
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'nome'
-                Title.Alignment = taCenter
-                Title.Caption = 'Nome'
-                Width = 100
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'dataNascimento'
-                Title.Alignment = taCenter
-                Title.Caption = 'Data Nascimento'
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'funcao'
-                Title.Alignment = taCenter
-                Title.Caption = 'Fun'#231#227'o'
-                Width = 100
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'telefone'
-                Title.Alignment = taCenter
-                Title.Caption = 'Telefone'
-                Width = 100
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'observacao'
-                Title.Alignment = taCenter
-                Title.Caption = 'Observa'#231#227'o'
-                Width = 102
                 Visible = True
               end
               item
@@ -779,24 +607,13 @@ object FPessoa: TFPessoa
                 Visible = True
               end>
           end
-          object CBInativoContato: TCheckBox
-            Left = 0
-            Top = 264
-            Width = 1347
-            Height = 17
-            Align = alBottom
-            Caption = 'Mostrar Inativos'
-            Enabled = False
-            TabOrder = 2
-            OnClick = CBInativoContatoClick
-          end
         end
       end
       object PDados: TPanel
         Left = 0
         Top = 29
         Width = 1355
-        Height = 172
+        Height = 132
         Align = alTop
         BevelOuter = bvNone
         Enabled = False
@@ -814,41 +631,6 @@ object FPessoa: TFPessoa
           Width = 64
           Height = 16
           Caption = 'Documento'
-        end
-        object Label3: TLabel
-          Left = 199
-          Top = 1
-          Width = 82
-          Height = 16
-          Caption = 'N'#186' Documento'
-        end
-        object LRazaoSocial: TLabel
-          Left = 9
-          Top = 43
-          Width = 73
-          Height = 16
-          Caption = 'Raz'#227'o Social'
-        end
-        object LNomeFantasia: TLabel
-          Left = 199
-          Top = 43
-          Width = 85
-          Height = 16
-          Caption = 'Nome Fantasia'
-        end
-        object Label11: TLabel
-          Left = 9
-          Top = 85
-          Width = 50
-          Height = 16
-          Caption = 'Telefone'
-        end
-        object Label12: TLabel
-          Left = 199
-          Top = 85
-          Width = 35
-          Height = 16
-          Caption = 'E-Mail'
         end
         object Label13: TLabel
           Left = 388
@@ -869,16 +651,6 @@ object FPessoa: TFPessoa
           ReadOnly = True
           TabOrder = 0
         end
-        object DBDocumento: TDBEdit
-          Left = 198
-          Top = 17
-          Width = 183
-          Height = 24
-          DataField = 'documento'
-          DataSource = FDMPessoa.DPessoa
-          TabOrder = 2
-          OnExit = DBDocumentoExit
-        end
         object DBLDocumento: TDBLookupComboBox
           Left = 91
           Top = 17
@@ -890,43 +662,6 @@ object FPessoa: TFPessoa
           ListField = 'descricao'
           ListSource = FDMPessoa.DTipoDocumento
           TabOrder = 1
-          OnExit = DBLDocumentoExit
-        end
-        object DBRazaoSocial: TDBEdit
-          Left = 9
-          Top = 59
-          Width = 184
-          Height = 24
-          DataField = 'razaoSocial'
-          DataSource = FDMPessoa.DPessoa
-          TabOrder = 4
-        end
-        object DBNomeFantasia: TDBEdit
-          Left = 199
-          Top = 59
-          Width = 184
-          Height = 24
-          DataField = 'nomeFantasia'
-          DataSource = FDMPessoa.DPessoa
-          TabOrder = 5
-        end
-        object DBEdit3: TDBEdit
-          Left = 9
-          Top = 101
-          Width = 184
-          Height = 24
-          DataField = 'telefone'
-          DataSource = FDMPessoa.DPessoa
-          TabOrder = 6
-        end
-        object DBEdit4: TDBEdit
-          Left = 199
-          Top = 101
-          Width = 184
-          Height = 24
-          DataField = 'email'
-          DataSource = FDMPessoa.DPessoa
-          TabOrder = 7
         end
         object DBMemo1: TDBMemo
           Left = 389
@@ -936,44 +671,7 @@ object FPessoa: TFPessoa
           DataField = 'observacao'
           DataSource = FDMPessoa.DPessoa
           ScrollBars = ssVertical
-          TabOrder = 3
-        end
-        object PFuncao: TPanel
-          Left = 0
-          Top = 125
-          Width = 383
-          Height = 46
-          BevelOuter = bvNone
-          TabOrder = 8
-          object Label8: TLabel
-            Left = 9
-            Top = 1
-            Width = 41
-            Height = 16
-            Caption = 'Fun'#231#227'o'
-          end
-          object DBDescricao: TDBEdit
-            Left = 9
-            Top = 19
-            Width = 67
-            Height = 24
-            DataField = 'codigoFuncao'
-            DataSource = FDMPessoa.DPessoa
-            TabOrder = 0
-            OnDblClick = DBDescricaoDblClick
-            OnExit = DBDescricaoExit
-          end
-          object DBEdit1: TDBEdit
-            Left = 80
-            Top = 19
-            Width = 303
-            Height = 24
-            TabStop = False
-            DataField = 'funcao'
-            DataSource = FDMPessoa.DPessoa
-            ReadOnly = True
-            TabOrder = 1
-          end
+          TabOrder = 2
         end
       end
     end
@@ -1005,13 +703,6 @@ object FPessoa: TFPessoa
           Height = 16
           Caption = 'Raz'#227'o Social'
         end
-        object LConsultaNomeFantasia: TLabel
-          Left = 193
-          Top = 0
-          Width = 85
-          Height = 16
-          Caption = 'Nome Fantasia'
-        end
         object SpeedButton1: TSpeedButton
           Left = 479
           Top = 12
@@ -1028,13 +719,6 @@ object FPessoa: TFPessoa
           Width = 184
           Height = 24
           TabOrder = 0
-        end
-        object ENomeFantasia: TEdit
-          Left = 193
-          Top = 18
-          Width = 184
-          Height = 24
-          TabOrder = 1
         end
       end
       object GDados: TDBGrid
@@ -1062,77 +746,6 @@ object FPessoa: TFPessoa
             Title.Alignment = taCenter
             Title.Caption = 'Codigo'
             Width = 65
-            Visible = True
-          end
-          item
-            Expanded = False
-            FieldName = 'tipoDocumento'
-            Title.Alignment = taCenter
-            Title.Caption = 'Documento'
-            Width = 78
-            Visible = True
-          end
-          item
-            Expanded = False
-            FieldName = 'documento'
-            Title.Alignment = taCenter
-            Title.Caption = 'N'#186' Documento'
-            Width = 114
-            Visible = True
-          end
-          item
-            Expanded = False
-            FieldName = 'razaoSocial'
-            Title.Alignment = taCenter
-            Title.Caption = 'Raz'#227'o Social'
-            Width = 126
-            Visible = True
-          end
-          item
-            Expanded = False
-            FieldName = 'nomeFantasia'
-            Title.Alignment = taCenter
-            Title.Caption = 'Nome Fantasia'
-            Width = 117
-            Visible = True
-          end
-          item
-            Expanded = False
-            FieldName = 'nome'
-            Title.Alignment = taCenter
-            Title.Caption = 'Nome'
-            Visible = False
-          end
-          item
-            Expanded = False
-            FieldName = 'funcao'
-            Title.Alignment = taCenter
-            Title.Caption = 'Fun'#231#227'o'
-            Width = 147
-            Visible = True
-          end
-          item
-            Expanded = False
-            FieldName = 'telefone'
-            Title.Alignment = taCenter
-            Title.Caption = 'Telefone'
-            Width = 114
-            Visible = True
-          end
-          item
-            Expanded = False
-            FieldName = 'email'
-            Title.Alignment = taCenter
-            Title.Caption = 'Email'
-            Width = 100
-            Visible = True
-          end
-          item
-            Expanded = False
-            FieldName = 'observacao'
-            Title.Alignment = taCenter
-            Title.Caption = 'Observa'#231#227'o'
-            Width = 135
             Visible = True
           end
           item
@@ -1184,7 +797,6 @@ object FPessoa: TFPessoa
         Align = alBottom
         Caption = 'Mostrar Inativos'
         TabOrder = 2
-        OnClick = CBMostrarInativoClick
       end
     end
   end

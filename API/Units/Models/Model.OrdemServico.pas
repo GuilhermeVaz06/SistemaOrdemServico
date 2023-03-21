@@ -71,7 +71,6 @@ type TOrdemServico = class
 
     function consultar: TArray<TOrdemServico>;
     function consultarChave: TOrdemServico;
-    function existeRegistro: TOrdemServico;
     function cadastrarOrdemServico: TOrdemServico;
     function alterarOrdemServico: TOrdemServico;
     function inativarOrdemServico: TOrdemServico;
@@ -96,7 +95,6 @@ begin
   sql.Add('     , `CODIGO_ENDERECO` = ' + IntToStrSenaoZero(FEndereco.id));
   sql.Add('     , `CODIGO_TRANSPORTADORA` = ' + IntToStrSenaoZero(FTransportador.id));
   sql.Add('     , `FINALIDADE` = ' + QuotedStr(FFinalidade));
-  sql.Add('     , `SITUACAO` = ' + QuotedStr(FSituacao));
   sql.Add('     , `TIPO_FRETE` = ' + QuotedStr(FTipoFrete));
   sql.Add('     , `DETALHAMENTO` = ' + QuotedStr(FDetalhamento));
   sql.Add('     , `OBSERVACAO` = ' + QuotedStr(FObservacao));
@@ -187,50 +185,50 @@ begin
     sql.Add('');
     sql.Add(', (SELECT pessoa_endereco.CEP');
     sql.Add('     FROM pessoa_endereco, pessoa');
-    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA ');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_CLIENTE ');
     sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA) enderecoCep');
     sql.Add('');
     sql.Add(', (SELECT pessoa_endereco.LONGRADOURO');
     sql.Add('     FROM pessoa_endereco, pessoa');
-    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_CLIENTE');
     sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA) enderecoLongradouro');
     sql.Add('');
     sql.Add(', (SELECT pessoa_endereco.NUMERO');
     sql.Add('     FROM pessoa_endereco, pessoa');
-    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_CLIENTE');
     sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA) enderecoNumero');
     sql.Add('');
     sql.Add(', (SELECT pessoa_endereco.BAIRRO');
     sql.Add('     FROM pessoa_endereco, pessoa');
-    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_CLIENTE');
     sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA) enderecoBairro ');
     sql.Add('');
     sql.Add(', (SELECT pessoa_endereco.COMPLEMENTO');
     sql.Add('     FROM pessoa_endereco, pessoa');
-    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA ');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_CLIENTE ');
     sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA) enderecoComplemento');
     sql.Add('');
     sql.Add(', (SELECT pessoa_endereco.OBSERVACAO');
     sql.Add('     FROM pessoa_endereco, pessoa');
-    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_CLIENTE');
     sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA) enderecoObservacao');
     sql.Add('');
     sql.Add(', (SELECT cidade.NOME');
     sql.Add('     FROM pessoa_endereco, pessoa, cidade ');
-    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_CLIENTE');
     sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA ');
     sql.Add('		AND pessoa_endereco.CODIGO_CIDADE = cidade.CODIGO_CIDADE) enderecoCidade');
     sql.Add('');
     sql.Add(', (SELECT estado.NOME');
     sql.Add('     FROM pessoa_endereco, pessoa, cidade, estado');
-    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_CLIENTE');
     sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA');
     sql.Add('		AND pessoa_endereco.CODIGO_CIDADE = cidade.CODIGO_CIDADE');
     sql.Add('		AND cidade.CODIGO_ESTADO = estado.CODIGO_ESTADO) enderecoEstado');
     sql.Add('');
     sql.Add(', (SELECT pais.NOME');
     sql.Add('     FROM pessoa_endereco, pessoa, cidade, estado, pais');
-    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_CLIENTE');
     sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA');
     sql.Add('		AND pessoa_endereco.CODIGO_CIDADE = cidade.CODIGO_CIDADE');
     sql.Add('		AND cidade.CODIGO_ESTADO = estado.CODIGO_ESTADO');
@@ -238,7 +236,7 @@ begin
     sql.Add('');
     sql.Add(', (SELECT tipo_endereco.DESCRICAO ');
     sql.Add('     FROM pessoa_endereco, pessoa, tipo_endereco');
-    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+    sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_CLIENTE');
     sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA');
     sql.Add('		AND pessoa_endereco.CODIGO_TIPO_ENDERECO = tipo_endereco.CODIGO_TIPO_ENDERECO) enderecoTipo');
     sql.Add('');
@@ -420,50 +418,50 @@ begin
   sql.Add('');
   sql.Add(', (SELECT pessoa_endereco.CEP');
   sql.Add('     FROM pessoa_endereco, pessoa');
-  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA ');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_CLIENTE ');
   sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA) enderecoCep');
   sql.Add('');
   sql.Add(', (SELECT pessoa_endereco.LONGRADOURO');
   sql.Add('     FROM pessoa_endereco, pessoa');
-  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_CLIENTE');
   sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA) enderecoLongradouro');
   sql.Add('');
   sql.Add(', (SELECT pessoa_endereco.NUMERO');
   sql.Add('     FROM pessoa_endereco, pessoa');
-  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_CLIENTE');
   sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA) enderecoNumero');
   sql.Add('');
   sql.Add(', (SELECT pessoa_endereco.BAIRRO');
   sql.Add('     FROM pessoa_endereco, pessoa');
-  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_CLIENTE');
   sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA) enderecoBairro ');
   sql.Add('');
   sql.Add(', (SELECT pessoa_endereco.COMPLEMENTO');
   sql.Add('     FROM pessoa_endereco, pessoa');
-  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA ');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_CLIENTE ');
   sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA) enderecoComplemento');
   sql.Add('');
   sql.Add(', (SELECT pessoa_endereco.OBSERVACAO');
   sql.Add('     FROM pessoa_endereco, pessoa');
-  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_CLIENTE');
   sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA) enderecoObservacao');
   sql.Add('');
   sql.Add(', (SELECT cidade.NOME');
   sql.Add('     FROM pessoa_endereco, pessoa, cidade ');
-  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_CLIENTE');
   sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA ');
   sql.Add('		AND pessoa_endereco.CODIGO_CIDADE = cidade.CODIGO_CIDADE) enderecoCidade');
   sql.Add('');
   sql.Add(', (SELECT estado.NOME');
   sql.Add('     FROM pessoa_endereco, pessoa, cidade, estado');
-  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_CLIENTE');
   sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA');
   sql.Add('		AND pessoa_endereco.CODIGO_CIDADE = cidade.CODIGO_CIDADE');
   sql.Add('		AND cidade.CODIGO_ESTADO = estado.CODIGO_ESTADO) enderecoEstado');
   sql.Add('');
   sql.Add(', (SELECT pais.NOME');
   sql.Add('     FROM pessoa_endereco, pessoa, cidade, estado, pais');
-  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_CLIENTE');
   sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA');
   sql.Add('		AND pessoa_endereco.CODIGO_CIDADE = cidade.CODIGO_CIDADE');
   sql.Add('		AND cidade.CODIGO_ESTADO = estado.CODIGO_ESTADO');
@@ -471,7 +469,7 @@ begin
   sql.Add('');
   sql.Add(', (SELECT tipo_endereco.DESCRICAO ');
   sql.Add('     FROM pessoa_endereco, pessoa, tipo_endereco');
-  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_EMPRESA');
+  sql.Add('    WHERE pessoa.CODIGO_PESSOA = ordem_servico.CODIGO_CLIENTE');
   sql.Add('	   AND pessoa.CODIGO_PESSOA = pessoa_endereco.CODIGO_PESSOA');
   sql.Add('		AND pessoa_endereco.CODIGO_TIPO_ENDERECO = tipo_endereco.CODIGO_TIPO_ENDERECO) enderecoTipo');
   sql.Add('');
@@ -652,49 +650,6 @@ begin
   end;
 
   inherited;
-end;
-
-function TOrdemServico.existeRegistro: TOrdemServico;
-var
-  query: TZQuery;
-  ordemConsultado: TOrdemServico;
-  sql: TStringList;
-begin
-  ordemConsultado := TOrdemServico.Create;
-  sql := TStringList.Create;
-  sql.Add('SELECT CODIGO_OS, SITUACAO, `STATUS`');
-  sql.Add('  FROM ordem_servico');
-  sql.Add(' WHERE SITUACAO = ' + QuotedStr(FSituacao));
-
-  if (FCodigo > 0) then
-  begin
-    sql.Add('   AND CODIGO_OS <> ' + IntToStrSenaoZero(FCodigo));
-  end;
-
-  sql.Add(' LIMIT 1');
-
-  query := FConexao.executarComandoDQL(sql.Text);
-
-  if not Assigned(query)
-  or (query = nil)
-  or (query.RecordCount = 0) then
-  begin
-    ordemConsultado.Destroy;
-    ordemConsultado := nil;
-  end
-  else
-  begin
-    query.First;
-    FRegistrosAfetados := FConexao.registrosAfetados;
-
-    ordemConsultado.FCodigo := query.FieldByName('CODIGO_OS').Value;
-    ordemConsultado.FSituacao := query.FieldByName('SITUACAO').Value;
-    ordemConsultado.FStatus := query.FieldByName('STATUS').Value;
-  end;
-
-  Result := ordemConsultado;
-
-  FreeAndNil(sql);
 end;
 
 function TOrdemServico.GerarLog(classe, procedimento,

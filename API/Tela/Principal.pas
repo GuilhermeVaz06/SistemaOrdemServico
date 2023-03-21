@@ -42,6 +42,11 @@ type
 var
   FPrincipal: TFPrincipal;
   FConexao: TConexao;
+  const tpCliente = 1;
+  const tpFornecedor = 2;
+  const tpFuncionario = 3;
+  const tpUsuario = 4;
+  const tpEmpresa = 5;
 
 implementation
 
@@ -49,7 +54,7 @@ uses Controller.Pais, Controller.Estado, Controller.Cidade,
      Controller.TipoDocumento, Controller.TipoEndereco, UFuncao,
      Controller.Pessoa, Controller.Pessoa.OutroDocumento,
      Controller.Pessoa.Endereco, Controller.Pessoa.Contato,
-     Controller.Funcao, Controller.Grupo;
+     Controller.Funcao, Controller.Grupo, Controller.OrdemServico;
 
 {$R *.dfm}
 
@@ -93,6 +98,7 @@ begin
     Controller.pessoa.Endereco.Registry;
     Controller.pessoa.Contato.Registry;
     Controller.Grupo.Registry;
+    Controller.OrdemServico.Registry;
 
     if (Trim(UpperCase(EIP.Text)) = 'LOCALHOST') then
     begin
@@ -142,6 +148,7 @@ begin
     Controller.pessoa.Contato.destruirConexao;
     Controller.Funcao.destruirConexao;
     Controller.Grupo.destruirConexao;
+    Controller.OrdemServico.destruirConexao;
 
     PStatus.Caption := 'Status: Parado';
     PStatus.Font.Color := clRed;

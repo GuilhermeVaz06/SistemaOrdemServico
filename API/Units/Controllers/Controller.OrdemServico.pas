@@ -291,8 +291,8 @@ begin
     ordemServico.tipoFrete := body.GetValue<string>('tipoFrete', '');
     ordemServico.detalhamento := body.GetValue<string>('detalhamento', '');
     ordemServico.observacao := body.GetValue<string>('observacao', '');
-    ordemServico.dataEntrega := body.GetValue<TDate>('dataEntrega', StrToDate('31/12/1989'));
-    ordemServico.dataOrdem := body.GetValue<TDate>('dataOrdem', StrToDate('31/12/1989'));
+    ordemServico.dataEntrega := StrToDate(body.GetValue<string>('dataEntrega', ''));
+    ordemServico.dataOrdem := StrToDate(body.GetValue<string>('dataOrdem', ''));
     ordemServico.desconto:= body.GetValue<Double>('desconto', 0);
     ordemServico.situacao := 'ORÇAMENTO';
     ordemServico.id := 0;
@@ -308,107 +308,165 @@ begin
 
   FreeAndNil(body);
 
-  // continuar daqui
+  if (continuar) and (verificarToken(res, resposta)) then
+  try
+    erros := TStringList.Create;
+    arrayResposta := TJSONArray.Create;
 
-//  if (continuar) and (verificarToken(res, resposta)) then
-//  try
-//    erros := TStringList.Create;
-//    arrayResposta := TJSONArray.Create;
-//
-//    if (ordemServico.nome = '') then
-//    begin
-//      erros.Add('O Nome da cidade deve ser informado!');
-//    end
-//    else if (Length(Trim(ordemServico.nome)) <= 2) then
-//    begin
-//      erros.Add('O nome da cidade deve conter no minimo 3 caracteres validos!');
-//    end
-//    else if (Length(Trim(ordemServico.nome)) > 150) then
-//    begin
-//      erros.Add('O nome da cidade deve conter no maximo 150 caracteres validos!');
-//    end;
-//
-//    if (Trim(ordemServico.codigoIbge) = '') then
-//    begin
-//      erros.Add('O codigo do IBGE deve ser informado!');
-//    end
-//    else if (Length(Trim(soNumeros(ordemServico.codigoIbge))) <> 7) then
-//    begin
-//      erros.Add('O codigo do IBGE deve conter 7 caracteres numericos validos!');
-//    end;
-//
-//    if not (ordemServico.estado.id > 0) then
-//    begin
-//      erros.Add('O Estado da cidade deve ser informado!');
-//    end;
-//
-//    if (erros.Text = '') then
-//    begin
-//      ordemServicoConsultado := ordemServico.existeRegistro();
-//
-//      if (Assigned(ordemServicoConsultado)) then
-//      begin
-//        erros.Add('Já existe um cidade [' + IntToStrSenaoZero(ordemServicoConsultado.id) +
-//                  ' - ' + ordemServicoConsultado.nome +
-//                  ' - ' + ordemServicoConsultado.status + '], cadastrada com esse codigo IBGE ou com esse nome!');
-//        ordemServicoConsultado.Destroy;
-//      end
-//      else
-//      begin
-//        ordemServicoConsultado := TordemServico.Create;
-//        ordemServicoConsultado.estado.Destroy;
-//        ordemServicoConsultado.estado := ordemServico.estado.consultarChave();
-//
-//        if not (Assigned(ordemServicoConsultado.estado)) then
-//        begin
-//          erros.Add('Nenhum Estado encontrado com o codigo [' + IntToStrSenaoZero(ordemServico.estado.id) + ']!');
-//        end;
-//
-//        ordemServicoConsultado.Destroy;
-//      end;
-//    end;
-//
-//    if (erros.Text <> '') then
-//    begin
-//      for i := 0 to erros.Count - 1 do
-//      begin
-//        arrayResposta.Add(UFuncao.JsonErro('ORDEMSERVICO006',  erros[i]));
-//      end;
-//
-//      resposta.AddPair(TJSONPair.Create('Erros', arrayResposta));
-//      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
-//    end
-//    else
-//    begin
-//      FreeAndNil(arrayResposta);
-//      ordemServicoConsultado := ordemServico.cadastrarOrdemServico();
-//
-//      if Assigned(ordemServicoConsultado) then
-//      begin
-//        resposta.AddPair('tipo', 'Cadastro de cidade');
-//        resposta.AddPair('registrosAfetados', TJSONNumber.Create(ordemServico.registrosAfetados));
-//        montarOrdemServico(ordemServicoConsultado, resposta);
-//        Res.Send<TJSONAncestor>(resposta.Clone).Status(200);
-//
-//        ordemServicoConsultado.Destroy;
-//      end
-//      else
-//      begin
-//        mensagem := 'Erro não tratado ao cadastrar uma cidade!';
-//        resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('ORDEMSERVICO007', mensagem))));
-//        Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
-//      end;
-//    end;
-//
-//    FreeAndNil(erros);
-//  except
-//    on E: Exception do
-//    begin
-//      mensagem := 'Erro não tratado ao cadastrar uma cidade!';
-//      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('ORDEMSERVICO007', mensagem))));
-//      Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
-//    end;
-//  end;
+    if (ordemServico.finalidade = '') then
+    begin
+      erros.Add('A finalidade deve ser informada!');
+    end
+    else if (ordemServico.finalidade <> 'REPARO')
+        and (ordemServico.finalidade <> 'INSTALAÇÃO')
+        and (ordemServico.finalidade <> 'MANUTENÇÃO') then
+    begin
+      erros.Add('A finalidade informada é invalida ela deve ser REPARO ou INSTALAÇÃO ou MANUTENÇÃO!');
+    end;
+
+    if (ordemServico.situacao = '') then
+    begin
+      erros.Add('A situação deve ser informada!');
+    end
+    else if (ordemServico.situacao <> 'ORÇAMENTO')
+        and (ordemServico.situacao <> 'EXCLUIDO')
+        and (ordemServico.situacao <> 'APROVADO')
+        and (ordemServico.situacao <> 'EXECUTANDO')
+        and (ordemServico.situacao <> 'CONCLUIDO')
+        and (ordemServico.situacao <> 'FATURADO') then
+    begin
+      erros.Add('A situação informada é invalida ela deve ser ORÇAMENTO ou EXCLUIDO ou APROVADO ou EXECUTANDO ou CONCLUIDO ou FATURADO!');
+    end;
+
+    if (ordemServico.tipoFrete = '') then
+    begin
+      erros.Add('O tipo do frete deve ser informado!');
+    end
+    else if (ordemServico.tipoFrete <> 'CIF')
+        and (ordemServico.tipoFrete <> 'FOB') then
+    begin
+      erros.Add('O tipo do frete informado é invalida ela deve ser CIF ou FOB!');
+    end;
+
+    if not (ordemServico.empresa.id > 0) then
+    begin
+      erros.Add('A empresa faturamento deve ser informada!');
+    end;
+
+    if not (ordemServico.cliente.id > 0) then
+    begin
+      erros.Add('O cliente deve ser informado!');
+    end;
+
+    if not (ordemServico.endereco.id > 0) then
+    begin
+      erros.Add('O endereço de entrega/serviço deve ser informado!');
+    end;
+
+    if not (ordemServico.transportador.id > 0) then
+    begin
+      erros.Add('O transportador deve ser informado!');
+    end;
+
+    if not (ordemServico.dataEntrega > StrToDate('31/12/1989')) then
+    begin
+      erros.Add('A data de entrega deve ser informada!');
+    end;
+
+    if not (ordemServico.dataOrdem > StrToDate('31/12/1989')) then
+    begin
+      erros.Add('A data da ordem de serviço deve ser informada!');
+    end;
+
+    if (erros.Text = '') then
+    begin
+      ordemServicoConsultado := TordemServico.Create;
+      ordemServicoConsultado.empresa.Destroy;
+      ordemServico.empresa.tipoPessoa.id := tpEmpresa;
+      ordemServicoConsultado.empresa := ordemServico.empresa.consultarChave();
+
+      if not (Assigned(ordemServicoConsultado.empresa)) then
+      begin
+        erros.Add('Nenhuma empresa encontrada com o codigo [' + IntToStrSenaoZero(ordemServico.empresa.id) + ']!');
+      end
+      else
+      begin
+        ordemServicoConsultado.cliente.Destroy;
+        ordemServico.cliente.tipoPessoa.id := tpCliente;
+        ordemServicoConsultado.cliente := ordemServico.cliente.consultarChave();
+
+        if not (Assigned(ordemServicoConsultado.cliente)) then
+        begin
+          erros.Add('Nenhum cliente encontrado com o codigo [' + IntToStrSenaoZero(ordemServico.cliente.id) + ']!');
+        end
+        else
+        begin
+          ordemServicoConsultado.endereco.Destroy;
+          ordemServico.endereco.pessoa.id := ordemServico.cliente.id;
+          ordemServicoConsultado.endereco := ordemServico.endereco.consultarChave();
+
+          if not (Assigned(ordemServicoConsultado.endereco)) then
+          begin
+            erros.Add('Nenhum endereço encontrado com o codigo [' + IntToStrSenaoZero(ordemServico.endereco.id) + ']!');
+          end
+          else
+          begin
+            ordemServicoConsultado.transportador.Destroy;
+            ordemServico.transportador.tipoPessoa.id := tpFornecedor;
+            ordemServicoConsultado.transportador := ordemServico.transportador.consultarChave();
+
+            if not (Assigned(ordemServicoConsultado.transportador)) then
+            begin
+              erros.Add('Nenhum transportadora encontrada com o codigo [' + IntToStrSenaoZero(ordemServico.transportador.id) + ']!');
+            end;
+          end;
+        end;
+      end;
+
+      ordemServicoConsultado.Destroy;
+    end;
+
+    if (erros.Text <> '') then
+    begin
+      for i := 0 to erros.Count - 1 do
+      begin
+        arrayResposta.Add(UFuncao.JsonErro('ORDEMSERVICO006',  erros[i]));
+      end;
+
+      resposta.AddPair(TJSONPair.Create('Erros', arrayResposta));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+    end
+    else
+    begin
+      FreeAndNil(arrayResposta);
+      ordemServicoConsultado := ordemServico.cadastrarOrdemServico();
+
+      if Assigned(ordemServicoConsultado) then
+      begin
+        resposta.AddPair('tipo', 'Cadastro de ordem de serviço');
+        resposta.AddPair('registrosAfetados', TJSONNumber.Create(ordemServico.registrosAfetados));
+        montarOrdemServico(ordemServicoConsultado, resposta);
+        Res.Send<TJSONAncestor>(resposta.Clone).Status(200);
+
+        ordemServicoConsultado.Destroy;
+      end
+      else
+      begin
+        mensagem := 'Erro não tratado ao cadastrar uma ordem de serviço!';
+        resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('ORDEMSERVICO007', mensagem))));
+        Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
+      end;
+    end;
+
+    FreeAndNil(erros);
+  except
+    on E: Exception do
+    begin
+      mensagem := 'Erro não tratado ao cadastrar uma ordem de serviço!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('ORDEMSERVICO007', mensagem))));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
+    end;
+  end;
 
   ordemServico.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
   limparVariaveis;
@@ -435,11 +493,19 @@ begin
     body := TJSONObject.ParseJSONValue(TEncoding.UTF8.GetBytes(req.Body), 0) as TJSONValue;
 
     token := Req.Headers['token'];
-//    ordemServico.nome := body.GetValue<string>('nomecidade', '');
-//    ordemServico.estado.id := body.GetValue<Integer>('codigoEstado', 0);
-//    ordemServico.codigoIbge := body.GetValue<string>('codigoIBGE', '');
-//    ordemServico.status := body.GetValue<string>('status', 'A');
-//    ordemServico.id := strToIntZero(Req.Params['id']);
+    ordemServico.empresa.id := body.GetValue<Integer>('empresaCodigo', 0);
+    ordemServico.cliente.id := body.GetValue<Integer>('clienteCodigo', 0);
+    ordemServico.endereco.id := body.GetValue<Integer>('enderecoCodigo', 0);
+    ordemServico.transportador.id := body.GetValue<Integer>('transportadoraCodigo', 0);
+    ordemServico.finalidade := body.GetValue<string>('finalidade', '');
+    ordemServico.tipoFrete := body.GetValue<string>('tipoFrete', '');
+    ordemServico.detalhamento := body.GetValue<string>('detalhamento', '');
+    ordemServico.observacao := body.GetValue<string>('observacao', '');
+    ordemServico.dataEntrega := StrToDate(body.GetValue<string>('dataEntrega', ''));
+    ordemServico.dataOrdem := StrToDate(body.GetValue<string>('dataOrdem', ''));
+    ordemServico.desconto:= body.GetValue<Double>('desconto', 0);
+    ordemServico.status := body.GetValue<string>('status', 'A');
+    ordemServico.id := strToIntZero(Req.Params['id']);
   except
     on E: Exception do
     begin
@@ -452,123 +518,170 @@ begin
 
   FreeAndNil(body);
 
-//  if (continuar) and (verificarToken(res, resposta)) then
-//  try
-//    erros := TStringList.Create;
-//    arrayResposta := TJSONArray.Create;
-//
-//    if not (ordemServico.id > 0) then
-//    begin
-//      erros.Add('O Codigo da cidade deve ser informado, ou deve ser um numero inteiro valido!');
-//    end;
-//
-//    if (ordemServico.nome = '') then
-//    begin
-//      erros.Add('O Nome da cidade deve ser informado!');
-//    end
-//    else if (Length(Trim(ordemServico.nome)) <= 2) then
-//    begin
-//      erros.Add('O nome da cidade deve conter no minimo 3 caracteres validos!');
-//    end
-//    else if (Length(Trim(ordemServico.nome)) > 150) then
-//    begin
-//      erros.Add('O nome da cidade deve conter no maximo 150 caracteres validos!');
-//    end;
-//
-//    if (Trim(ordemServico.codigoIbge) = '') then
-//    begin
-//      erros.Add('O codigo do IBGE deve ser informado!');
-//    end
-//    else if (Length(Trim(soNumeros(ordemServico.codigoIbge))) <> 7) then
-//    begin
-//      erros.Add('O codigo do IBGE deve conter 7 caracteres numericos validos!');
-//    end;
-//
-//    if not (ordemServico.estado.id > 0) then
-//    begin
-//      erros.Add('O Estado do cidade deve ser informado!');
-//    end;
-//
-//    if (ordemServico.status <> 'A') and (ordemServico.status <> 'I') then
-//    begin
-//      erros.Add('O Status da cidade informado é invalido!');
-//    end;
-//
-//    if (erros.Text = '') then
-//    begin
-//      ordemServicoConsultado := ordemServico.consultarChave();
-//
-//      if not (Assigned(ordemServicoConsultado)) then
-//      begin
-//        erros.Add('Nenhuma cidade encontrado com o codigo [' + IntToStrSenaoZero(ordemServico.id) + ']!');
-//      end
-//      else
-//      begin
-//        ordemServicoConsultado.Destroy;
-//        ordemServicoConsultado := ordemServico.existeRegistro();
-//
-//        if (Assigned(ordemServicoConsultado)) then
-//        begin
-//          erros.Add('Já existe uma cidade [' + IntToStrSenaoZero(ordemServicoConsultado.id) +
-//                  ' - ' + ordemServicoConsultado.nome +
-//                  ' - ' + ordemServicoConsultado.status + '], cadastrada com esse codigo IBGE ou com esse nome!');
-//          ordemServicoConsultado.Destroy;
-//        end;
-//      end;
-//
-//      ordemServicoConsultado := TordemServico.Create;
-//      ordemServicoConsultado.estado.Destroy;
-//      ordemServicoConsultado.estado := ordemServico.estado.consultarChave();
-//
-//      if not (Assigned(ordemServicoConsultado.estado)) then
-//      begin
-//        erros.Add('Nenhum Estado encontrado com o codigo [' + IntToStrSenaoZero(ordemServico.estado.id) + ']!');
-//      end;
-//
-//      ordemServicoConsultado.Destroy;
-//    end;
-//
-//    if (erros.Text <> '') then
-//    begin
-//      for i := 0 to erros.Count - 1 do
-//      begin
-//        arrayResposta.Add(UFuncao.JsonErro('ORDEMSERVICO013',  erros[i]));
-//      end;
-//
-//      resposta.AddPair(TJSONPair.Create('Erros', arrayResposta));
-//      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
-//    end
-//    else
-//    begin
-//      FreeAndNil(arrayResposta);
-//      ordemServicoConsultado := ordemServico.alterarOrdemServico();
-//
-//      if Assigned(ordemServicoConsultado) then
-//      begin
-//        resposta.AddPair('tipo', 'Alteração de cidade');
-//        resposta.AddPair('registrosAfetados', TJSONNumber.Create(ordemServico.registrosAfetados));
-//        montarOrdemServico(ordemServicoConsultado, resposta);
-//        Res.Send<TJSONAncestor>(resposta.Clone).Status(200);
-//
-//        ordemServicoConsultado.Destroy;
-//      end
-//      else
-//      begin
-//        mensagem := 'Erro não tratado ao alterar uma cidade!';
-//        resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('ORDEMSERVICO014', mensagem))));
-//        Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
-//      end;
-//    end;
-//
-//    FreeAndNil(erros);
-//  except
-//    on E: Exception do
-//    begin
-//      mensagem := 'Erro não tratado ao alterar uma cidade!';
-//      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('ORDEMSERVICO014', mensagem))));
-//      Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
-//    end;
-//  end;
+  if (continuar) and (verificarToken(res, resposta)) then
+  try
+    erros := TStringList.Create;
+    arrayResposta := TJSONArray.Create;
+
+    if not (ordemServico.id > 0) then
+    begin
+      erros.Add('O Codigo da ordem de serviço deve ser informado, ou deve ser um numero inteiro valido!');
+    end;
+
+    if (ordemServico.finalidade = '') then
+    begin
+      erros.Add('A finalidade deve ser informada!');
+    end
+    else if (ordemServico.finalidade <> 'REPARO')
+        and (ordemServico.finalidade <> 'INSTALAÇÃO')
+        and (ordemServico.finalidade <> 'MANUTENÇÃO') then
+    begin
+      erros.Add('A finalidade informada é invalida ela deve ser REPARO ou INSTALAÇÃO ou MANUTENÇÃO!');
+    end;
+
+    if (ordemServico.tipoFrete = '') then
+    begin
+      erros.Add('O tipo do frete deve ser informado!');
+    end
+    else if (ordemServico.tipoFrete <> 'CIF')
+        and (ordemServico.tipoFrete <> 'FOB') then
+    begin
+      erros.Add('O tipo do frete informado é invalida ela deve ser CIF ou FOB!');
+    end;
+
+    if not (ordemServico.empresa.id > 0) then
+    begin
+      erros.Add('A empresa faturamento deve ser informada!');
+    end;
+
+    if not (ordemServico.cliente.id > 0) then
+    begin
+      erros.Add('O cliente deve ser informado!');
+    end;
+
+    if not (ordemServico.endereco.id > 0) then
+    begin
+      erros.Add('O endereço de entrega/serviço deve ser informado!');
+    end;
+
+    if not (ordemServico.transportador.id > 0) then
+    begin
+      erros.Add('O transportador deve ser informado!');
+    end;
+
+    if not (ordemServico.dataEntrega > StrToDate('31/12/1989')) then
+    begin
+      erros.Add('A data de entrega deve ser informada!');
+    end;
+
+    if not (ordemServico.dataOrdem > StrToDate('31/12/1989')) then
+    begin
+      erros.Add('A data da ordem de serviço deve ser informada!');
+    end;
+
+
+    if   (ordemServico.status <> 'A')
+     and (ordemServico.status <> 'I') then
+    begin
+      erros.Add('O Status da ordem ser serviço informado é invalido!');
+    end;
+
+    if (erros.Text = '') then
+    begin
+      ordemServicoConsultado := ordemServico.consultarChave();
+
+      if not (Assigned(ordemServicoConsultado)) then
+      begin
+        erros.Add('Nenhuma ordem de serviço encontrada com o codigo [' + IntToStrSenaoZero(ordemServico.id) + ']!');
+      end;
+
+      ordemServicoConsultado := TordemServico.Create;
+      ordemServicoConsultado.empresa.Destroy;
+      ordemServico.empresa.tipoPessoa.id := tpEmpresa;
+      ordemServicoConsultado.empresa := ordemServico.empresa.consultarChave();
+
+      if not (Assigned(ordemServicoConsultado.empresa)) then
+      begin
+        erros.Add('Nenhuma empresa encontrada com o codigo [' + IntToStrSenaoZero(ordemServico.empresa.id) + ']!');
+      end
+      else
+      begin
+        ordemServicoConsultado.cliente.Destroy;
+        ordemServico.cliente.tipoPessoa.id := tpCliente;
+        ordemServicoConsultado.cliente := ordemServico.cliente.consultarChave();
+
+        if not (Assigned(ordemServicoConsultado.cliente)) then
+        begin
+          erros.Add('Nenhum cliente encontrado com o codigo [' + IntToStrSenaoZero(ordemServico.cliente.id) + ']!');
+        end
+        else
+        begin
+          ordemServicoConsultado.endereco.Destroy;
+          ordemServico.endereco.pessoa.id := ordemServico.cliente.id;
+          ordemServicoConsultado.endereco := ordemServico.endereco.consultarChave();
+
+          if not (Assigned(ordemServicoConsultado.endereco)) then
+          begin
+            erros.Add('Nenhum endereço encontrado com o codigo [' + IntToStrSenaoZero(ordemServico.endereco.id) + ']!');
+          end
+          else
+          begin
+            ordemServicoConsultado.transportador.Destroy;
+            ordemServico.transportador.tipoPessoa.id := tpFornecedor;
+            ordemServicoConsultado.transportador := ordemServico.transportador.consultarChave();
+
+            if not (Assigned(ordemServicoConsultado.transportador)) then
+            begin
+              erros.Add('Nenhum transportadora encontrada com o codigo [' + IntToStrSenaoZero(ordemServico.transportador.id) + ']!');
+            end;
+          end;
+        end;
+      end;
+
+      ordemServicoConsultado.Destroy;
+    end;
+
+    if (erros.Text <> '') then
+    begin
+      for i := 0 to erros.Count - 1 do
+      begin
+        arrayResposta.Add(UFuncao.JsonErro('ORDEMSERVICO013',  erros[i]));
+      end;
+
+      resposta.AddPair(TJSONPair.Create('Erros', arrayResposta));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+    end
+    else
+    begin
+      FreeAndNil(arrayResposta);
+      ordemServicoConsultado := ordemServico.alterarOrdemServico();
+
+      if Assigned(ordemServicoConsultado) then
+      begin
+        resposta.AddPair('tipo', 'Alteração de ordem de serviço');
+        resposta.AddPair('registrosAfetados', TJSONNumber.Create(ordemServico.registrosAfetados));
+        montarOrdemServico(ordemServicoConsultado, resposta);
+        Res.Send<TJSONAncestor>(resposta.Clone).Status(200);
+
+        ordemServicoConsultado.Destroy;
+      end
+      else
+      begin
+        mensagem := 'Erro não tratado ao alterar uma ordem de serviço!';
+        resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('ORDEMSERVICO014', mensagem))));
+        Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
+      end;
+    end;
+
+    FreeAndNil(erros);
+  except
+    on E: Exception do
+    begin
+      mensagem := 'Erro não tratado ao alterar uma ordem de serviço!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('ORDEMSERVICO014', mensagem))));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
+    end;
+  end;
 
   ordemServico.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
   limparVariaveis;

@@ -23,7 +23,9 @@ uses
   DMFuncao in '..\Data Module\DMFuncao.pas' {FDMFuncao: TDataModule},
   Funcao in '..\Tela\Funcao.pas' {FFuncao},
   DMGrupo in '..\Data Module\DMGrupo.pas' {FDMGrupo: TDataModule},
-  Grupo in '..\Tela\Grupo.pas' {FGrupo};
+  Grupo in '..\Tela\Grupo.pas' {FGrupo},
+  OrdemServico in '..\Tela\OrdemServico.pas' {FOrdemServico},
+  DMOrdemServico in '..\Data Module\DMOrdemServico.pas' {FDMOrdemServico: TDataModule};
 
 {$R *.res}
 
@@ -42,5 +44,6 @@ begin
   Application.CreateForm(TFDMPais, FDMPais);
   Application.CreateForm(TFDMFuncao, FDMFuncao);
   Application.CreateForm(TFDMGrupo, FDMGrupo);
+  Application.CreateForm(TFDMOrdemServico, FDMOrdemServico);
   Application.Run;
 end.
