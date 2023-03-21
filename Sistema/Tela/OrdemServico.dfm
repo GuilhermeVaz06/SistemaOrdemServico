@@ -24,7 +24,7 @@ object FOrdemServico: TFOrdemServico
     Top = 0
     Width = 1363
     Height = 614
-    ActivePage = TBConsulta
+    ActivePage = TBCadastro
     Align = alClient
     TabOrder = 0
     object TBCadastro: TTabSheet
@@ -38,6 +38,8 @@ object FOrdemServico: TFOrdemServico
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 0
+        ExplicitLeft = -24
+        ExplicitTop = -18
         object BFechar: TSpeedButton
           Left = 627
           Top = 0
@@ -136,13 +138,15 @@ object FOrdemServico: TFOrdemServico
       end
       object PInfo: TPanel
         Left = 0
-        Top = 513
+        Top = 530
         Width = 1355
         Height = 53
         Align = alBottom
         BevelOuter = bvNone
         Enabled = False
         TabOrder = 3
+        ExplicitLeft = -3
+        ExplicitTop = 532
         object Label4: TLabel
           Left = 9
           Top = 3
@@ -220,30 +224,16 @@ object FOrdemServico: TFOrdemServico
           TabOrder = 3
         end
       end
-      object CBAtivo: TDBCheckBox
-        Left = 0
-        Top = 566
-        Width = 1355
-        Height = 17
-        Align = alBottom
-        Caption = 'Ativo'
-        DataField = 'status'
-        DataSource = FDMPessoa.DPessoa
-        Enabled = False
-        TabOrder = 4
-        ValueChecked = 'A'
-        ValueUnchecked = 'I'
-      end
       object PCDados: TPageControl
         Left = 0
-        Top = 161
+        Top = 249
         Width = 1355
-        Height = 352
+        Height = 281
         ActivePage = TBOutrosDocumentos
         Align = alClient
         TabOrder = 2
-        ExplicitTop = 201
-        ExplicitHeight = 312
+        ExplicitTop = 161
+        ExplicitHeight = 352
         object TBOutrosDocumentos: TTabSheet
           Caption = 'Outros Documentos'
           object Panel2: TPanel
@@ -282,28 +272,17 @@ object FOrdemServico: TFOrdemServico
               ExplicitHeight = 39
             end
           end
-          object CBInativoOutroDocumento: TCheckBox
-            Left = 0
-            Top = 304
-            Width = 1347
-            Height = 17
-            Align = alBottom
-            Caption = 'Mostrar Inativos'
-            Enabled = False
-            TabOrder = 1
-            ExplicitTop = 264
-          end
           object GDocumento: TDBGrid
             Left = 0
             Top = 29
             Width = 1347
-            Height = 275
+            Height = 221
             Align = alClient
             DataSource = FDMPessoa.DOutroDocumento
             Enabled = False
             Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
             ReadOnly = True
-            TabOrder = 2
+            TabOrder = 1
             TitleFont.Charset = DEFAULT_CHARSET
             TitleFont.Color = clWindowText
             TitleFont.Height = -13
@@ -403,26 +382,26 @@ object FOrdemServico: TFOrdemServico
           end
           object CBInativoEndereco: TCheckBox
             Left = 0
-            Top = 304
+            Top = 233
             Width = 1347
             Height = 17
             Align = alBottom
             Caption = 'Mostrar Inativos'
             Enabled = False
-            TabOrder = 1
-            ExplicitTop = 264
+            TabOrder = 2
+            ExplicitTop = 304
           end
           object GEndereco: TDBGrid
             Left = 0
             Top = 29
             Width = 1347
-            Height = 275
+            Height = 204
             Align = alClient
             DataSource = FDMPessoa.DEndereco
             Enabled = False
             Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
             ReadOnly = True
-            TabOrder = 2
+            TabOrder = 1
             TitleFont.Charset = DEFAULT_CHARSET
             TitleFont.Color = clWindowText
             TitleFont.Height = -13
@@ -522,26 +501,26 @@ object FOrdemServico: TFOrdemServico
           end
           object CBInativoContato: TCheckBox
             Left = 0
-            Top = 304
+            Top = 233
             Width = 1347
             Height = 17
             Align = alBottom
             Caption = 'Mostrar Inativos'
             Enabled = False
-            TabOrder = 1
-            ExplicitTop = 264
+            TabOrder = 2
+            ExplicitTop = 304
           end
           object GContato: TDBGrid
             Left = 0
             Top = 29
             Width = 1347
-            Height = 275
+            Height = 204
             Align = alClient
             DataSource = FDMPessoa.DContato
             Enabled = False
             Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
             ReadOnly = True
-            TabOrder = 2
+            TabOrder = 1
             TitleFont.Charset = DEFAULT_CHARSET
             TitleFont.Color = clWindowText
             TitleFont.Height = -13
@@ -613,7 +592,7 @@ object FOrdemServico: TFOrdemServico
         Left = 0
         Top = 29
         Width = 1355
-        Height = 132
+        Height = 220
         Align = alTop
         BevelOuter = bvNone
         Enabled = False
@@ -628,16 +607,142 @@ object FOrdemServico: TFOrdemServico
         object Label2: TLabel
           Left = 90
           Top = 1
-          Width = 64
+          Width = 50
           Height = 16
-          Caption = 'Documento'
+          Caption = 'Empresa'
         end
         object Label13: TLabel
-          Left = 388
+          Left = 594
           Top = 1
+          Width = 79
+          Height = 16
+          Caption = 'Detalhamento'
+        end
+        object Label3: TLabel
+          Left = 9
+          Top = 42
+          Width = 39
+          Height = 16
+          Caption = 'Cliente'
+        end
+        object Label8: TLabel
+          Left = 594
+          Top = 129
           Width = 67
           Height = 16
           Caption = 'Observa'#231#227'o'
+        end
+        object Label9: TLabel
+          Left = 277
+          Top = 42
+          Width = 53
+          Height = 16
+          Caption = 'Endere'#231'o'
+        end
+        object Label10: TLabel
+          Left = 359
+          Top = 42
+          Width = 55
+          Height = 16
+          Caption = 'Descri'#231#227'o'
+        end
+        object Label11: TLabel
+          Left = 451
+          Top = 42
+          Width = 22
+          Height = 16
+          Caption = 'CEP'
+        end
+        object Label12: TLabel
+          Left = 9
+          Top = 87
+          Width = 72
+          Height = 16
+          Caption = 'Longradouro'
+        end
+        object Label14: TLabel
+          Left = 208
+          Top = 87
+          Width = 45
+          Height = 16
+          Caption = 'Numero'
+        end
+        object Label15: TLabel
+          Left = 290
+          Top = 87
+          Width = 34
+          Height = 16
+          Caption = 'Bairro'
+        end
+        object Label16: TLabel
+          Left = 382
+          Top = 87
+          Width = 79
+          Height = 16
+          Caption = 'Complemento'
+        end
+        object Label18: TLabel
+          Left = 9
+          Top = 129
+          Width = 39
+          Height = 16
+          Caption = 'Cidade'
+        end
+        object Label19: TLabel
+          Left = 208
+          Top = 129
+          Width = 38
+          Height = 16
+          Caption = 'Estado'
+        end
+        object Label20: TLabel
+          Left = 320
+          Top = 129
+          Width = 23
+          Height = 16
+          Caption = 'Pais'
+        end
+        object Label21: TLabel
+          Left = 450
+          Top = 129
+          Width = 58
+          Height = 16
+          Caption = 'Finalidade'
+        end
+        object Label22: TLabel
+          Left = 9
+          Top = 171
+          Width = 89
+          Height = 16
+          Caption = 'Transportadora'
+        end
+        object Label23: TLabel
+          Left = 276
+          Top = 171
+          Width = 59
+          Height = 16
+          Caption = 'Tipo Frete'
+        end
+        object Label24: TLabel
+          Left = 388
+          Top = 0
+          Width = 49
+          Height = 16
+          Caption = 'Situa'#231#227'o'
+        end
+        object Label25: TLabel
+          Left = 476
+          Top = 170
+          Width = 80
+          Height = 16
+          Caption = 'Prazo Entrega'
+        end
+        object Label26: TLabel
+          Left = 271
+          Top = 0
+          Width = 97
+          Height = 16
+          Caption = 'Data Vencimento'
         end
         object ECodigo: TDBEdit
           Left = 9
@@ -654,7 +759,7 @@ object FOrdemServico: TFOrdemServico
         object DBLDocumento: TDBLookupComboBox
           Left = 91
           Top = 17
-          Width = 102
+          Width = 174
           Height = 24
           DataField = 'codigoTipoDocumento'
           DataSource = FDMPessoa.DPessoa
@@ -664,13 +769,224 @@ object FOrdemServico: TFOrdemServico
           TabOrder = 1
         end
         object DBMemo1: TDBMemo
-          Left = 389
+          Left = 594
           Top = 17
           Width = 373
-          Height = 108
+          Height = 110
           DataField = 'observacao'
           DataSource = FDMPessoa.DPessoa
           ScrollBars = ssVertical
+          TabOrder = 4
+        end
+        object DBEdit1: TDBEdit
+          Left = 91
+          Top = 59
+          Width = 180
+          Height = 24
+          TabStop = False
+          DataField = 'tipoEndereco'
+          DataSource = FDMPessoa.DEndereco
+          ReadOnly = True
+          TabOrder = 6
+        end
+        object DBDescricao: TDBEdit
+          Left = 9
+          Top = 59
+          Width = 76
+          Height = 24
+          DataField = 'codigoTipoEndereco'
+          DataSource = FDMPessoa.DEndereco
+          TabOrder = 5
+        end
+        object DBMemo2: TDBMemo
+          Left = 594
+          Top = 145
+          Width = 373
+          Height = 66
+          DataField = 'observacao'
+          DataSource = FDMPessoa.DPessoa
+          ScrollBars = ssVertical
+          TabOrder = 18
+        end
+        object DBEdit2: TDBEdit
+          Left = 359
+          Top = 59
+          Width = 86
+          Height = 24
+          TabStop = False
+          DataField = 'tipoEndereco'
+          DataSource = FDMPessoa.DEndereco
+          ReadOnly = True
+          TabOrder = 8
+        end
+        object DBEdit3: TDBEdit
+          Left = 277
+          Top = 59
+          Width = 76
+          Height = 24
+          DataField = 'codigoTipoEndereco'
+          DataSource = FDMPessoa.DEndereco
+          TabOrder = 7
+        end
+        object DBEdit4: TDBEdit
+          Left = 451
+          Top = 59
+          Width = 136
+          Height = 24
+          TabStop = False
+          DataField = 'tipoEndereco'
+          DataSource = FDMPessoa.DEndereco
+          ReadOnly = True
+          TabOrder = 9
+        end
+        object DBEdit5: TDBEdit
+          Left = 9
+          Top = 103
+          Width = 193
+          Height = 24
+          TabStop = False
+          DataField = 'tipoEndereco'
+          DataSource = FDMPessoa.DEndereco
+          ReadOnly = True
+          TabOrder = 10
+        end
+        object DBEdit6: TDBEdit
+          Left = 208
+          Top = 103
+          Width = 76
+          Height = 24
+          TabStop = False
+          DataField = 'tipoEndereco'
+          DataSource = FDMPessoa.DEndereco
+          ReadOnly = True
+          TabOrder = 11
+        end
+        object DBEdit7: TDBEdit
+          Left = 290
+          Top = 103
+          Width = 86
+          Height = 24
+          TabStop = False
+          DataField = 'tipoEndereco'
+          DataSource = FDMPessoa.DEndereco
+          ReadOnly = True
+          TabOrder = 12
+        end
+        object DBEdit8: TDBEdit
+          Left = 382
+          Top = 103
+          Width = 205
+          Height = 24
+          TabStop = False
+          DataField = 'tipoEndereco'
+          DataSource = FDMPessoa.DEndereco
+          ReadOnly = True
+          TabOrder = 13
+        end
+        object DBEdit9: TDBEdit
+          Left = 9
+          Top = 145
+          Width = 193
+          Height = 24
+          TabStop = False
+          DataField = 'tipoEndereco'
+          DataSource = FDMPessoa.DEndereco
+          ReadOnly = True
+          TabOrder = 14
+        end
+        object DBEdit10: TDBEdit
+          Left = 208
+          Top = 145
+          Width = 106
+          Height = 24
+          TabStop = False
+          DataField = 'tipoEndereco'
+          DataSource = FDMPessoa.DEndereco
+          ReadOnly = True
+          TabOrder = 15
+        end
+        object DBEdit11: TDBEdit
+          Left = 320
+          Top = 145
+          Width = 125
+          Height = 24
+          TabStop = False
+          DataField = 'tipoEndereco'
+          DataSource = FDMPessoa.DEndereco
+          ReadOnly = True
+          TabOrder = 16
+        end
+        object DBLookupComboBox1: TDBLookupComboBox
+          Left = 451
+          Top = 145
+          Width = 136
+          Height = 24
+          DataField = 'codigoTipoDocumento'
+          DataSource = FDMPessoa.DPessoa
+          KeyField = 'codigo'
+          ListField = 'descricao'
+          ListSource = FDMPessoa.DTipoDocumento
+          TabOrder = 17
+        end
+        object DBEdit12: TDBEdit
+          Left = 91
+          Top = 187
+          Width = 178
+          Height = 24
+          TabStop = False
+          DataField = 'tipoEndereco'
+          DataSource = FDMPessoa.DEndereco
+          ReadOnly = True
+          TabOrder = 20
+        end
+        object DBEdit13: TDBEdit
+          Left = 9
+          Top = 187
+          Width = 76
+          Height = 24
+          DataField = 'codigoTipoEndereco'
+          DataSource = FDMPessoa.DEndereco
+          TabOrder = 19
+        end
+        object DBLookupComboBox2: TDBLookupComboBox
+          Left = 276
+          Top = 187
+          Width = 194
+          Height = 24
+          DataField = 'codigoTipoDocumento'
+          DataSource = FDMPessoa.DPessoa
+          KeyField = 'codigo'
+          ListField = 'descricao'
+          ListSource = FDMPessoa.DTipoDocumento
+          TabOrder = 21
+        end
+        object DBEdit14: TDBEdit
+          Left = 388
+          Top = 17
+          Width = 199
+          Height = 24
+          TabStop = False
+          DataField = 'tipoEndereco'
+          DataSource = FDMPessoa.DEndereco
+          ReadOnly = True
+          TabOrder = 3
+        end
+        object EDTEmissao: TDateTimePicker
+          Left = 476
+          Top = 187
+          Width = 111
+          Height = 24
+          Date = 44975.000000000000000000
+          Time = 0.918185462964174800
+          TabOrder = 22
+        end
+        object EDTVencimento: TDateTimePicker
+          Left = 271
+          Top = 17
+          Width = 111
+          Height = 24
+          Date = 44975.000000000000000000
+          Time = 0.918185462964174800
           TabOrder = 2
         end
       end
@@ -699,9 +1015,9 @@ object FOrdemServico: TFOrdemServico
         object LConsultaRazaoSocial: TLabel
           Left = 3
           Top = 0
-          Width = 73
+          Width = 210
           Height = 16
-          Caption = 'Raz'#227'o Social'
+          Caption = 'gggggggggggggggggggggggggggggg'
         end
         object SpeedButton1: TSpeedButton
           Left = 479
