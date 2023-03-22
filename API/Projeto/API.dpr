@@ -30,7 +30,8 @@ uses
   Model.Grupo in '..\Units\Models\Model.Grupo.pas',
   Controller.Grupo in '..\Units\Controllers\Controller.Grupo.pas',
   Model.OrdemServico in '..\Units\Models\Model.OrdemServico.pas',
-  Controller.OrdemServico in '..\Units\Controllers\Controller.OrdemServico.pas';
+  Controller.OrdemServico in '..\Units\Controllers\Controller.OrdemServico.pas',
+  Model.OrdemServico.Item in '..\Units\Models\Model.OrdemServico.Item.pas';
 
 {$R *.res}
 
