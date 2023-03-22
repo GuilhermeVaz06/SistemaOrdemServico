@@ -42,6 +42,7 @@ procedure ordenarGrid(Coluna: TColumn);
 procedure copiarItemJsonArray(arrayOrigem: TJSONArray; out arrayDestino : TJSONArray);
 procedure converterArrayJsonQuery(json: IRESTResponseJSON; out dataSet: TFDMemTable); overload;
 procedure converterArrayJsonQuery(json: string; out dataSet: TFDMemTable); overload;
+procedure limparCampoLookUp(sender: TObject; Key: Word);
 procedure colorirGrid(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
 
@@ -54,6 +55,18 @@ var
 implementation
 
 uses Pessoa, DMPessoa;
+
+procedure limparCampoLookUp(sender: TObject; Key: Word);
+begin
+  if (sender is TDBLookupComboBox) then
+  begin
+    if (Key = vk_back) or
+       (Key = vk_delete) then
+    begin
+      (Sender as TDBLookupComboBox).KeyValue := -1;
+    end;
+  end;
+end;
 
 function VirgulaPonto(valor: double): string;
 begin

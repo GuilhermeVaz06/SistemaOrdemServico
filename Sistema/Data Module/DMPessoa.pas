@@ -112,11 +112,11 @@ type
     procedure TPessoaAfterScroll(DataSet: TDataSet);
     procedure TOutroDocumentodocumentoGetText(Sender: TField; var Text: string;
       DisplayText: Boolean);
-    procedure DataModuleCreate(Sender: TObject);
     procedure TEnderecocepGetText(Sender: TField; var Text: string;
       DisplayText: Boolean);
     procedure TContatodocumentoGetText(Sender: TField; var Text: string;
       DisplayText: Boolean);
+    procedure DataModuleCreate(Sender: TObject);
   private
 
   public

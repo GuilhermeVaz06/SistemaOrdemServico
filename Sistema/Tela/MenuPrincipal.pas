@@ -25,6 +25,7 @@ type
     Funcao1: TMenuItem;
     EmpresaFaturamento1: TMenuItem;
     Grupo1: TMenuItem;
+    OrdemdeServio1: TMenuItem;
     procedure sair1Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure pais1Click(Sender: TObject);
@@ -40,6 +41,7 @@ type
     procedure Funcao1Click(Sender: TObject);
     procedure EmpresaFaturamento1Click(Sender: TObject);
     procedure Grupo1Click(Sender: TObject);
+    procedure OrdemdeServio1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -51,7 +53,8 @@ var
 
 implementation
 
-uses UFuncao, Pais, Estado, Cidade, TipoDocumento, TipoEndereco, Funcao, Grupo;
+uses UFuncao, Pais, Estado, Cidade, TipoDocumento, TipoEndereco, Funcao, Grupo,
+     OrdemServico;
 
 {$R *.dfm}
 
@@ -125,6 +128,16 @@ begin
     FGrupo.ShowModal;
   finally
     FreeAndNil(FGrupo);
+  end;
+end;
+
+procedure TFMenuPrincipal.OrdemdeServio1Click(Sender: TObject);
+begin
+  try
+    Application.CreateForm(TFOrdemServico, FOrdemServico);
+    FOrdemServico.ShowModal;
+  finally
+    FreeAndNil(FOrdemServico);
   end;
 end;
 

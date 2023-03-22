@@ -45,7 +45,7 @@ type
     Label1: TLabel;
     Label2: TLabel;
     ECodigo: TDBEdit;
-    DBLDocumento: TDBLookupComboBox;
+    DBLEmpresa: TDBLookupComboBox;
     DBMemo1: TDBMemo;
     SpeedButton1: TSpeedButton;
     Panel1: TPanel;
@@ -62,7 +62,7 @@ type
     Label13: TLabel;
     Label3: TLabel;
     DBEdit1: TDBEdit;
-    DBDescricao: TDBEdit;
+    DBCliente: TDBEdit;
     Label8: TLabel;
     DBMemo2: TDBMemo;
     Label9: TLabel;
@@ -95,9 +95,11 @@ type
     DBEdit14: TDBEdit;
     Label24: TLabel;
     Label25: TLabel;
-    EDTEmissao: TDateTimePicker;
+    DBPrazoEntrega: TDateTimePicker;
     Label26: TLabel;
-    EDTVencimento: TDateTimePicker;
+    DBDataOrdem: TDateTimePicker;
+    Label17: TLabel;
+    DBLConsultaEmpresa: TDBLookupComboBox;
     procedure BFecharClick(Sender: TObject);
     procedure BCadastrarClick(Sender: TObject);
     procedure BAlterarClick(Sender: TObject);
@@ -112,6 +114,13 @@ type
     procedure GDadosDblClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure TBCadastroShow(Sender: TObject);
+    procedure DBLConsultaEmpresaKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure DBDataOrdemChange(Sender: TObject);
+    procedure DBPrazoEntregaChange(Sender: TObject);
+    procedure DBClienteDblClick(Sender: TObject);
+    procedure DBClienteExit(Sender: TObject);
+    procedure BInativarClick(Sender: TObject);
   private
     { Private declarations }
     function validarCampos: boolean;
@@ -126,82 +135,39 @@ var
 
 implementation
 
-uses UFuncao, DMPessoa, OutroDocumento, Endereco, Contato, Funcao, DMFuncao;
+uses UFuncao, DMOrdemServico, DMPessoa;
 
 {$R *.dfm}
 
 procedure TFOrdemServico.BAlterarClick(Sender: TObject);
 begin
-//  if not (FDMPessoa.TPessoa.RecordCount > 0) then
-//  begin
-//    informar('Nenhum registro selecionado!');
-//  end
-//  else
-//  begin
-//    UFuncao.desativaBotoes(self);
-//    FDMPessoa.TPessoa.Edit;
-//
-//    if (FDMPessoa.tipoCadastro = 'usuario') or
-//       (FDMPessoa.tipoCadastro = 'funcionario') then
-//    begin
-//      PCDados.ActivePage := TBEndereco;
-//    end
-//    else
-//    begin
-//      PCDados.ActivePage := TBOutrosDocumentos;
-//    end;
-//  end;
+  if not (FDMOrdemServico.TOrdemServico.RecordCount > 0) then
+  begin
+    informar('Nenhum registro selecionado!');
+  end
+  else
+  begin
+    UFuncao.desativaBotoes(self);
+    FDMOrdemServico.TOrdemServico.Edit;
+  end;
 end;
 
 procedure TFOrdemServico.BCadastrarClick(Sender: TObject);
 begin
-//  UFuncao.desativaBotoes(self);
-//
-//  with FDMPessoa do
-//  begin
-//    TPessoa.Append;
-//
-//    if (tipoCadastro = 'usuario') or
-//       (tipoCadastro = 'funcionario') then
-//    begin
-//      PCDados.ActivePage := TBEndereco;
-//
-//      if (QTipoDocumento.Locate('descricao', 'CPF', [loCaseInsensitive])) then
-//      begin
-//        TPessoacodigoTipoDocumento.Value := QTipoDocumentocodigo.Value;
-//        DBLDocumentoExit(nil);
-//      end
-//      else
-//      begin
-//        informar('Tipo documento "CPF" não localizado, contate o suporte!');
-//      end;
-//
-//      if (tipoCadastro = 'funcionario') then
-//      begin
-//        if (FDMFuncao.TFuncao.Locate('descricao', 'NENHUM', [loCaseInsensitive])) then
-//        begin
-//          TPessoacodigoFuncao.Value := FDMFuncao.TFuncaocodigo.Value;
-//          DBDescricaoExit(nil);
-//        end
-//        else
-//        begin
-//          informar('Função "NENHUM" não localizado, contate o suporte!');
-//        end;
-//      end;
-//    end
-//    else
-//    begin
-//      PCDados.ActivePage := TBOutrosDocumentos;
-//    end;
-//  end;
+  UFuncao.desativaBotoes(self);
+  FDMOrdemServico.TOrdemServico.Append;
+  DBDataOrdemChange(nil);
+  DBPrazoEntregaChange(nil);
+  FDMOrdemServico.TOrdemServicosituacao.Value := 'ORÇAMENTO';
+
+  if (FDMOrdemServico.QEmpresa.RecordCount = 1) then
+  begin
+    DBLEmpresa.KeyValue := FDMOrdemServico.QEmpresacodigo.Value;
+  end;
 end;
 
 procedure TFOrdemServico.BCancelarClick(Sender: TObject);
 begin
-//  CBInativoContato.Checked := False;
-//  CBInativoEndereco.Checked := False;
-//  CBInativoOutroDocumento.Checked := False;
-//
 //  if (FDMPessoa.TPessoa.State = dsInsert) and
 //     (FDMPessoa.TPessoacodigo.Value > 0) and
 //     ((FDMPessoa.TOutroDocumento.RecordCount <= 0) and
@@ -210,27 +176,27 @@ begin
 //     (FDMPessoa.excluirPessoa = False) then
 //  begin
 //    informar('Erro ao cancelar cadastro, contate o suporte!');
-//  end;
-//
-//  Painel.SetFocus;
-//  FDMPessoa.TPessoa.Cancel;
-//  UFuncao.desativaBotoes(self);
+//  end;  vai ser necessario futuramente
+
+  Painel.SetFocus;
+  FDMOrdemServico.TOrdemServico.Cancel;
+  UFuncao.desativaBotoes(self);
 end;
 
 procedure TFOrdemServico.BConfirmarClick(Sender: TObject);
 begin
-//  confirmarCadastro(True);
+  confirmarCadastro(True);
 end;
 
 procedure TFOrdemServico.BConsultarClick(Sender: TObject);
 begin
-//  BConsultar.Enabled := False;
-//
-//  try
-//    FDMPessoa.consultarDados(0);
-//  finally
-//    BConsultar.Enabled := True;
-//  end;
+  BConsultar.Enabled := False;
+
+  try
+    FDMOrdemServico.consultarDados(0);
+  finally
+    BConsultar.Enabled := True;
+  end;
 end;
 
 procedure TFOrdemServico.BFecharClick(Sender: TObject);
@@ -238,38 +204,35 @@ begin
   close;
 end;
 
+procedure TFOrdemServico.BInativarClick(Sender: TObject);
+begin
+//  vai ser o excluir ordem de servico
+end;
+
 function TFOrdemServico.confirmarCadastro(confirmar: boolean): Boolean;
 var
   resposta: Boolean;
   mensagem: string;
 begin
-//  Painel.SetFocus;
-//  resposta := False;
-//
-//  if (validarCampos) then
-//  begin
-//    if (FDMPessoa.TPessoa.State = dsInsert) and
-//       (FDMPessoa.TPessoacodigo.Value <= 0) then
-//    begin
-//      resposta := FDMPessoa.cadastrarPessoa;
-//    end
-//    else if (FDMPessoa.TPessoa.State = dsEdit) or
-//       (FDMPessoa.TPessoacodigo.Value > 0) then
-//    begin
-//      resposta := FDMPessoa.alterarPessoa;
-//    end;
-//
-//    if (FDMPessoa.tipoCadastro <> 'usuario') and
-//       (FDMPessoa.tipoCadastro <> 'funcionario') then
-//    begin
-//      mensagem := 'Nenhum item (endereço, outro documento ou contato)';
-//    end
-//    else
-//    begin
-//      mensagem := 'Nenhum endereço';
-//    end;
-//
-//    if (FDMPessoa.TPessoa.State = dsInsert) and
+  Painel.SetFocus;
+  resposta := False;
+  DBDataOrdemChange(nil);
+  DBPrazoEntregaChange(nil);
+
+  if (validarCampos) then
+  begin
+    if (FDMOrdemServico.TOrdemServico.State = dsInsert) and
+       (FDMOrdemServico.TOrdemServicocodigo.Value <= 0) then
+    begin
+      resposta := FDMOrdemServico.cadastrarOrdemServico;
+    end
+    else if (FDMOrdemServico.TOrdemServico.State = dsEdit) or
+       (FDMOrdemServico.TOrdemServicocodigo.Value > 0) then
+    begin
+      resposta := FDMOrdemServico.alterarOrdemServico;
+    end;
+
+//    if (FDMPessoa.TOrdemServico.State = dsInsert) and vai ser necessario futuramente
 //       (confirmar) and
 //       ((FDMPessoa.TOutroDocumento.RecordCount <= 0) and
 //        (FDMPessoa.TContato.RecordCount <= 0) and
@@ -279,14 +242,55 @@ begin
 //    begin
 ////   se cair aqui não faz nada
 //    end
-//    else if (resposta) and (confirmar) then
-//    begin
-//      FDMPessoa.TPessoa.Post;
-//      UFuncao.desativaBotoes(self);
-//    end;
-//  end;
-//
-//  Result := resposta;
+//    else
+    if (resposta) and (confirmar) then
+    begin
+      FDMOrdemServico.TOrdemServico.Post;
+      UFuncao.desativaBotoes(self);
+    end;
+  end;
+
+  Result := resposta;
+end;
+
+procedure TFOrdemServico.DBClienteDblClick(Sender: TObject);
+begin
+  UFuncao.abreTelaCliente;
+  if (FDMPessoa.TPessoa.RecordCount > 0) then
+  begin
+    FDMOrdemServico.TOrdemServicoclienteCodigo.Value := FDMPessoa.TPessoacodigo.Value;
+    FDMOrdemServico.TOrdemServicoclienteNome.Value := FDMPessoa.TPessoarazaoSocial.Value;
+  end;
+end;
+
+procedure TFOrdemServico.DBClienteExit(Sender: TObject);
+begin
+  if (FDMOrdemServico.TOrdemServicoclienteCodigo.Value > 0) then
+  begin
+    FDMPessoa.consultarDados(FDMOrdemServico.TOrdemServicoclienteCodigo.Value);
+
+    if (FDMPessoa.TPessoa.RecordCount > 0) then
+    begin
+      FDMOrdemServico.TOrdemServicoclienteCodigo.Value := FDMPessoa.TPessoacodigo.Value;
+      FDMOrdemServico.TOrdemServicoclienteNome.Value := FDMPessoa.TPessoarazaoSocial.Value;
+    end;
+  end;
+end;
+
+procedure TFOrdemServico.DBDataOrdemChange(Sender: TObject);
+begin
+  FDMOrdemServico.TOrdemServicodataOrdemServico.Value := DateToStr(DBDataOrdem.Date);
+end;
+
+procedure TFOrdemServico.DBLConsultaEmpresaKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+begin
+  limparCampoLookUp(Sender, Key);
+end;
+
+procedure TFOrdemServico.DBPrazoEntregaChange(Sender: TObject);
+begin
+  FDMOrdemServico.TOrdemServicodataPrazoEntrega.Value := DateToStr(DBPrazoEntrega.Date);
 end;
 
 procedure TFOrdemServico.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -306,36 +310,9 @@ procedure TFOrdemServico.FormShow(Sender: TObject);
 var
   i: Integer;
 begin
-//  PCTela.ActivePage := TBConsulta;
-//
-//  if (FDMPessoa.tipoCadastro = 'usuario') or
-//     (FDMPessoa.tipoCadastro = 'funcionario') then
-//  begin
-//    PCDados.ActivePage := TBEndereco;
-//
-//    for i := 0 to GDados.Columns.Count - 1 do
-//    begin
-//      if (GDados.Columns.Items[i].FieldName = 'razaoSocial') or
-//         (GDados.Columns.Items[i].FieldName = 'nomeFantasia') then
-//      begin
-//        GDados.Columns.Items[i].Visible := False;
-//      end
-//      else if (GDados.Columns.Items[i].FieldName = 'nome') or
-//              (GDados.Columns.Items[i].FieldName = 'funcao') then
-//      begin
-//        GDados.Columns.Items[i].Visible := True;
-//        GDados.Columns.Items[i].Width := 117;
-//      end;
-//    end;
-//  end
-//  else
-//  begin
-//    PCDados.ActivePage := TBOutrosDocumentos;
-//  end;
-//
-//  FDMFuncao.consultarDados(0);
-//  FDMPessoa.consultarTipoDocumento;
-//  BConsultarClick(nil);
+  PCTela.ActivePage := TBConsulta;
+  FDMOrdemServico.consultarEmpresa;
+  BConsultarClick(nil);
 end;
 
 procedure TFOrdemServico.GDadosDblClick(Sender: TObject);
@@ -359,6 +336,15 @@ end;
 
 procedure TFOrdemServico.TBCadastroShow(Sender: TObject);
 begin
+  with FDMOrdemServico do
+  begin
+    if (TOrdemServico.RecordCount > 0) then
+    begin
+      FOrdemServico.DBDataOrdem.Date := StrToDate(TOrdemServicodataOrdemServico.Value);
+      FOrdemServico.DBPrazoEntrega.Date := StrToDate(TOrdemServicodataPrazoEntrega.Value);
+    end;
+  end;
+
 //  with FDMPessoa do
 //  begin
 //    if (dadosPessoaConsultados <> TPessoacodigo.Value) then
@@ -376,88 +362,55 @@ var
 begin
   mensagem := TStringList.Create;
 
-//  if (FDMPessoa.tipoCadastro <> 'usuario') and
-//     (FDMPessoa.tipoCadastro <> 'funcionario') then
-//  begin
-//    if (FDMPessoa.TPessoarazaoSocial.Value = '') then
-//    begin
-//      mensagem.Add('A Razão Social deve ser informada!');
-//    end
-//    else if (Length(Trim(FDMPessoa.TPessoarazaoSocial.Value)) <= 2) then
-//    begin
-//      mensagem.Add('A Razão Social deve conter no minimo 2 caracteres validos!');
-//    end
-//    else if (Length(Trim(FDMPessoa.TPessoarazaoSocial.Value)) > 150) then
-//    begin
-//      mensagem.Add('A Razão Social deve conter no maximo 150 caracteres validos!');
-//    end;
-//
-//    if (FDMPessoa.TPessoanomeFantasia.Value = '') then
-//    begin
-//      mensagem.Add('O Nome fantasia deve ser informado!');
-//    end
-//    else if (Length(Trim(FDMPessoa.TPessoanomeFantasia.Value)) <= 2) then
-//    begin
-//      mensagem.Add('O Nome fantasia deve conter no minimo 2 caracteres validos!');
-//    end
-//    else if (Length(Trim(FDMPessoa.TPessoanomeFantasia.Value)) > 150) then
-//    begin
-//      mensagem.Add('O Nome fantasia deve conter no maximo 150 caracteres validos!');
-//    end;
-//  end
-//  else if (FDMPessoa.tipoCadastro = 'usuario') or
-//          (FDMPessoa.tipoCadastro = 'funcionario') then
-//  begin
-//    if (FDMPessoa.TPessoanome.Value = '') then
-//    begin
-//      mensagem.Add('O nome deve ser informado!');
-//    end
-//    else if (Length(Trim(FDMPessoa.TPessoanome.Value)) <= 2) then
-//    begin
-//      mensagem.Add('O nome deve conter no minimo 2 caracteres validos!');
-//    end
-//    else if (Length(Trim(FDMPessoa.TPessoanome.Value)) > 150) then
-//    begin
-//      mensagem.Add('O nome deve conter no maximo 150 caracteres validos!');
-//    end;
-//
-//    if (FDMPessoa.tipoCadastro = 'usuario') then
-//    begin
-//      if (FDMPessoa.TPessoasenha.Value = '') then
-//      begin
-//        mensagem.Add('A senha deve ser informada!');
-//      end
-//      else if (Length(Trim(FDMPessoa.TPessoasenha.Value)) <= 2) then
-//      begin
-//        mensagem.Add('A senha deve conter no minimo 2 caracteres validos!');
-//      end
-//      else if (Length(Trim(FDMPessoa.TPessoasenha.Value)) > 250) then
-//      begin
-//        mensagem.Add('A senha deve conter no maximo 250 caracteres validos!');
-//      end;
-//    end
-//    else if (FDMPessoa.tipoCadastro = 'funcionario') then
-//    begin
-//      if not (FDMPessoa.TPessoacodigoFuncao.Value > 0) then
-//      begin
-//        mensagem.Add('A função deve ser selecionada!');
-//      end;
-//    end;
-//  end;
-//
-//  if (FDMPessoa.TPessoatipoDocumento.Value = '') then
-//  begin
-//    mensagem.Add('O Documento deve ser selecionado!');
-//  end
-//  else if (Trim(soNumeros(FDMPessoa.TPessoadocumento.Value)) = '') then
-//  begin
-//    mensagem.Add('O Nº do Documento deve ser informado!');
-//  end
-//  else if (Length(Trim(soNumeros(FDMPessoa.TPessoadocumento.Value))) <> FDMPessoa.TPessoaqtdeCaracteres.Value) then
-//  begin
-//    mensagem.Add('O Nº do Documento deve conter ' + IntToStrSenaoZero(FDMPessoa.TPessoaqtdeCaracteres.Value) +
-//                 ' caracteres validos!');
-//  end;
+  if not (FDMOrdemServico.TOrdemServicoempresaCodigo.Value > 0) then
+  begin
+    mensagem.Add('A empresa deve ser selecionada!');
+  end;
+
+  if not (DBDataOrdem.Date > 0) then
+  begin
+    mensagem.Add('A data de OS deve ser selecionada!');
+  end;
+
+  if not (DBPrazoEntrega.Date > 0) then
+  begin
+    mensagem.Add('O prazo de entrega deve ser selecionado!');
+  end;
+
+  if (FDMOrdemServico.TOrdemServicosituacao.Value = '') then
+  begin
+    mensagem.Add('A Situação deve ser informada!');
+  end;
+
+  if not (FDMOrdemServico.TOrdemServicoclienteCodigo.Value > 0) then
+  begin
+    mensagem.Add('O cliente deve ser selecionado!');
+  end;
+
+  if not (FDMOrdemServico.TOrdemServicoenderecoCodigo.Value > 0) then
+  begin
+    mensagem.Add('O endereço do serviço deve ser selecionado!');
+  end;
+
+  if (FDMOrdemServico.TOrdemServicofinalidade.Value = '') then
+  begin
+    mensagem.Add('A finalidade deve ser selecionada!');
+  end;
+
+  if not (FDMOrdemServico.TOrdemServicotransportadoraCodigo.Value > 0) then
+  begin
+    mensagem.Add('A transportadora do serviço deve ser selecionada!');
+  end;
+
+  if (FDMOrdemServico.TOrdemServicotipoFrete.Value = '') then
+  begin
+    mensagem.Add('O tipo de frete deve ser selecionado!');
+  end;
+
+  if (FDMOrdemServico.TOrdemServicodetalhamento.Value = '') then
+  begin
+    mensagem.Add('O detalhamento da OS deve ser informado!');
+  end;
 
   if (mensagem.Text <> '') then
   begin

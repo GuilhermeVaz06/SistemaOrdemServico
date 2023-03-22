@@ -595,6 +595,7 @@ begin
         erros.Add('Nenhuma ordem de serviço encontrada com o codigo [' + IntToStrSenaoZero(ordemServico.id) + ']!');
       end;
 
+      ordemServicoConsultado.Destroy;
       ordemServicoConsultado := TordemServico.Create;
       ordemServicoConsultado.empresa.Destroy;
       ordemServico.empresa.tipoPessoa.id := tpEmpresa;

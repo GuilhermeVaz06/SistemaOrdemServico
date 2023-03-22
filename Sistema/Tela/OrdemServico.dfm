@@ -38,8 +38,6 @@ object FOrdemServico: TFOrdemServico
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitLeft = -24
-        ExplicitTop = -18
         object BFechar: TSpeedButton
           Left = 627
           Top = 0
@@ -93,6 +91,7 @@ object FOrdemServico: TFOrdemServico
           Caption = 'Inativar'
           ImageIndex = 2
           Images = FMenuPrincipal.ImageList1
+          OnClick = BInativarClick
           ExplicitLeft = 327
           ExplicitTop = -4
           ExplicitHeight = 39
@@ -130,7 +129,7 @@ object FOrdemServico: TFOrdemServico
           Top = 0
           Width = 147
           Height = 29
-          DataSource = FDMPessoa.DPessoa
+          DataSource = FDMOrdemServico.DOrdemServico
           VisibleButtons = [nbFirst, nbPrior, nbNext, nbLast]
           Align = alLeft
           TabOrder = 0
@@ -145,8 +144,6 @@ object FOrdemServico: TFOrdemServico
         BevelOuter = bvNone
         Enabled = False
         TabOrder = 3
-        ExplicitLeft = -3
-        ExplicitTop = 532
         object Label4: TLabel
           Left = 9
           Top = 3
@@ -183,7 +180,7 @@ object FOrdemServico: TFOrdemServico
           TabStop = False
           Color = clBtnFace
           DataField = 'cadastradoPor'
-          DataSource = FDMPessoa.DPessoa
+          DataSource = FDMOrdemServico.DOrdemServico
           ReadOnly = True
           TabOrder = 0
         end
@@ -195,7 +192,7 @@ object FOrdemServico: TFOrdemServico
           TabStop = False
           Color = clBtnFace
           DataField = 'alteradoPor'
-          DataSource = FDMPessoa.DPessoa
+          DataSource = FDMOrdemServico.DOrdemServico
           ReadOnly = True
           TabOrder = 1
         end
@@ -207,7 +204,7 @@ object FOrdemServico: TFOrdemServico
           TabStop = False
           Color = clBtnFace
           DataField = 'dataCadastro'
-          DataSource = FDMPessoa.DPessoa
+          DataSource = FDMOrdemServico.DOrdemServico
           ReadOnly = True
           TabOrder = 2
         end
@@ -219,7 +216,7 @@ object FOrdemServico: TFOrdemServico
           TabStop = False
           Color = clBtnFace
           DataField = 'dataAlteracao'
-          DataSource = FDMPessoa.DPessoa
+          DataSource = FDMOrdemServico.DOrdemServico
           ReadOnly = True
           TabOrder = 3
         end
@@ -232,8 +229,7 @@ object FOrdemServico: TFOrdemServico
         ActivePage = TBOutrosDocumentos
         Align = alClient
         TabOrder = 2
-        ExplicitTop = 161
-        ExplicitHeight = 352
+        Visible = False
         object TBOutrosDocumentos: TTabSheet
           Caption = 'Outros Documentos'
           object Panel2: TPanel
@@ -389,7 +385,6 @@ object FOrdemServico: TFOrdemServico
             Caption = 'Mostrar Inativos'
             Enabled = False
             TabOrder = 2
-            ExplicitTop = 304
           end
           object GEndereco: TDBGrid
             Left = 0
@@ -508,7 +503,6 @@ object FOrdemServico: TFOrdemServico
             Caption = 'Mostrar Inativos'
             Enabled = False
             TabOrder = 2
-            ExplicitTop = 304
           end
           object GContato: TDBGrid
             Left = 0
@@ -740,9 +734,9 @@ object FOrdemServico: TFOrdemServico
         object Label26: TLabel
           Left = 271
           Top = 0
-          Width = 97
+          Width = 47
           Height = 16
-          Caption = 'Data Vencimento'
+          Caption = 'Data OS'
         end
         object ECodigo: TDBEdit
           Left = 9
@@ -752,20 +746,20 @@ object FOrdemServico: TFOrdemServico
           TabStop = False
           Color = clBtnFace
           DataField = 'codigo'
-          DataSource = FDMPessoa.DPessoa
+          DataSource = FDMOrdemServico.DOrdemServico
           ReadOnly = True
           TabOrder = 0
         end
-        object DBLDocumento: TDBLookupComboBox
+        object DBLEmpresa: TDBLookupComboBox
           Left = 91
           Top = 17
           Width = 174
           Height = 24
-          DataField = 'codigoTipoDocumento'
-          DataSource = FDMPessoa.DPessoa
+          DataField = 'empresaCodigo'
+          DataSource = FDMOrdemServico.DOrdemServico
           KeyField = 'codigo'
-          ListField = 'descricao'
-          ListSource = FDMPessoa.DTipoDocumento
+          ListField = 'razaoSocial'
+          ListSource = FDMOrdemServico.DEmpresa
           TabOrder = 1
         end
         object DBMemo1: TDBMemo
@@ -773,8 +767,8 @@ object FOrdemServico: TFOrdemServico
           Top = 17
           Width = 373
           Height = 110
-          DataField = 'observacao'
-          DataSource = FDMPessoa.DPessoa
+          DataField = 'detalhamento'
+          DataSource = FDMOrdemServico.DOrdemServico
           ScrollBars = ssVertical
           TabOrder = 4
         end
@@ -784,19 +778,21 @@ object FOrdemServico: TFOrdemServico
           Width = 180
           Height = 24
           TabStop = False
-          DataField = 'tipoEndereco'
-          DataSource = FDMPessoa.DEndereco
+          DataField = 'clienteNome'
+          DataSource = FDMOrdemServico.DOrdemServico
           ReadOnly = True
           TabOrder = 6
         end
-        object DBDescricao: TDBEdit
+        object DBCliente: TDBEdit
           Left = 9
           Top = 59
           Width = 76
           Height = 24
-          DataField = 'codigoTipoEndereco'
-          DataSource = FDMPessoa.DEndereco
+          DataField = 'clienteCodigo'
+          DataSource = FDMOrdemServico.DOrdemServico
           TabOrder = 5
+          OnDblClick = DBClienteDblClick
+          OnExit = DBClienteExit
         end
         object DBMemo2: TDBMemo
           Left = 594
@@ -804,7 +800,7 @@ object FOrdemServico: TFOrdemServico
           Width = 373
           Height = 66
           DataField = 'observacao'
-          DataSource = FDMPessoa.DPessoa
+          DataSource = FDMOrdemServico.DOrdemServico
           ScrollBars = ssVertical
           TabOrder = 18
         end
@@ -814,8 +810,8 @@ object FOrdemServico: TFOrdemServico
           Width = 86
           Height = 24
           TabStop = False
-          DataField = 'tipoEndereco'
-          DataSource = FDMPessoa.DEndereco
+          DataField = 'enderecoTipo'
+          DataSource = FDMOrdemServico.DOrdemServico
           ReadOnly = True
           TabOrder = 8
         end
@@ -824,8 +820,8 @@ object FOrdemServico: TFOrdemServico
           Top = 59
           Width = 76
           Height = 24
-          DataField = 'codigoTipoEndereco'
-          DataSource = FDMPessoa.DEndereco
+          DataField = 'enderecoCodigo'
+          DataSource = FDMOrdemServico.DOrdemServico
           TabOrder = 7
         end
         object DBEdit4: TDBEdit
@@ -834,8 +830,8 @@ object FOrdemServico: TFOrdemServico
           Width = 136
           Height = 24
           TabStop = False
-          DataField = 'tipoEndereco'
-          DataSource = FDMPessoa.DEndereco
+          DataField = 'enderecoCEP'
+          DataSource = FDMOrdemServico.DOrdemServico
           ReadOnly = True
           TabOrder = 9
         end
@@ -845,8 +841,8 @@ object FOrdemServico: TFOrdemServico
           Width = 193
           Height = 24
           TabStop = False
-          DataField = 'tipoEndereco'
-          DataSource = FDMPessoa.DEndereco
+          DataField = 'enderecoLongradouro'
+          DataSource = FDMOrdemServico.DOrdemServico
           ReadOnly = True
           TabOrder = 10
         end
@@ -856,8 +852,8 @@ object FOrdemServico: TFOrdemServico
           Width = 76
           Height = 24
           TabStop = False
-          DataField = 'tipoEndereco'
-          DataSource = FDMPessoa.DEndereco
+          DataField = 'enderecoNumero'
+          DataSource = FDMOrdemServico.DOrdemServico
           ReadOnly = True
           TabOrder = 11
         end
@@ -867,8 +863,8 @@ object FOrdemServico: TFOrdemServico
           Width = 86
           Height = 24
           TabStop = False
-          DataField = 'tipoEndereco'
-          DataSource = FDMPessoa.DEndereco
+          DataField = 'enderecoBairro'
+          DataSource = FDMOrdemServico.DOrdemServico
           ReadOnly = True
           TabOrder = 12
         end
@@ -878,8 +874,8 @@ object FOrdemServico: TFOrdemServico
           Width = 205
           Height = 24
           TabStop = False
-          DataField = 'tipoEndereco'
-          DataSource = FDMPessoa.DEndereco
+          DataField = 'enderecoComplemento'
+          DataSource = FDMOrdemServico.DOrdemServico
           ReadOnly = True
           TabOrder = 13
         end
@@ -889,8 +885,8 @@ object FOrdemServico: TFOrdemServico
           Width = 193
           Height = 24
           TabStop = False
-          DataField = 'tipoEndereco'
-          DataSource = FDMPessoa.DEndereco
+          DataField = 'enderecoCidade'
+          DataSource = FDMOrdemServico.DOrdemServico
           ReadOnly = True
           TabOrder = 14
         end
@@ -900,8 +896,8 @@ object FOrdemServico: TFOrdemServico
           Width = 106
           Height = 24
           TabStop = False
-          DataField = 'tipoEndereco'
-          DataSource = FDMPessoa.DEndereco
+          DataField = 'enderecoEstado'
+          DataSource = FDMOrdemServico.DOrdemServico
           ReadOnly = True
           TabOrder = 15
         end
@@ -911,8 +907,8 @@ object FOrdemServico: TFOrdemServico
           Width = 125
           Height = 24
           TabStop = False
-          DataField = 'tipoEndereco'
-          DataSource = FDMPessoa.DEndereco
+          DataField = 'enderecoPais'
+          DataSource = FDMOrdemServico.DOrdemServico
           ReadOnly = True
           TabOrder = 16
         end
@@ -921,11 +917,11 @@ object FOrdemServico: TFOrdemServico
           Top = 145
           Width = 136
           Height = 24
-          DataField = 'codigoTipoDocumento'
-          DataSource = FDMPessoa.DPessoa
-          KeyField = 'codigo'
+          DataField = 'finalidade'
+          DataSource = FDMOrdemServico.DOrdemServico
+          KeyField = 'descricao'
           ListField = 'descricao'
-          ListSource = FDMPessoa.DTipoDocumento
+          ListSource = FDMOrdemServico.DFinalidade
           TabOrder = 17
         end
         object DBEdit12: TDBEdit
@@ -934,8 +930,8 @@ object FOrdemServico: TFOrdemServico
           Width = 178
           Height = 24
           TabStop = False
-          DataField = 'tipoEndereco'
-          DataSource = FDMPessoa.DEndereco
+          DataField = 'transportadoraNome'
+          DataSource = FDMOrdemServico.DOrdemServico
           ReadOnly = True
           TabOrder = 20
         end
@@ -944,8 +940,8 @@ object FOrdemServico: TFOrdemServico
           Top = 187
           Width = 76
           Height = 24
-          DataField = 'codigoTipoEndereco'
-          DataSource = FDMPessoa.DEndereco
+          DataField = 'transportadoraCodigo'
+          DataSource = FDMOrdemServico.DOrdemServico
           TabOrder = 19
         end
         object DBLookupComboBox2: TDBLookupComboBox
@@ -953,11 +949,11 @@ object FOrdemServico: TFOrdemServico
           Top = 187
           Width = 194
           Height = 24
-          DataField = 'codigoTipoDocumento'
-          DataSource = FDMPessoa.DPessoa
-          KeyField = 'codigo'
+          DataField = 'tipoFrete'
+          DataSource = FDMOrdemServico.DOrdemServico
+          KeyField = 'descricao'
           ListField = 'descricao'
-          ListSource = FDMPessoa.DTipoDocumento
+          ListSource = FDMOrdemServico.DTipoFrete
           TabOrder = 21
         end
         object DBEdit14: TDBEdit
@@ -966,12 +962,12 @@ object FOrdemServico: TFOrdemServico
           Width = 199
           Height = 24
           TabStop = False
-          DataField = 'tipoEndereco'
-          DataSource = FDMPessoa.DEndereco
+          DataField = 'situacao'
+          DataSource = FDMOrdemServico.DOrdemServico
           ReadOnly = True
           TabOrder = 3
         end
-        object EDTEmissao: TDateTimePicker
+        object DBPrazoEntrega: TDateTimePicker
           Left = 476
           Top = 187
           Width = 111
@@ -979,8 +975,9 @@ object FOrdemServico: TFOrdemServico
           Date = 44975.000000000000000000
           Time = 0.918185462964174800
           TabOrder = 22
+          OnChange = DBPrazoEntregaChange
         end
-        object EDTVencimento: TDateTimePicker
+        object DBDataOrdem: TDateTimePicker
           Left = 271
           Top = 17
           Width = 111
@@ -988,6 +985,7 @@ object FOrdemServico: TFOrdemServico
           Date = 44975.000000000000000000
           Time = 0.918185462964174800
           TabOrder = 2
+          OnChange = DBDataOrdemChange
         end
       end
     end
@@ -1002,9 +1000,10 @@ object FOrdemServico: TFOrdemServico
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 0
+        ExplicitTop = -6
         object BConsultar: TSpeedButton
-          Left = 383
-          Top = 12
+          Left = 1126
+          Top = 16
           Width = 96
           Height = 30
           Caption = 'Consultar'
@@ -1015,13 +1014,13 @@ object FOrdemServico: TFOrdemServico
         object LConsultaRazaoSocial: TLabel
           Left = 3
           Top = 0
-          Width = 210
+          Width = 79
           Height = 16
-          Caption = 'gggggggggggggggggggggggggggggg'
+          Caption = 'Detalhamento'
         end
         object SpeedButton1: TSpeedButton
-          Left = 479
-          Top = 12
+          Left = 1222
+          Top = 16
           Width = 96
           Height = 30
           Caption = 'Fechar'
@@ -1029,12 +1028,30 @@ object FOrdemServico: TFOrdemServico
           Images = FMenuPrincipal.ImageList1
           OnClick = BFecharClick
         end
+        object Label17: TLabel
+          Left = 157
+          Top = 0
+          Width = 50
+          Height = 16
+          Caption = 'Empresa'
+        end
         object ERazaoSocial: TEdit
           Left = 3
           Top = 18
-          Width = 184
+          Width = 149
           Height = 24
           TabOrder = 0
+        end
+        object DBLConsultaEmpresa: TDBLookupComboBox
+          Left = 158
+          Top = 18
+          Width = 174
+          Height = 24
+          KeyField = 'codigo'
+          ListField = 'razaoSocial'
+          ListSource = FDMOrdemServico.DEmpresa
+          TabOrder = 1
+          OnKeyDown = DBLConsultaEmpresaKeyDown
         end
       end
       object GDados: TDBGrid
@@ -1043,7 +1060,7 @@ object FOrdemServico: TFOrdemServico
         Width = 1355
         Height = 514
         Align = alClient
-        DataSource = FDMPessoa.DPessoa
+        DataSource = FDMOrdemServico.DOrdemServico
         Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
         ReadOnly = True
         TabOrder = 1
@@ -1062,6 +1079,158 @@ object FOrdemServico: TFOrdemServico
             Title.Alignment = taCenter
             Title.Caption = 'Codigo'
             Width = 65
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'empresaNome'
+            Title.Alignment = taCenter
+            Title.Caption = 'Empresa'
+            Width = 164
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'dataOrdemServico'
+            Title.Alignment = taCenter
+            Title.Caption = 'Data OS'
+            Width = 100
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'situacao'
+            Title.Alignment = taCenter
+            Title.Caption = 'Situa'#231#227'o'
+            Width = 119
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'clienteNome'
+            Title.Alignment = taCenter
+            Title.Caption = 'Cliente'
+            Width = 155
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'enderecoTipo'
+            Title.Alignment = taCenter
+            Title.Caption = 'Tipo Endere'#231'o'
+            Width = 100
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'enderecoCEP'
+            Title.Alignment = taCenter
+            Title.Caption = 'CEP'
+            Width = 100
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'enderecoLongradouro'
+            Title.Alignment = taCenter
+            Title.Caption = 'Longradouro'
+            Width = 154
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'enderecoNumero'
+            Title.Alignment = taCenter
+            Title.Caption = 'Numero'
+            Width = 100
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'enderecoBairro'
+            Title.Alignment = taCenter
+            Title.Caption = 'Bairro'
+            Width = 100
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'enderecoComplemento'
+            Title.Alignment = taCenter
+            Title.Caption = 'Complemento'
+            Width = 100
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'enderecoCidade'
+            Title.Alignment = taCenter
+            Title.Caption = 'Cidade'
+            Width = 100
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'enderecoEstado'
+            Title.Alignment = taCenter
+            Title.Caption = 'Estado'
+            Width = 100
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'enderecoPais'
+            Title.Alignment = taCenter
+            Title.Caption = 'Pais'
+            Width = 100
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'finalidade'
+            Title.Alignment = taCenter
+            Title.Caption = 'Finalidade'
+            Width = 100
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'detalhamento'
+            Title.Alignment = taCenter
+            Title.Caption = 'Detalhamento'
+            Width = 100
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'transportadoraNome'
+            Title.Alignment = taCenter
+            Title.Caption = 'Transportadora'
+            Width = 194
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'tipoFrete'
+            Title.Alignment = taCenter
+            Title.Caption = 'Tipo Frete'
+            Width = 100
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'dataPrazoEntrega'
+            Title.Alignment = taCenter
+            Title.Caption = 'Prazo Entrega'
+            Width = 100
+            Visible = True
+          end
+          item
+            Expanded = False
+            FieldName = 'observacao'
+            Title.Alignment = taCenter
+            Title.Caption = 'Observa'#231#227'o'
+            Width = 100
             Visible = True
           end
           item

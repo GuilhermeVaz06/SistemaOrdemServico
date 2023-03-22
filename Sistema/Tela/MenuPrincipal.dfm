@@ -108,6 +108,10 @@ object FMenuPrincipal: TFMenuPrincipal
         OnClick = Grupo1Click
       end
     end
+    object OrdemdeServio1: TMenuItem
+      Caption = 'Ordem de Servi'#231'o'
+      OnClick = OrdemdeServio1Click
+    end
     object sair1: TMenuItem
       Caption = 'Sair'
       OnClick = sair1Click
