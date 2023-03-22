@@ -2,7 +2,7 @@ object FOrdemServico: TFOrdemServico
   Left = 0
   Top = 0
   BorderStyle = bsSingle
-  Caption = 'Cadastro de Cliente'
+  Caption = 'Cadastro de Ordem de Servi'#231'o'
   ClientHeight = 614
   ClientWidth = 1363
   Color = clBtnFace
@@ -815,14 +815,16 @@ object FOrdemServico: TFOrdemServico
           ReadOnly = True
           TabOrder = 8
         end
-        object DBEdit3: TDBEdit
+        object DBEndereco: TDBEdit
           Left = 277
           Top = 59
           Width = 76
           Height = 24
           DataField = 'enderecoCodigo'
           DataSource = FDMOrdemServico.DOrdemServico
+          ReadOnly = True
           TabOrder = 7
+          OnDblClick = DBEnderecoDblClick
         end
         object DBEdit4: TDBEdit
           Left = 451
@@ -935,7 +937,7 @@ object FOrdemServico: TFOrdemServico
           ReadOnly = True
           TabOrder = 20
         end
-        object DBEdit13: TDBEdit
+        object DBTransportadora: TDBEdit
           Left = 9
           Top = 187
           Width = 76
@@ -943,6 +945,8 @@ object FOrdemServico: TFOrdemServico
           DataField = 'transportadoraCodigo'
           DataSource = FDMOrdemServico.DOrdemServico
           TabOrder = 19
+          OnDblClick = DBTransportadoraDblClick
+          OnExit = DBTransportadoraExit
         end
         object DBLookupComboBox2: TDBLookupComboBox
           Left = 276

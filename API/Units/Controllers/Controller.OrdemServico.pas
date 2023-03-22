@@ -319,7 +319,8 @@ begin
     end
     else if (ordemServico.finalidade <> 'REPARO')
         and (ordemServico.finalidade <> 'INSTALAÇÃO')
-        and (ordemServico.finalidade <> 'MANUTENÇÃO') then
+        and (ordemServico.finalidade <> 'MANUTENÇÃO')
+        and (ordemServico.finalidade <> 'CONSTRUÇÃO') then
     begin
       erros.Add('A finalidade informada é invalida ela deve ser REPARO ou INSTALAÇÃO ou MANUTENÇÃO!');
     end;
@@ -534,7 +535,8 @@ begin
     end
     else if (ordemServico.finalidade <> 'REPARO')
         and (ordemServico.finalidade <> 'INSTALAÇÃO')
-        and (ordemServico.finalidade <> 'MANUTENÇÃO') then
+        and (ordemServico.finalidade <> 'MANUTENÇÃO')
+        and (ordemServico.finalidade <> 'CONSTRUÇÃO') then
     begin
       erros.Add('A finalidade informada é invalida ela deve ser REPARO ou INSTALAÇÃO ou MANUTENÇÃO!');
     end;

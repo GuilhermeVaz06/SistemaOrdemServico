@@ -214,4 +214,97 @@ object FDMOrdemServico: TFDMOrdemServico
       Size = 150
     end
   end
+  object DEndereco: TDataSource
+    DataSet = QEndereco
+    Left = 417
+    Top = 64
+  end
+  object QEndereco: TFDMemTable
+    FieldDefs = <>
+    IndexDefs = <>
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired, uvAutoCommitUpdates]
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.AutoCommitUpdates = True
+    StoreDefs = True
+    Left = 416
+    Top = 14
+    object QEnderecocodigo: TIntegerField
+      FieldName = 'codigo'
+    end
+    object QEnderecocodigoPessoa: TIntegerField
+      FieldName = 'codigoPessoa'
+    end
+    object QEnderecocodigoTipoEndereco: TIntegerField
+      FieldName = 'codigoTipoEndereco'
+    end
+    object QEnderecotipoEndereco: TStringField
+      FieldName = 'tipoEndereco'
+      Size = 150
+    end
+    object QEnderecocep: TStringField
+      FieldName = 'cep'
+      Size = 10
+    end
+    object QEnderecolongradouro: TStringField
+      FieldName = 'longradouro'
+      Size = 150
+    end
+    object QEndereconumero: TStringField
+      FieldName = 'numero'
+      Size = 10
+    end
+    object QEnderecobairro: TStringField
+      FieldName = 'bairro'
+      Size = 150
+    end
+    object QEnderecocomplemento: TStringField
+      FieldName = 'complemento'
+      Size = 150
+    end
+    object QEnderecoobservacao: TMemoField
+      FieldName = 'observacao'
+      BlobType = ftMemo
+    end
+    object QEnderecocodigoCidade: TIntegerField
+      FieldName = 'codigoCidade'
+    end
+    object QEndereconomeCidade: TStringField
+      FieldName = 'nomeCidade'
+      Size = 150
+    end
+    object QEndereconomeEstado: TStringField
+      FieldName = 'nomeEstado'
+      Size = 150
+    end
+    object QEndereconomePais: TStringField
+      FieldName = 'nomePais'
+      Size = 150
+    end
+    object QEnderecoprioridade: TStringField
+      FieldName = 'prioridade'
+      Size = 1
+    end
+    object QEnderecocadastradoPor: TStringField
+      FieldName = 'cadastradoPor'
+      Size = 150
+    end
+    object QEnderecoalteradoPor: TStringField
+      FieldName = 'alteradoPor'
+      Size = 150
+    end
+    object QEnderecodataCadastro: TStringField
+      FieldName = 'dataCadastro'
+    end
+    object QEnderecodataAlteracao: TStringField
+      FieldName = 'dataAlteracao'
+    end
+    object QEnderecostatus: TStringField
+      FieldName = 'status'
+      Size = 1
+    end
+  end
 end

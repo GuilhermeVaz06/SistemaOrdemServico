@@ -312,7 +312,7 @@ begin
         else
         begin
           outroDocumentoConsultado.pessoa.Destroy;
-          outroDocumentoConsultado.pessoa := outroDocumento.pessoa.consultarChave();
+          outroDocumentoConsultado.pessoa := outroDocumento.pessoa.consultarChaveSemTipo();
 
           if not (Assigned(outroDocumentoConsultado.pessoa)) then
           begin
@@ -469,6 +469,16 @@ begin
       else if (Length(Trim(soNumeros(outroDocumento.documento))) <> outroDocumentoConsultado.tipoDocumento.qtdeCaracteres) then
       begin
         erros.Add('O Numero do documento é invalido, deve conter ' + IntToStrSenaoZero(outroDocumentoConsultado.tipoDocumento.qtdeCaracteres) + ' numericos e validos!');
+      end
+      else
+      begin
+        outroDocumentoConsultado.pessoa.Destroy;
+        outroDocumentoConsultado.pessoa := outroDocumento.pessoa.consultarChaveSemTipo();
+
+        if not (Assigned(outroDocumentoConsultado.pessoa)) then
+        begin
+          erros.Add('Nenhum Pessoa encontrado com o codigo [' + IntToStrSenaoZero(outroDocumento.pessoa.id) + ']!');
+        end;
       end;
 
       outroDocumentoConsultado.Destroy;

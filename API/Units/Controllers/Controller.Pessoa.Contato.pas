@@ -366,7 +366,7 @@ begin
         else
         begin
           contatoConsultado.pessoa.Destroy;
-          contatoConsultado.pessoa := contato.pessoa.consultarChave();
+          contatoConsultado.pessoa := contato.pessoa.consultarChaveSemTipo();
 
           if not (Assigned(contatoConsultado.pessoa)) then
           begin
@@ -573,7 +573,7 @@ begin
       else
       begin
         contatoConsultado.pessoa.Destroy;
-        contatoConsultado.pessoa := contato.pessoa.consultarChave();
+        contatoConsultado.pessoa := contato.pessoa.consultarChaveSemTipo();
 
         if not (Assigned(contatoConsultado.pessoa)) then
         begin

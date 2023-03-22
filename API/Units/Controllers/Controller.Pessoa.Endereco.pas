@@ -308,7 +308,7 @@ begin
     end
     else if (Length(endereco.longradouro) <= 2) then
     begin
-      erros.Add('O longradouro deve conter no minimo 2 caracteres validos!');
+      erros.Add('O longradouro deve conter no minimo 3 caracteres validos!');
     end
     else if (Length(endereco.longradouro) > 150) then
     begin
@@ -319,7 +319,7 @@ begin
     begin
       if (Length(endereco.complemento) <= 2) then
       begin
-        erros.Add('O complemento deve conter no minimo 2 caracteres validos!');
+        erros.Add('O complemento deve conter no minimo 3 caracteres validos!');
       end
       else if (Length(endereco.complemento) > 150) then
       begin
@@ -342,7 +342,7 @@ begin
     end
     else if (Length(Trim(endereco.bairro)) <= 2) then
     begin
-      erros.Add('O bairro deve conter no minimo 2 caracteres validos!');
+      erros.Add('O bairro deve conter no minimo 3 caracteres validos!');
     end
     else if (Length(Trim(endereco.bairro)) > 150) then
     begin
@@ -382,7 +382,7 @@ begin
         else
         begin
           enderecoConsultado.pessoa.Destroy;
-          enderecoConsultado.pessoa := endereco.pessoa.consultarChave();
+          enderecoConsultado.pessoa := endereco.pessoa.consultarChaveSemTipo();
 
           if not (Assigned(enderecoConsultado.pessoa)) then
           begin
@@ -613,7 +613,7 @@ begin
       else
       begin
         enderecoConsultado.pessoa.Destroy;
-        enderecoConsultado.pessoa := endereco.pessoa.consultarChave();
+        enderecoConsultado.pessoa := endereco.pessoa.consultarChaveSemTipo();
 
         if not (Assigned(enderecoConsultado.pessoa)) then
         begin

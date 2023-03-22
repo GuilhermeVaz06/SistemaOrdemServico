@@ -25,7 +25,8 @@ uses
   DMGrupo in '..\Data Module\DMGrupo.pas' {FDMGrupo: TDataModule},
   Grupo in '..\Tela\Grupo.pas' {FGrupo},
   OrdemServico in '..\Tela\OrdemServico.pas' {FOrdemServico},
-  DMOrdemServico in '..\Data Module\DMOrdemServico.pas' {FDMOrdemServico: TDataModule};
+  DMOrdemServico in '..\Data Module\DMOrdemServico.pas' {FDMOrdemServico: TDataModule},
+  SelecaoEnderecoCliente in '..\Tela\SelecaoEnderecoCliente.pas' {FSelecaoEnderecoCliente};
 
 {$R *.res}
 

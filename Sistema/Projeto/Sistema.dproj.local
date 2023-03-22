@@ -2,8 +2,8 @@
 <BorlandProject>
 	<Transactions>
     <Transaction>2023/02/02 20:06:38.000.665,C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Data Module\DMPais.pas=</Transaction>
-    <Transaction>2023/02/02 20:09:38.000.222,=C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Data Module\DMEstado.pas</Transaction>
     <Transaction>2023/02/02 20:09:38.000.332,=C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Data Module\DMPais.pas</Transaction>
+    <Transaction>2023/02/02 20:09:38.000.222,=C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Data Module\DMEstado.pas</Transaction>
     <Transaction>2023/02/02 20:10:05.000.567,=C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Tela\Estado.pas</Transaction>
     <Transaction>2023/02/06 21:06:40.000.040,=C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Data Module\DMCidade.pas</Transaction>
     <Transaction>2023/02/06 21:07:40.000.329,=C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Tela\Cidade.pas</Transaction>
@@ -14,8 +14,8 @@
     <Transaction>2023/02/12 10:45:36.000.307,=C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Data Module\DMCliente.pas</Transaction>
     <Transaction>2023/02/12 10:45:44.000.437,=C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Tela\Cliente.pas</Transaction>
     <Transaction>2023/02/15 21:10:11.000.446,=C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Projeto\Unit1.pas</Transaction>
-    <Transaction>2023/02/15 21:10:44.000.953,C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Projeto\Unit1.dfm=C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Tela\OutroDocumento.dfm</Transaction>
-    <Transaction>2023/02/15 21:10:44.000.953,C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Projeto\Unit1.pas=C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Tela\OutroDocumento.pas</Transaction>
+    <Transaction>2023/02/15 21:10:44.000.953,C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Tela\OutroDocumento.pas=C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Projeto\Unit1.pas</Transaction>
+    <Transaction>2023/02/15 21:10:44.000.953,C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Tela\OutroDocumento.dfm=C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Projeto\Unit1.dfm</Transaction>
     <Transaction>2023/02/15 21:20:51.000.796,C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Tela\Cliente.pas=</Transaction>
     <Transaction>2023/02/15 21:20:55.000.991,C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Data Module\DMCliente.pas=</Transaction>
     <Transaction>2023/02/15 21:22:23.000.076,=C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Data Module\DMClienteFornecedor.pas</Transaction>
@@ -26,7 +26,10 @@
     <Transaction>2023/03/01 19:20:17.000.530,=C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Tela\Funcao.pas</Transaction>
     <Transaction>2023/03/07 21:14:24.000.280,=C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Data Module\DMGrupo.pas</Transaction>
     <Transaction>2023/03/07 21:14:32.000.611,=C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Tela\Grupo.pas</Transaction>
-    <Transaction>2023/03/20 20:39:04.977,=C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Tela\OrdemServico.pas</Transaction>
-    <Transaction>2023/03/20 20:47:01.750,=C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Data Module\DMOrdemServico.pas</Transaction>
+    <Transaction>2023/03/20 20:39:04.000.977,=C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Tela\OrdemServico.pas</Transaction>
+    <Transaction>2023/03/20 20:47:01.000.750,=C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Data Module\DMOrdemServico.pas</Transaction>
+    <Transaction>2023/03/21 21:34:29.181,=C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Projeto\Unit1.pas</Transaction>
+    <Transaction>2023/03/21 21:34:50.441,C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Tela\SelecaoEnderecoCliente.dfm=C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Projeto\Unit1.dfm</Transaction>
+    <Transaction>2023/03/21 21:34:50.441,C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Tela\SelecaoEnderecoCliente.pas=C:\Users\Guilherme Vaz\OneDrive\Área de Trabalho\SISTEMAS\Delphi\SistemaOrdemServico\Sistema\Projeto\Unit1.pas</Transaction>
   </Transactions>
 </BorlandProject>

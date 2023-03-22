@@ -70,12 +70,12 @@ end;
 
 procedure TFMenuPrincipal.cliente1Click(Sender: TObject);
 begin
-  abreTelaCliente;
+  abreTelaCliente(False);
 end;
 
 procedure TFMenuPrincipal.EmpresaFaturamento1Click(Sender: TObject);
 begin
-  abreTelaEmpresa;
+  abreTelaEmpresa(False);
 end;
 
 procedure TFMenuPrincipal.estado1Click(Sender: TObject);
@@ -103,7 +103,7 @@ end;
 
 procedure TFMenuPrincipal.fornecedor1Click(Sender: TObject);
 begin
-  abreTelaFornecedor;
+  abreTelaFornecedor(False);
 end;
 
 procedure TFMenuPrincipal.Funcao1Click(Sender: TObject);
@@ -118,7 +118,7 @@ end;
 
 procedure TFMenuPrincipal.Funcionario1Click(Sender: TObject);
 begin
-  abreTelaFuncionario;
+  abreTelaFuncionario(False);
 end;
 
 procedure TFMenuPrincipal.Grupo1Click(Sender: TObject);
@@ -185,7 +185,7 @@ end;
 
 procedure TFMenuPrincipal.usuario1Click(Sender: TObject);
 begin
-  abreTelaUsuario;
+  abreTelaUsuario(False);
 end;
 
 end.

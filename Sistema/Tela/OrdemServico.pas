@@ -67,7 +67,7 @@ type
     DBMemo2: TDBMemo;
     Label9: TLabel;
     DBEdit2: TDBEdit;
-    DBEdit3: TDBEdit;
+    DBEndereco: TDBEdit;
     Label10: TLabel;
     DBEdit4: TDBEdit;
     Label11: TLabel;
@@ -89,7 +89,7 @@ type
     DBLookupComboBox1: TDBLookupComboBox;
     Label22: TLabel;
     DBEdit12: TDBEdit;
-    DBEdit13: TDBEdit;
+    DBTransportadora: TDBEdit;
     Label23: TLabel;
     DBLookupComboBox2: TDBLookupComboBox;
     DBEdit14: TDBEdit;
@@ -121,6 +121,9 @@ type
     procedure DBClienteDblClick(Sender: TObject);
     procedure DBClienteExit(Sender: TObject);
     procedure BInativarClick(Sender: TObject);
+    procedure DBEnderecoDblClick(Sender: TObject);
+    procedure DBTransportadoraDblClick(Sender: TObject);
+    procedure DBTransportadoraExit(Sender: TObject);
   private
     { Private declarations }
     function validarCampos: boolean;
@@ -135,7 +138,7 @@ var
 
 implementation
 
-uses UFuncao, DMOrdemServico, DMPessoa;
+uses UFuncao, DMOrdemServico, DMPessoa, SelecaoEnderecoCliente;
 
 {$R *.dfm}
 
@@ -163,6 +166,7 @@ begin
   if (FDMOrdemServico.QEmpresa.RecordCount = 1) then
   begin
     DBLEmpresa.KeyValue := FDMOrdemServico.QEmpresacodigo.Value;
+    FDMOrdemServico.TOrdemServicoempresaCodigo.Value := FDMOrdemServico.QEmpresacodigo.Value;
   end;
 end;
 
@@ -255,7 +259,7 @@ end;
 
 procedure TFOrdemServico.DBClienteDblClick(Sender: TObject);
 begin
-  UFuncao.abreTelaCliente;
+  UFuncao.abreTelaCliente(True);
   if (FDMPessoa.TPessoa.RecordCount > 0) then
   begin
     FDMOrdemServico.TOrdemServicoclienteCodigo.Value := FDMPessoa.TPessoacodigo.Value;
@@ -267,12 +271,35 @@ procedure TFOrdemServico.DBClienteExit(Sender: TObject);
 begin
   if (FDMOrdemServico.TOrdemServicoclienteCodigo.Value > 0) then
   begin
+    FDMPessoa.tipoCadastro := 'cliente';
     FDMPessoa.consultarDados(FDMOrdemServico.TOrdemServicoclienteCodigo.Value);
 
     if (FDMPessoa.TPessoa.RecordCount > 0) then
     begin
       FDMOrdemServico.TOrdemServicoclienteCodigo.Value := FDMPessoa.TPessoacodigo.Value;
       FDMOrdemServico.TOrdemServicoclienteNome.Value := FDMPessoa.TPessoarazaoSocial.Value;
+
+      FDMOrdemServico.consultarEnderecoCliente;
+
+      if (FDMOrdemServico.QEndereco.RecordCount > 0) then
+      begin
+        FDMOrdemServico.TOrdemServicoenderecoCodigo.Value := FDMOrdemServico.QEnderecocodigo.Value;
+        FDMOrdemServico.TOrdemServicoenderecoTipo.Value := FDMOrdemServico.QEnderecotipoEndereco.Value;
+        FDMOrdemServico.TOrdemServicoenderecoCEP.Value := FDMOrdemServico.QEnderecocep.Value;
+        FDMOrdemServico.TOrdemServicoenderecoLongradouro.Value := FDMOrdemServico.QEnderecolongradouro.Value;
+        FDMOrdemServico.TOrdemServicoenderecoNumero.Value := FDMOrdemServico.QEndereconumero.Value;
+        FDMOrdemServico.TOrdemServicoenderecoBairro.Value := FDMOrdemServico.QEnderecobairro.Value;
+        FDMOrdemServico.TOrdemServicoenderecoComplemento.Value := FDMOrdemServico.QEnderecocomplemento.Value;
+        FDMOrdemServico.TOrdemServicoenderecoCidade.Value := FDMOrdemServico.QEndereconomeCidade.Value;
+        FDMOrdemServico.TOrdemServicoenderecoEstado.Value := FDMOrdemServico.QEndereconomeEstado.Value;
+        FDMOrdemServico.TOrdemServicoenderecoPais.Value := FDMOrdemServico.QEndereconomePais.Value;
+      end;
+    end
+    else
+    begin
+      FDMOrdemServico.TOrdemServicoclienteCodigo.Value := 0;
+      FDMOrdemServico.TOrdemServicoclienteNome.Value := '';
+      DBClienteDblClick(nil);
     end;
   end;
 end;
@@ -280,6 +307,38 @@ end;
 procedure TFOrdemServico.DBDataOrdemChange(Sender: TObject);
 begin
   FDMOrdemServico.TOrdemServicodataOrdemServico.Value := DateToStr(DBDataOrdem.Date);
+end;
+
+procedure TFOrdemServico.DBEnderecoDblClick(Sender: TObject);
+begin
+  FDMOrdemServico.consultarEnderecoCliente;
+
+  if (FDMOrdemServico.QEndereco.RecordCount > 0) then
+  begin
+    try
+      Application.CreateForm(TFSelecaoEnderecoCliente, FSelecaoEnderecoCliente);
+
+      if (FSelecaoEnderecoCliente.ShowModal = MrOk) then
+      begin
+        FDMOrdemServico.TOrdemServicoenderecoCodigo.Value := FDMOrdemServico.QEnderecocodigo.Value;
+        FDMOrdemServico.TOrdemServicoenderecoTipo.Value := FDMOrdemServico.QEnderecotipoEndereco.Value;
+        FDMOrdemServico.TOrdemServicoenderecoCEP.Value := FDMOrdemServico.QEnderecocep.Value;
+        FDMOrdemServico.TOrdemServicoenderecoLongradouro.Value := FDMOrdemServico.QEnderecolongradouro.Value;
+        FDMOrdemServico.TOrdemServicoenderecoNumero.Value := FDMOrdemServico.QEndereconumero.Value;
+        FDMOrdemServico.TOrdemServicoenderecoBairro.Value := FDMOrdemServico.QEnderecobairro.Value;
+        FDMOrdemServico.TOrdemServicoenderecoComplemento.Value := FDMOrdemServico.QEnderecocomplemento.Value;
+        FDMOrdemServico.TOrdemServicoenderecoCidade.Value := FDMOrdemServico.QEndereconomeCidade.Value;
+        FDMOrdemServico.TOrdemServicoenderecoEstado.Value := FDMOrdemServico.QEndereconomeEstado.Value;
+        FDMOrdemServico.TOrdemServicoenderecoPais.Value := FDMOrdemServico.QEndereconomePais.Value;
+      end;
+    finally
+      FreeAndNil(FSelecaoEnderecoCliente);
+    end;
+  end
+  else
+  begin
+    informar('Esse cliente não possui nenhum endereço cadastrado, va ate o cadastro do cliente e insirá um endereço!');
+  end;
 end;
 
 procedure TFOrdemServico.DBLConsultaEmpresaKeyDown(Sender: TObject;
@@ -291,6 +350,37 @@ end;
 procedure TFOrdemServico.DBPrazoEntregaChange(Sender: TObject);
 begin
   FDMOrdemServico.TOrdemServicodataPrazoEntrega.Value := DateToStr(DBPrazoEntrega.Date);
+end;
+
+procedure TFOrdemServico.DBTransportadoraDblClick(Sender: TObject);
+begin
+  UFuncao.abreTelaFornecedor(True);
+  if (FDMPessoa.TPessoa.RecordCount > 0) then
+  begin
+    FDMOrdemServico.TOrdemServicotransportadoraCodigo.Value := FDMPessoa.TPessoacodigo.Value;
+    FDMOrdemServico.TOrdemServicotransportadoraNome.Value := FDMPessoa.TPessoarazaoSocial.Value;
+  end;
+end;
+
+procedure TFOrdemServico.DBTransportadoraExit(Sender: TObject);
+begin
+  if (FDMOrdemServico.TOrdemServicotransportadoraCodigo.Value > 0) then
+  begin
+    FDMPessoa.tipoCadastro := 'fornecedor';
+    FDMPessoa.consultarDados(FDMOrdemServico.TOrdemServicotransportadoraCodigo.Value);
+
+    if (FDMPessoa.TPessoa.RecordCount > 0) then
+    begin
+      FDMOrdemServico.TOrdemServicotransportadoraCodigo.Value := FDMPessoa.TPessoacodigo.Value;
+      FDMOrdemServico.TOrdemServicotransportadoraNome.Value := FDMPessoa.TPessoarazaoSocial.Value;
+    end
+    else
+    begin
+      FDMOrdemServico.TOrdemServicotransportadoraCodigo.Value := 0;
+      FDMOrdemServico.TOrdemServicotransportadoraNome.Value := '';
+      DBTransportadoraDblClick(nil);
+    end;
+  end;
 end;
 
 procedure TFOrdemServico.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -385,6 +475,16 @@ begin
   if not (FDMOrdemServico.TOrdemServicoclienteCodigo.Value > 0) then
   begin
     mensagem.Add('O cliente deve ser selecionado!');
+  end
+  else
+  begin
+    FDMPessoa.tipoCadastro := 'cliente';
+    FDMPessoa.consultarDados(FDMOrdemServico.TOrdemServicoclienteCodigo.Value);
+
+    if not (FDMPessoa.TPessoa.RecordCount > 0) then
+    begin
+      mensagem.Add('Selecione um cliente valido!');
+    end;
   end;
 
   if not (FDMOrdemServico.TOrdemServicoenderecoCodigo.Value > 0) then

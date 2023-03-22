@@ -52,6 +52,28 @@ type
     DFinalidade: TDataSource;
     QFinalidade: TFDMemTable;
     QFinalidadedescricao: TStringField;
+    DEndereco: TDataSource;
+    QEndereco: TFDMemTable;
+    QEnderecocodigo: TIntegerField;
+    QEnderecocodigoPessoa: TIntegerField;
+    QEnderecocodigoTipoEndereco: TIntegerField;
+    QEnderecotipoEndereco: TStringField;
+    QEnderecocep: TStringField;
+    QEnderecolongradouro: TStringField;
+    QEndereconumero: TStringField;
+    QEnderecobairro: TStringField;
+    QEnderecocomplemento: TStringField;
+    QEnderecoobservacao: TMemoField;
+    QEnderecocodigoCidade: TIntegerField;
+    QEndereconomeCidade: TStringField;
+    QEndereconomeEstado: TStringField;
+    QEndereconomePais: TStringField;
+    QEnderecoprioridade: TStringField;
+    QEnderecocadastradoPor: TStringField;
+    QEnderecoalteradoPor: TStringField;
+    QEnderecodataCadastro: TStringField;
+    QEnderecodataAlteracao: TStringField;
+    QEnderecostatus: TStringField;
     procedure GetText(Sender: TField; var Text: string;
       DisplayText: Boolean);
     procedure TOrdemServicoAfterScroll(DataSet: TDataSet);
@@ -63,6 +85,7 @@ type
     function cadastrarOrdemServico: Boolean;
     function alterarOrdemServico: Boolean;
     procedure consultarEmpresa;
+    procedure consultarEnderecoCliente;
   end;
 
 var
@@ -300,6 +323,59 @@ begin
   Conexao.Destroy;
 end;
 
+procedure TFDMOrdemServico.consultarEnderecoCliente;
+var
+  Conexao: TConexao;
+  master, item: TJSONArray;
+  json: TJSONValue;
+  limite, offset: integer;
+  continuar: Boolean;
+begin
+  if (TOrdemServicoclienteCodigo.Value > 0) then
+  begin
+    Conexao := TConexao.Create;
+    Conexao.AtribuirParametro('status', 'A');
+    Conexao.metodo := rmGET;
+    Conexao.url := 'endereco/' + IntToStrSenaoZero(TOrdemServicoclienteCodigo.Value);
+    master := TJSONArray.Create;
+    limite := 500;
+    offset := 0;
+
+    repeat
+      Conexao.AtribuirParametro('limite', IntToStrSenaoZero(limite));
+      Conexao.AtribuirParametro('offset', IntToStrSenaoZero(offset));
+      Conexao.Enviar;
+      continuar := False;
+      offset := offset + limite;
+
+      if not (Conexao.status in[200..202]) then
+      begin
+        informar(Conexao.erro);
+        Break;
+      end
+      else if (Conexao.status in[200..202]) then
+      begin
+        json := converterJsonTextoJsonValue(Conexao.resposta);
+        item := converterJsonValueJsonArray(json, 'dados');
+        continuar := json.GetValue<Boolean>('maisRegistros', False);
+        copiarItemJsonArray(item, master);
+      end;
+    until not continuar;
+
+    if (Assigned(master)) and (master.Count > 0) then
+    begin
+      converterArrayJsonQuery(converterJsonArrayRestResponse(master), QEndereco);
+    end
+    else
+    begin
+      QEndereco.Close;
+      QEndereco.Open;
+    end;
+
+    Conexao.Destroy;
+  end;
+end;
+
 procedure TFDMOrdemServico.DataModuleCreate(Sender: TObject);
 var
   jsonArrayTipoFrete, jsonArrayFinalidade: TJSONArray;
@@ -334,6 +410,9 @@ begin
 
   json := TJSONObject.Create;
   json.AddPair('descricao', 'MANUTENÇÃO');
+
+  json := TJSONObject.Create;
+  json.AddPair('descricao', 'CONSTRUÇÃO');
 
   jsonArrayFinalidade.Add(json);
 

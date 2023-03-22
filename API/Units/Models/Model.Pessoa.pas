@@ -64,6 +64,7 @@ type TPessoa = class
     function consultar: TArray<TPessoa>;
     function excluirCadastro: Boolean;
     function consultarChave: TPessoa;
+    function consultarChaveSemTipo: TPessoa;
     function existeRegistro: TPessoa;
     function cadastrarPessoa: TPessoa;
     function alterarPessoa: TPessoa;
@@ -280,6 +281,42 @@ begin
       FreeAndNil(sql);
     end;
   end;
+end;
+
+function TPessoa.consultarChaveSemTipo: TPessoa;
+var
+  query: TZQuery;
+  pessoaConsultado: TPessoa;
+  sql: TStringList;
+begin
+  pessoaConsultado := TPessoa.Create;
+  sql := TStringList.Create;
+  sql.Add('SELECT CODIGO_PESSOA, NOME_FANTASIA');
+  sql.Add('  FROM pessoa');
+  sql.Add(' WHERE CODIGO_PESSOA = ' + IntToStrSenaoZero(FCodigo));
+  sql.Add(' LIMIT 1');
+
+  query := FConexao.executarComandoDQL(sql.Text);
+
+  if not Assigned(query)
+  or (query = nil)
+  or (query.RecordCount = 0) then
+  begin
+    pessoaConsultado.Destroy;
+    pessoaConsultado := nil;
+  end
+  else
+  begin
+    query.First;
+    FRegistrosAfetados := FConexao.registrosAfetados;
+
+    pessoaConsultado.FCodigo := query.FieldByName('CODIGO_PESSOA').Value;
+    pessoaConsultado.FNomeFantasia := query.FieldByName('NOME_FANTASIA').Value;
+  end;
+
+  Result := pessoaConsultado;
+
+  FreeAndNil(sql);
 end;
 
 function TPessoa.consultarChave: TPessoa;

@@ -33,11 +33,11 @@ function VirgulaPonto(valor: double): string; overload;
 function VirgulaPonto(valor: string): string; overload;
 function PontoVirgula(valor: string): Double;
 procedure desativaBotoes(form: TForm);
-procedure abreTelaCliente;
-procedure abreTelaEmpresa;
-procedure abreTelaFornecedor;
-procedure abreTelaUsuario;
-procedure abreTelaFuncionario;
+procedure abreTelaCliente(consulta: Boolean);
+procedure abreTelaEmpresa(consulta: Boolean);
+procedure abreTelaFornecedor(consulta: Boolean);
+procedure abreTelaUsuario(consulta: Boolean);
+procedure abreTelaFuncionario(consulta: Boolean);
 procedure ordenarGrid(Coluna: TColumn);
 procedure copiarItemJsonArray(arrayOrigem: TJSONArray; out arrayDestino : TJSONArray);
 procedure converterArrayJsonQuery(json: IRESTResponseJSON; out dataSet: TFDMemTable); overload;
@@ -136,11 +136,12 @@ begin
   end;
 end;
 
-procedure abreTelaCliente;
+procedure abreTelaCliente(consulta: Boolean);
 begin
   try
     Application.CreateForm(TFPessoa, FPessoa);
     FPessoa.Caption := 'Cadastro de Cliente';
+    FPessoa.consulta := consulta;
     FDMPessoa.tipoCadastro := 'cliente';
     FPessoa.PDados.Height := 128;
     FPessoa.PFuncao.Visible := False;
@@ -150,11 +151,12 @@ begin
   end;
 end;
 
-procedure abreTelaEmpresa;
+procedure abreTelaEmpresa(consulta: Boolean);
 begin
   try
     Application.CreateForm(TFPessoa, FPessoa);
     FPessoa.Caption := 'Cadastro de Empresa Faturamento';
+    FPessoa.consulta := consulta;
     FDMPessoa.tipoCadastro := 'empresa';
     FPessoa.PDados.Height := 128;
     FPessoa.PFuncao.Visible := False;
@@ -164,11 +166,12 @@ begin
   end;
 end;
 
-procedure abreTelaFornecedor;
+procedure abreTelaFornecedor(consulta: Boolean);
 begin
   try
     Application.CreateForm(TFPessoa, FPessoa);
     FPessoa.Caption := 'Cadastro de Fornecedor';
+    FPessoa.consulta := consulta;
     FDMPessoa.tipoCadastro := 'fornecedor';
     FPessoa.PDados.Height := 128;
     FPessoa.PFuncao.Visible := False;
@@ -178,11 +181,12 @@ begin
   end;
 end;
 
-procedure abreTelaFuncionario;
+procedure abreTelaFuncionario(consulta: Boolean);
 begin
   try
     Application.CreateForm(TFPessoa, FPessoa);
     FPessoa.Caption := 'Cadastro de Funcionario';
+    FPessoa.consulta := consulta;
     FPessoa.PDados.Height := 171;
     FPessoa.PFuncao.Visible := True;
     FPessoa.DBLDocumento.Enabled := False;
@@ -204,11 +208,12 @@ begin
   end;
 end;
 
-procedure abreTelaUsuario;
+procedure abreTelaUsuario(consulta: Boolean);
 begin
   try
     Application.CreateForm(TFPessoa, FPessoa);
     FPessoa.Caption := 'Cadastro de Usuario';
+    FPessoa.consulta := consulta;
     FPessoa.PDados.Height := 128;
     FPessoa.PFuncao.Visible := False;
     FPessoa.DBLDocumento.Enabled := False;
