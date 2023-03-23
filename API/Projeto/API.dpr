@@ -32,7 +32,8 @@ uses
   Model.OrdemServico in '..\Units\Models\Model.OrdemServico.pas',
   Controller.OrdemServico in '..\Units\Controllers\Controller.OrdemServico.pas',
   Model.OrdemServico.Item in '..\Units\Models\Model.OrdemServico.Item.pas',
-  Controller.OrdemServico.Item in '..\Units\Controllers\Controller.OrdemServico.Item.pas';
+  Controller.OrdemServico.Item in '..\Units\Controllers\Controller.OrdemServico.Item.pas',
+  Model.OrdemServico.Produto in '..\Units\Models\Model.OrdemServico.Produto.pas';
 
 {$R *.res}
 

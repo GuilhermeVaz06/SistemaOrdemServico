@@ -21,25 +21,25 @@ begin
   token := '';
 end;
 
-procedure montarContato(contatoItem: TItem; out resposta: TJSONObject);
+procedure montarItem(itemServico: TItem; out resposta: TJSONObject);
 begin
-  resposta.AddPair('codigo',TJSONNumber.Create(contatoItem.id));
-  resposta.AddPair('ordem',TJSONNumber.Create(contatoItem.id));
-  resposta.AddPair('descricao',TJSONNumber.Create(contatoItem.ordemServico.id));
-  resposta.AddPair('quantidade',TJSONNumber.Create(contatoItem.quantidade));
-  resposta.AddPair('valorUnitario',TJSONNumber.Create(contatoItem.valorUnitario));
-  resposta.AddPair('valorTotal',TJSONNumber.Create(contatoItem.valorTotal));
-  resposta.AddPair('desconto',TJSONNumber.Create(contatoItem.desconto));
-  resposta.AddPair('valorDesconto',TJSONNumber.Create(contatoItem.valorDesconto));
-  resposta.AddPair('valorFinal',TJSONNumber.Create(contatoItem.valorFinal));
-  resposta.AddPair('cadastradoPor',contatoItem.cadastradoPor.usuario);
-  resposta.AddPair('alteradoPor',contatoItem.alteradoPor.usuario);
-  resposta.AddPair('dataCadastro',DateTimeToStr(contatoItem.dataCadastro));
-  resposta.AddPair('dataAlteracao',DateTimeToStr(contatoItem.ultimaAlteracao));
-  resposta.AddPair('status',contatoItem.status);
+  resposta.AddPair('codigo',TJSONNumber.Create(itemServico.id));
+  resposta.AddPair('ordem',TJSONNumber.Create(itemServico.ordemServico.id));
+  resposta.AddPair('descricao', itemServico.descricao);
+  resposta.AddPair('quantidade',TJSONNumber.Create(itemServico.quantidade));
+  resposta.AddPair('valorUnitario',TJSONNumber.Create(itemServico.valorUnitario));
+  resposta.AddPair('valorTotal',TJSONNumber.Create(itemServico.valorTotal));
+  resposta.AddPair('desconto',TJSONNumber.Create(itemServico.desconto));
+  resposta.AddPair('valorDesconto',TJSONNumber.Create(itemServico.valorDesconto));
+  resposta.AddPair('valorFinal',TJSONNumber.Create(itemServico.valorFinal));
+  resposta.AddPair('cadastradoPor',itemServico.cadastradoPor.usuario);
+  resposta.AddPair('alteradoPor',itemServico.alteradoPor.usuario);
+  resposta.AddPair('dataCadastro',DateTimeToStr(itemServico.dataCadastro));
+  resposta.AddPair('dataAlteracao',DateTimeToStr(itemServico.ultimaAlteracao));
+  resposta.AddPair('status',itemServico.status);
 end;
 
-function gerarLogContato(Req: THorseRequest; Res: THorseResponse; procedimento: string; out resposta: TJSONObject): Integer;
+function gerarLogItem(Req: THorseRequest; Res: THorseResponse; procedimento: string; out resposta: TJSONObject): Integer;
 var
   mensagem: string;
 begin
@@ -121,7 +121,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogContato(Req, Res, 'buscarItens', resposta);
+  codigoLog := gerarLogItem(Req, Res, 'buscarItens', resposta);
 
   if (continuar) then
   try
@@ -197,7 +197,7 @@ begin
       for i := 0 to quantidade - 1 do
       begin
         temporario := TJSONObject.Create;
-        montarContato(itens[i], temporario);
+        montarItem(itens[i], temporario);
         arrayResposta.Add(temporario);
       end;
 
@@ -242,7 +242,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogContato(Req, Res, 'cadastrarItem', resposta);
+  codigoLog := gerarLogItem(Req, Res, 'cadastrarItem', resposta);
 
   if (continuar) then
   try
@@ -347,7 +347,7 @@ begin
       begin
         resposta.AddPair('tipo', 'Cadastro de Item');
         resposta.AddPair('registrosAfetados', TJSONNumber.Create(item.registrosAfetados));
-        montarContato(itemConsultado, resposta);
+        montarItem(itemConsultado, resposta);
         Res.Send<TJSONAncestor>(resposta.Clone).Status(200);
 
         itemConsultado.Destroy;
@@ -388,7 +388,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogContato(Req, Res, 'alterarItem', resposta);
+  codigoLog := gerarLogItem(Req, Res, 'alterarItem', resposta);
 
   if (continuar) then
   try
@@ -507,7 +507,7 @@ begin
       begin
         resposta.AddPair('tipo', 'Alteração de Item');
         resposta.AddPair('registrosAfetados', TJSONNumber.Create(item.registrosAfetados));
-        montarContato(itemConsultado, resposta);
+        montarItem(itemConsultado, resposta);
         Res.Send<TJSONAncestor>(resposta.Clone).Status(200);
 
         itemConsultado.Destroy;
@@ -547,7 +547,7 @@ var
 begin
   continuar := True;
   resposta := TJSONObject.Create;
-  codigoLog := gerarLogContato(Req, Res, 'inativarItem', resposta);
+  codigoLog := gerarLogItem(Req, Res, 'inativarItem', resposta);
 
   if (continuar) then
   try
@@ -612,7 +612,7 @@ begin
       begin
         resposta.AddPair('tipo', 'Exclusão de Item');
         resposta.AddPair('registrosAfetados', TJSONNumber.Create(item.registrosAfetados));
-        montarContato(itemConsultado, resposta);
+        montarItem(itemConsultado, resposta);
         Res.Send<TJSONAncestor>(resposta.Clone).Status(200);
 
         itemConsultado.Destroy;

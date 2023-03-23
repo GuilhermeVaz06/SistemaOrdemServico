@@ -10,6 +10,7 @@ type TProduto = class
     FCodigo: integer;
     FOrdemServico: TOrdemServico;
     FDescricao: string;
+    FUnidade: string;
     FQuantidade: Double;
     FValorUnitario: Double;
     FDesconto: Double;
@@ -38,6 +39,7 @@ type TProduto = class
 
     property ordemServico: TOrdemServico read FOrdemServico write FOrdemServico;
     property descricao: string read FDescricao write FDescricao;
+    property unidade: string read FUnidade write FUnidade;
     property quantidade: Double read FQuantidade write FQuantidade;
     property valorUnitario: Double read FValorUnitario write FValorUnitario;
     property valorTotal: Double read calculaValorTotal;
@@ -163,6 +165,7 @@ begin
   FCodigo := 0;
   FOrdemServico.limpar;
   FDescricao := '';
+  FUnidade := '';
   FQuantidade := 0;
   FValorUnitario := 0;
   FDesconto := 0;
@@ -187,6 +190,7 @@ begin
     data.FOrdemServico.id := query.FieldByName('CODIGO_OS').Value;
     data.FCodigo := query.FieldByName('CODIGO_PRODUTO').Value;
     data.FDescricao := query.FieldByName('DESCRICAO').Value;
+    data.FUnidade := query.FieldByName('UNIDADE').Value;
     data.FQuantidade := query.FieldByName('QTDE').Value;
     data.FValorUnitario := query.FieldByName('VALOR_UNITARIO').Value;
     data.FDesconto := query.FieldByName('DESCONTO').Value;
@@ -218,6 +222,7 @@ begin
   sql := TStringList.Create;
   sql.Add('UPDATE `ordem_servico_produto` ');
   sql.Add('   SET DESCRICAO = ' + QuotedStr(FDescricao));
+  sql.Add('     , UNIDADE = ' + QuotedStr(FUnidade));
   sql.Add('     , QTDE = ' + VirgulaPonto(FQuantidade));
   sql.Add('     , VALOR_UNITARIO = ' + VirgulaPonto(FValorUnitario));
   sql.Add('     , DESCONTO = ' + VirgulaPonto(FDesconto));
@@ -244,11 +249,12 @@ begin
   codigo := FConexao.ultimoRegistro('ordem_servico_produto', 'CODIGO_PRODUTO');
 
   sql := TStringList.Create;
-  sql.Add('INSERT INTO `ordem_servico_produto` (CODIGO_OS, CODIGO_PRODUTO, DESCRICAO, QTDE');
+  sql.Add('INSERT INTO `ordem_servico_produto` (CODIGO_OS, CODIGO_PRODUTO, DESCRICAO, UNIDADE, QTDE');
   sql.Add(', VALOR_UNITARIO, DESCONTO, CODIGO_SESSAO_CADASTRO, CODIGO_SESSAO_ALTERACAO) VALUES (');
   sql.Add(' ' + IntToStrSenaoZero(FOrdemServico.id));                           //CODIGO_OS
   sql.Add(',' + IntToStrSenaoZero(codigo));                                     //CODIGO_PRODUTO
   sql.Add(',' + QuotedStr(FDescricao));                                         //DESCRICAO
+  sql.Add(',' + QuotedStr(FUnidade));                                           //UNIDADE
   sql.Add(',' + VirgulaPonto(FQuantidade));                                     //QTDE
   sql.Add(',' + VirgulaPonto(FValorUnitario));                                  //VALOR_UNITARIO
   sql.Add(',' + VirgulaPonto(FDesconto));                                       //DESCONTO
@@ -303,9 +309,10 @@ begin
 
     sql := TStringList.Create;
     sql.Add('SELECT ordem_servico_produto.CODIGO_OS, ordem_servico_produto.CODIGO_PRODUTO, ordem_servico_produto.DESCRICAO');
-    sql.Add(', ordem_servico_produto.QTDE, ordem_servico_produto.VALOR_UNITARIO, ordem_servico_produto.DESCONTO');
-    sql.Add(', ordem_servico_produto.CODIGO_SESSAO_CADASTRO, ordem_servico_produto.CODIGO_SESSAO_ALTERACAO');
-    sql.Add(', ordem_servico_produto.DATA_CADASTRO, ordem_servico_produto.DATA_ULTIMA_ALTERACAO, ordem_servico_produto.`STATUS`');
+    sql.Add(', ordem_servico_produto.UNIDADE, ordem_servico_produto.QTDE, ordem_servico_produto.VALOR_UNITARIO');
+    sql.Add(', ordem_servico_produto.DESCONTO, ordem_servico_produto.CODIGO_SESSAO_CADASTRO');
+    sql.Add(', ordem_servico_produto.CODIGO_SESSAO_ALTERACAO, ordem_servico_produto.DATA_CADASTRO');
+    sql.Add(', ordem_servico_produto.DATA_ULTIMA_ALTERACAO, ordem_servico_produto.`STATUS`');
     sql.Add('');
     sql.Add(', (SELECT pessoa.RAZAO_SOCIAL ');
     sql.Add('     FROM pessoa, sessao');
@@ -413,9 +420,10 @@ var
 begin
   sql := TStringList.Create;
   sql.Add('SELECT ordem_servico_produto.CODIGO_OS, ordem_servico_produto.CODIGO_PRODUTO, ordem_servico_produto.DESCRICAO');
-  sql.Add(', ordem_servico_produto.QTDE, ordem_servico_produto.VALOR_UNITARIO, ordem_servico_produto.DESCONTO');
-  sql.Add(', ordem_servico_produto.CODIGO_SESSAO_CADASTRO, ordem_servico_produto.CODIGO_SESSAO_ALTERACAO');
-  sql.Add(', ordem_servico_produto.DATA_CADASTRO, ordem_servico_produto.DATA_ULTIMA_ALTERACAO, ordem_servico_produto.`STATUS`');
+  sql.Add(', ordem_servico_produto.UNIDADE, ordem_servico_produto.QTDE, ordem_servico_produto.VALOR_UNITARIO');
+  sql.Add(', ordem_servico_produto.DESCONTO, ordem_servico_produto.CODIGO_SESSAO_CADASTRO');
+  sql.Add(', ordem_servico_produto.CODIGO_SESSAO_ALTERACAO, ordem_servico_produto.DATA_CADASTRO');
+  sql.Add(', ordem_servico_produto.DATA_ULTIMA_ALTERACAO, ordem_servico_produto.`STATUS`');
   sql.Add('');
   sql.Add(', (SELECT pessoa.RAZAO_SOCIAL ');
   sql.Add('     FROM pessoa, sessao');
