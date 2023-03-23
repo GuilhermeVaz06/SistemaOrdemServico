@@ -31,7 +31,8 @@ uses
   Controller.Grupo in '..\Units\Controllers\Controller.Grupo.pas',
   Model.OrdemServico in '..\Units\Models\Model.OrdemServico.pas',
   Controller.OrdemServico in '..\Units\Controllers\Controller.OrdemServico.pas',
-  Model.OrdemServico.Item in '..\Units\Models\Model.OrdemServico.Item.pas';
+  Model.OrdemServico.Item in '..\Units\Models\Model.OrdemServico.Item.pas',
+  Controller.OrdemServico.Item in '..\Units\Controllers\Controller.OrdemServico.Item.pas';
 
 {$R *.res}
 
