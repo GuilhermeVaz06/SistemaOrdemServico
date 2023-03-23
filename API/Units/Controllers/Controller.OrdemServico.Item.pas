@@ -250,7 +250,7 @@ begin
 
     token := Req.Headers['token'];
     item.ordemServico.id := body.GetValue<Integer>('ordem', 0);
-    item.descricao := body.GetValue<string>('ordem', '');
+    item.descricao := body.GetValue<string>('descricao', '');
     item.quantidade := body.GetValue<Double>('quantidade', 0);
     item.valorUnitario := body.GetValue<Double>('valorUnitario', 0);
     item.desconto := body.GetValue<Double>('desconto', 0);
@@ -283,11 +283,11 @@ begin
     end
     else if (Length(item.descricao) <= 3) then
     begin
-      erros.Add('O descrição deve conter no minimo 4 caracteres validos!');
+      erros.Add('A descrição deve conter no minimo 4 caracteres validos!');
     end
     else if (Length(item.descricao) > 250) then
     begin
-      erros.Add('O descrição deve conter no maximo 250 caracteres validos!');
+      erros.Add('A descrição deve conter no maximo 250 caracteres validos!');
     end;
 
     if not (item.quantidade > 0) then
@@ -396,7 +396,7 @@ begin
 
     token := Req.Headers['token'];
     item.ordemServico.id := body.GetValue<Integer>('ordem', 0);
-    item.descricao := body.GetValue<string>('ordem', '');
+    item.descricao := body.GetValue<string>('descricao', '');
     item.quantidade := body.GetValue<Double>('quantidade', 0);
     item.valorUnitario := body.GetValue<Double>('valorUnitario', 0);
     item.desconto := body.GetValue<Double>('desconto', 0);
@@ -430,11 +430,11 @@ begin
     end
     else if (Length(item.descricao) <= 3) then
     begin
-      erros.Add('O descrição deve conter no minimo 4 caracteres validos!');
+      erros.Add('A descrição deve conter no minimo 4 caracteres validos!');
     end
     else if (Length(item.descricao) > 250) then
     begin
-      erros.Add('O descrição deve conter no maximo 250 caracteres validos!');
+      erros.Add('A descrição deve conter no maximo 250 caracteres validos!');
     end;
 
     if not (item.quantidade > 0) then

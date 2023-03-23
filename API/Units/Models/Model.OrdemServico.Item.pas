@@ -77,6 +77,11 @@ uses Principal, UFuncao;
 
 destructor TItem.Destroy;
 begin
+  if Assigned(FOrdemServico) then
+  begin
+    FOrdemServico.Destroy;
+  end;
+
   if Assigned(FCadastradoPor) then
   begin
     FCadastradoPor.Destroy;
@@ -180,12 +185,12 @@ begin
   try
     data := TItem.Create;
 
-    data.FCodigo := query.FieldByName('CODIGO_OS').Value;
+    data.FOrdemServico.id := query.FieldByName('CODIGO_OS').Value;
     data.FCodigo := query.FieldByName('CODIGO_ITEM').Value;
-    data.FCodigo := query.FieldByName('DESCRICAO').Value;
-    data.FCodigo := query.FieldByName('QTDE').Value;
-    data.FCodigo := query.FieldByName('VALOR_UNITARIO').Value;
-    data.FCodigo := query.FieldByName('DESCONTO').Value;
+    data.FDescricao := query.FieldByName('DESCRICAO').Value;
+    data.FQuantidade := query.FieldByName('QTDE').Value;
+    data.FValorUnitario := query.FieldByName('VALOR_UNITARIO').Value;
+    data.FDesconto := query.FieldByName('DESCONTO').Value;
     data.FCadastradoPor.usuario := query.FieldByName('usuarioCadastro').Value;
     data.FAlteradoPor.usuario := query.FieldByName('usuarioAlteracao').Value;
     data.FDataCadastro := query.FieldByName('DATA_CADASTRO').Value;
@@ -424,7 +429,7 @@ begin
   sql.Add('      AND sessao.CODIGO_SESSAO = ordem_servico_item.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
   sql.Add('');
   sql.Add('  FROM ordem_servico_item');
-  sql.Add(' WHERE pessoa_contato.CODIGO_CONTATO = ' + IntToStrSenaoZero(codigo));
+  sql.Add(' WHERE ordem_servico_item.CODIGO_ITEM = ' + IntToStrSenaoZero(codigo));
 
   query := FConexao.executarComandoDQL(sql.Text);
 
@@ -488,6 +493,7 @@ end;
 
 constructor TItem.Create;
 begin
+  FOrdemServico := TOrdemServico.Create;
   FCadastradoPor := TSessao.Create;
   FAlteradoPor := TSessao.Create;
 

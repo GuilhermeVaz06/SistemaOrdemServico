@@ -54,7 +54,8 @@ uses Controller.Pais, Controller.Estado, Controller.Cidade,
      Controller.TipoDocumento, Controller.TipoEndereco, UFuncao,
      Controller.Pessoa, Controller.Pessoa.OutroDocumento,
      Controller.Pessoa.Endereco, Controller.Pessoa.Contato,
-     Controller.Funcao, Controller.Grupo, Controller.OrdemServico;
+     Controller.Funcao, Controller.Grupo, Controller.OrdemServico,
+     Controller.OrdemServico.Item;
 
 {$R *.dfm}
 
@@ -99,6 +100,7 @@ begin
     Controller.pessoa.Contato.Registry;
     Controller.Grupo.Registry;
     Controller.OrdemServico.Registry;
+    Controller.OrdemServico.Item.Registry;
 
     if (Trim(UpperCase(EIP.Text)) = 'LOCALHOST') then
     begin
@@ -149,6 +151,7 @@ begin
     Controller.Funcao.destruirConexao;
     Controller.Grupo.destruirConexao;
     Controller.OrdemServico.destruirConexao;
+    Controller.OrdemServico.Item.destruirConexao;
 
     PStatus.Caption := 'Status: Parado';
     PStatus.Font.Color := clRed;
