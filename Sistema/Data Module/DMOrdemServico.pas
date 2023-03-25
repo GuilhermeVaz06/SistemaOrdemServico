@@ -118,6 +118,21 @@ type
     TOrdemServicovalorFinal: TFloatField;
     TOrdemServicovalorDescontoTotal: TFloatField;
     TOrdemServicovalorTotal: TFloatField;
+    DCusto: TDataSource;
+    TCusto: TFDMemTable;
+    TCustocodigo: TIntegerField;
+    TCustoordem: TIntegerField;
+    TCustocodigoGrupo: TIntegerField;
+    TCustodescricao: TStringField;
+    TCustosubDescricao: TStringField;
+    TCustoquantidade: TFloatField;
+    TCustovalorUnitario: TFloatField;
+    TCustovalorTotal: TFloatField;
+    TCustocadastradoPor: TStringField;
+    TCustoalteradoPor: TStringField;
+    TCustodataCadastro: TStringField;
+    TCustodataAlteracao: TStringField;
+    TCustostatus: TStringField;
     procedure GetText(Sender: TField; var Text: string;
       DisplayText: Boolean);
     procedure TOrdemServicoAfterScroll(DataSet: TDataSet);
@@ -133,12 +148,16 @@ type
     procedure consultarEnderecoCliente;
     procedure consultarDadosItem(codigo: integer; mostrarErro: Boolean);
     procedure consultarDadosProduto(codigo: integer; mostrarErro: Boolean);
+    procedure consultarDadosCusto(codigo: integer; mostrarErro: Boolean);
     function alterarItem: Boolean;
     function alterarProduto: Boolean;
+    function alterarCusto: Boolean;
     function cadastrarItem: Boolean;
     function cadastrarProduto: Boolean;
+    function cadastrarCusto: Boolean;
     function inativarItem: Boolean;
     function inativarProduto: Boolean;
+    function inativarCusto: Boolean;
     function excluirOrdem: Boolean;
   end;
 
@@ -195,6 +214,40 @@ begin
   Conexao.metodo := rmDELETE;
   Conexao.url := 'ordemServicoItem/' + IntToStrSenaoZero(TOrdemServicocodigo.Value) +
                  '/' + IntToStrSenaoZero(TItemcodigo.Value);
+  Conexao.Enviar;
+
+  if not (Conexao.status in[200..202]) then
+  begin
+    informar(Conexao.erro);
+    Result := False;
+  end
+  else
+  begin
+    json := converterJsonTextoJsonValue(Conexao.resposta);
+
+    if (Assigned(json)) then
+    begin
+      Result := True;
+    end
+    else
+    begin
+      Result := False;
+    end;
+  end;
+
+  Conexao.Destroy;
+end;
+
+function TFDMOrdemServico.inativarCusto: Boolean;
+var
+  Conexao: TConexao;
+  json: TJSONValue;
+begin
+  Conexao := TConexao.Create;
+
+  Conexao.metodo := rmDELETE;
+  Conexao.url := 'ordemServicoCusto/' + IntToStrSenaoZero(TOrdemServicocodigo.Value) +
+                 '/' + IntToStrSenaoZero(TCustocodigo.Value);
   Conexao.Enviar;
 
   if not (Conexao.status in[200..202]) then
@@ -316,6 +369,51 @@ begin
   Conexao.Destroy;
 end;
 
+function TFDMOrdemServico.cadastrarCusto: Boolean;
+var
+  Conexao: TConexao;
+  json: TJSONValue;
+begin
+  Conexao := TConexao.Create;
+
+  Conexao.metodo := rmPOST;
+  Conexao.url := 'ordemServicoCusto';
+  Conexao.AtribuirBody('ordem', IntToStrSenaoZero(TOrdemServicocodigo.Value));
+  Conexao.AtribuirBody('codigoGrupo', IntToStrSenaoZero(TCustocodigoGrupo.Value));
+  Conexao.AtribuirBody('quantidade', VirgulaPonto(TCustoquantidade.Value));
+  Conexao.AtribuirBody('valorUnitario', VirgulaPonto(TCustovalorUnitario.Value));
+  Conexao.Enviar;
+
+  if not (Conexao.status in[200..202]) then
+  begin
+    informar(Conexao.erro);
+    Result := False;
+  end
+  else
+  begin
+    json := converterJsonTextoJsonValue(Conexao.resposta);
+
+    if (Assigned(json)) then
+    begin
+      TCustocodigo.Value := json.GetValue<Integer>('codigo', 0);
+      TCustocadastradoPor.Value := json.GetValue<string>('cadastradoPor', '');
+      TCustovalorTotal.Value := json.GetValue<Double>('valorTotal', 0);
+      TCustoalteradoPor.Value := json.GetValue<string>('alteradoPor', '');
+      TCustodataCadastro.Value := json.GetValue<string>('dataCadastro', '');
+      TCustodataAlteracao.Value := json.GetValue<string>('dataAlteracao', '');
+      TCustostatus.Value := json.GetValue<string>('status', 'A');
+
+      Result := True;
+    end
+    else
+    begin
+      Result := False;
+    end;
+  end;
+
+  Conexao.Destroy;
+end;
+
 function TFDMOrdemServico.alterarProduto: Boolean;
 var
   Conexao: TConexao;
@@ -419,6 +517,54 @@ begin
   Conexao.Destroy;
 end;
 
+function TFDMOrdemServico.alterarCusto: Boolean;
+var
+  Conexao: TConexao;
+  json: TJSONValue;
+begin
+  Conexao := TConexao.Create;
+
+  Conexao.metodo := rmPUT;
+  Conexao.url := 'ordemServicoCusto/' + IntToStrSenaoZero(TOrdemServicocodigo.Value) +
+                 '/' + IntToStrSenaoZero(TCustocodigo.Value);
+
+  Conexao.AtribuirBody('ordem', IntToStrSenaoZero(TOrdemServicocodigo.Value));
+  Conexao.AtribuirBody('codigoGrupo', IntToStrSenaoZero(TCustocodigoGrupo.Value));
+  Conexao.AtribuirBody('quantidade', VirgulaPonto(TCustoquantidade.Value));
+  Conexao.AtribuirBody('valorUnitario', VirgulaPonto(TCustovalorUnitario.Value));
+  Conexao.AtribuirBody('status', TCustostatus.Value);
+  Conexao.Enviar;
+
+  if not (Conexao.status in[200..202]) then
+  begin
+    informar(Conexao.erro);
+    Result := False;
+  end
+  else
+  begin
+    json := converterJsonTextoJsonValue(Conexao.resposta);
+
+    if (Assigned(json)) then
+    begin
+      TCustocodigo.Value := json.GetValue<Integer>('codigo', 0);
+      TCustocadastradoPor.Value := json.GetValue<string>('cadastradoPor', '');
+      TCustovalorTotal.Value := json.GetValue<Double>('valorTotal', 0);
+      TCustoalteradoPor.Value := json.GetValue<string>('alteradoPor', '');
+      TCustodataCadastro.Value := json.GetValue<string>('dataCadastro', '');
+      TCustodataAlteracao.Value := json.GetValue<string>('dataAlteracao', '');
+      TCustostatus.Value := json.GetValue<string>('status', 'A');
+
+      Result := True;
+    end
+    else
+    begin
+      Result := False;
+    end;
+  end;
+
+  Conexao.Destroy;
+end;
+
 procedure TFDMOrdemServico.consultarDadosProduto(codigo: integer; mostrarErro: Boolean);
 var
   Conexao: TConexao;
@@ -489,6 +635,82 @@ begin
     begin
       TProduto.Close;
       TProduto.Open;
+    end;
+
+    Conexao.Destroy;
+  end;
+end;
+
+procedure TFDMOrdemServico.consultarDadosCusto(codigo: integer; mostrarErro: Boolean);
+var
+  Conexao: TConexao;
+  master, item: TJSONArray;
+  json: TJSONValue;
+  limite, offset: integer;
+  continuar: Boolean;
+begin
+  if (TOrdemServicocodigo.Value > 0) or (TOrdemServico.State = dsInsert) then
+  begin
+    Conexao := TConexao.Create;
+
+    if (codigo > 0) then
+    begin
+      Conexao.AtribuirParametro('codigo', IntToStrSenaoZero(codigo));
+    end;
+
+    if (Assigned(FOrdemServico)) then
+    begin
+      if FOrdemServico.CBInativoCusto.Checked then
+      begin
+        Conexao.AtribuirParametro('status', 'I');
+      end
+      else
+      begin
+        Conexao.AtribuirParametro('status', 'A');
+      end;
+    end;
+
+    dadosOrdemConsultados := TOrdemServicocodigo.Value;
+
+    Conexao.metodo := rmGET;
+    Conexao.url := 'ordemServicoCusto/' + IntToStrSenaoZero(TOrdemServicocodigo.Value);
+    master := TJSONArray.Create;
+    limite := 500;
+    offset := 0;
+
+    repeat
+      Conexao.AtribuirParametro('limite', IntToStrSenaoZero(limite));
+      Conexao.AtribuirParametro('offset', IntToStrSenaoZero(offset));
+      Conexao.Enviar;
+      continuar := False;
+      offset := offset + limite;
+
+      if not (Conexao.status in[200..202]) and (mostrarErro) then
+      begin
+        informar(Conexao.erro);
+        Break;
+      end
+      else if (Conexao.status in[200..202]) then
+      begin
+        json := converterJsonTextoJsonValue(Conexao.resposta);
+        item := converterJsonValueJsonArray(json, 'dados');
+        continuar := json.GetValue<Boolean>('maisRegistros', False);
+        copiarItemJsonArray(item, master);
+      end
+      else if not (Conexao.status in[200..202]) and (mostrarErro = False) then
+      begin
+        Break;
+      end;
+    until not continuar;
+
+    if (Assigned(master)) and (master.Count > 0) then
+    begin
+      converterArrayJsonQuery(converterJsonArrayRestResponse(master), TCusto);
+    end
+    else
+    begin
+      TCusto.Close;
+      TCusto.Open;
     end;
 
     Conexao.Destroy;
@@ -975,6 +1197,7 @@ begin
   begin
     consultarDadosItem(0, False);
     consultarDadosProduto(0, False);
+    consultarDadosCusto(0, False);
 
     if (TOrdemServicodataOrdemServico.Value <> '') then
     begin

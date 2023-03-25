@@ -62,6 +62,7 @@ type
     procedure CBMostrarInativoClick(Sender: TObject);
     procedure GDadosDblClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
+    procedure DBEdit1Exit(Sender: TObject);
   private
     { Private declarations }
     function validarCampos: boolean;
@@ -175,6 +176,16 @@ end;
 procedure TFFuncao.CBMostrarInativoClick(Sender: TObject);
 begin
   BConsultarClick(nil);
+end;
+
+procedure TFFuncao.DBEdit1Exit(Sender: TObject);
+var
+  valorHoraNormal: Double;
+begin
+  valorHoraNormal := FDMFuncao.TFuncaovalorHoraNormal.Value;
+  FDMFuncao.TFuncaovalorHora50.Value := ((valorHoraNormal / 100) * 50) + valorHoraNormal;
+  FDMFuncao.TFuncaovalorHora100.Value := ((valorHoraNormal / 100) * 100) + valorHoraNormal;
+  FDMFuncao.TFuncaovalorAdicionalNoturno.Value := ((valorHoraNormal / 100) * 20) + valorHoraNormal;
 end;
 
 procedure TFFuncao.FormClose(Sender: TObject; var Action: TCloseAction);

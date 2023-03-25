@@ -142,7 +142,6 @@ object FOrdemServico: TFOrdemServico
         BevelOuter = bvNone
         Enabled = False
         TabOrder = 3
-        ExplicitTop = 534
         object Label27: TLabel
           Left = 9
           Top = 0
@@ -225,10 +224,9 @@ object FOrdemServico: TFOrdemServico
         Top = 249
         Width = 1355
         Height = 286
-        ActivePage = TabResumo
+        ActivePage = TabCusto
         Align = alClient
         TabOrder = 2
-        ExplicitHeight = 240
         object TBItem: TTabSheet
           Caption = 'Servi'#231'os'
           object Panel2: TPanel
@@ -404,7 +402,6 @@ object FOrdemServico: TFOrdemServico
             Enabled = False
             TabOrder = 2
             OnClick = CBMostrarInativoItemClick
-            ExplicitTop = 233
           end
         end
         object TBProduto: TTabSheet
@@ -458,7 +455,6 @@ object FOrdemServico: TFOrdemServico
             Enabled = False
             TabOrder = 2
             OnClick = CBInativoProdutoClick
-            ExplicitTop = 233
           end
           object GProduto: TDBGrid
             Left = 0
@@ -592,6 +588,169 @@ object FOrdemServico: TFOrdemServico
                 Width = 61
                 Visible = True
               end>
+          end
+        end
+        object TabCusto: TTabSheet
+          Caption = 'Custos'
+          ImageIndex = 3
+          object Panel4: TPanel
+            Left = 0
+            Top = 0
+            Width = 1347
+            Height = 29
+            Align = alTop
+            BevelOuter = bvNone
+            TabOrder = 0
+            ExplicitTop = 8
+            object BCadastrarCusto: TSpeedButton
+              Left = 0
+              Top = 0
+              Width = 96
+              Height = 29
+              Align = alLeft
+              Caption = 'Cadastrar'
+              ImageIndex = 0
+              Images = FMenuPrincipal.ImageList1
+              Enabled = False
+              OnClick = BCadastrarCustoClick
+              ExplicitLeft = 8
+              ExplicitHeight = 41
+            end
+            object BExcluirCusto: TSpeedButton
+              Left = 96
+              Top = 0
+              Width = 96
+              Height = 29
+              Align = alLeft
+              Caption = 'Excluir'
+              ImageIndex = 3
+              Images = FMenuPrincipal.ImageList1
+              Enabled = False
+              OnClick = BExcluirCustoClick
+              ExplicitLeft = 1
+              ExplicitTop = -1
+              ExplicitHeight = 39
+            end
+          end
+          object GCusto: TDBGrid
+            Left = 0
+            Top = 29
+            Width = 1347
+            Height = 209
+            Align = alClient
+            DataSource = FDMOrdemServico.DCusto
+            Enabled = False
+            Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+            ReadOnly = True
+            TabOrder = 1
+            TitleFont.Charset = DEFAULT_CHARSET
+            TitleFont.Color = clWindowText
+            TitleFont.Height = -13
+            TitleFont.Name = 'Tahoma'
+            TitleFont.Style = []
+            OnDrawColumnCell = GDadosDrawColumnCell
+            OnDblClick = GCustoDblClick
+            OnTitleClick = GDadosTitleClick
+            Columns = <
+              item
+                Expanded = False
+                FieldName = 'codigo'
+                Title.Alignment = taCenter
+                Title.Caption = 'Codigo'
+                Width = 65
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'descricao'
+                Title.Alignment = taCenter
+                Title.Caption = 'Descri'#231#227'o'
+                Width = 170
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'subDescricao'
+                Title.Alignment = taCenter
+                Title.Caption = 'Sub Descri'#231#227'o'
+                Width = 145
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'quantidade'
+                Title.Alignment = taCenter
+                Title.Caption = 'Quantidade'
+                Width = 100
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'valorUnitario'
+                Title.Alignment = taCenter
+                Title.Caption = 'Valor Unitario'
+                Width = 100
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'valorTotal'
+                Title.Alignment = taCenter
+                Title.Caption = 'Valor Total'
+                Width = 100
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'cadastradoPor'
+                Title.Alignment = taCenter
+                Title.Caption = 'Cadastrado Por'
+                Width = 143
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'alteradoPor'
+                Title.Alignment = taCenter
+                Title.Caption = 'Alterado Por'
+                Width = 130
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'dataCadastro'
+                Title.Alignment = taCenter
+                Title.Caption = 'Data Cadastro'
+                Width = 134
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'dataAlteracao'
+                Title.Alignment = taCenter
+                Title.Caption = 'Data Altera'#231#227'o'
+                Width = 153
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'status'
+                Title.Alignment = taCenter
+                Title.Caption = 'Status'
+                Width = 61
+                Visible = True
+              end>
+          end
+          object CBInativoCusto: TCheckBox
+            Left = 0
+            Top = 238
+            Width = 1347
+            Height = 17
+            Align = alBottom
+            Caption = 'Mostrar Inativos'
+            Enabled = False
+            TabOrder = 2
+            OnClick = CBInativoCustoClick
           end
         end
         object TabResumo: TTabSheet

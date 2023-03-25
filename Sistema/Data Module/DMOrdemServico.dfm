@@ -510,4 +510,70 @@ object FDMOrdemServico: TFDMOrdemServico
       Size = 50
     end
   end
+  object DCusto: TDataSource
+    DataSet = TCusto
+    Left = 334
+    Top = 175
+  end
+  object TCusto: TFDMemTable
+    FieldDefs = <>
+    IndexDefs = <>
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired, uvAutoCommitUpdates]
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.AutoCommitUpdates = True
+    StoreDefs = True
+    Left = 334
+    Top = 125
+    object TCustocodigo: TIntegerField
+      FieldName = 'codigo'
+    end
+    object TCustoordem: TIntegerField
+      FieldName = 'ordem'
+    end
+    object TCustocodigoGrupo: TIntegerField
+      FieldName = 'codigoGrupo'
+    end
+    object TCustodescricao: TStringField
+      FieldName = 'descricao'
+      Size = 150
+    end
+    object TCustosubDescricao: TStringField
+      FieldName = 'subDescricao'
+      Size = 150
+    end
+    object TCustoquantidade: TFloatField
+      FieldName = 'quantidade'
+      DisplayFormat = '###,###,###,##0.00'
+    end
+    object TCustovalorUnitario: TFloatField
+      FieldName = 'valorUnitario'
+      currency = True
+    end
+    object TCustovalorTotal: TFloatField
+      FieldName = 'valorTotal'
+      currency = True
+    end
+    object TCustocadastradoPor: TStringField
+      FieldName = 'cadastradoPor'
+      Size = 150
+    end
+    object TCustoalteradoPor: TStringField
+      FieldName = 'alteradoPor'
+      Size = 150
+    end
+    object TCustodataCadastro: TStringField
+      FieldName = 'dataCadastro'
+    end
+    object TCustodataAlteracao: TStringField
+      FieldName = 'dataAlteracao'
+    end
+    object TCustostatus: TStringField
+      FieldName = 'status'
+      Size = 1
+    end
+  end
 end

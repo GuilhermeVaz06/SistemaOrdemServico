@@ -169,9 +169,9 @@ object FFuncao: TFFuncao
     object Label11: TLabel
       Left = 153
       Top = 89
-      Width = 134
+      Width = 133
       Height = 16
-      Caption = 'Valor Adicional Noturno'
+      Caption = 'Valor Hora Ad. Noturno'
     end
     object ECodigo: TDBEdit
       Left = 9
@@ -301,33 +301,43 @@ object FFuncao: TFFuncao
       DataField = 'valorHoraNormal'
       DataSource = FDMFuncao.DFuncao
       TabOrder = 2
+      OnExit = DBEdit1Exit
     end
     object DBEdit2: TDBEdit
       Left = 153
       Top = 63
       Width = 139
       Height = 24
+      TabStop = False
       DataField = 'valorHora50'
       DataSource = FDMFuncao.DFuncao
+      ReadOnly = True
       TabOrder = 3
+      OnExit = DBEdit1Exit
     end
     object DBEdit3: TDBEdit
       Left = 9
       Top = 106
       Width = 138
       Height = 24
+      TabStop = False
       DataField = 'valorHora100'
       DataSource = FDMFuncao.DFuncao
+      ReadOnly = True
       TabOrder = 4
+      OnExit = DBEdit1Exit
     end
     object DBEdit4: TDBEdit
       Left = 153
       Top = 106
       Width = 139
       Height = 24
+      TabStop = False
       DataField = 'valorAdicionalNoturno'
       DataSource = FDMFuncao.DFuncao
+      ReadOnly = True
       TabOrder = 5
+      OnExit = DBEdit1Exit
     end
   end
   object PGrid: TPanel

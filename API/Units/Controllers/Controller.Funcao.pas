@@ -124,9 +124,6 @@ begin
     token := Req.Headers['token'];
     funcao.id := strToIntZero(Req.Query['codigo']);
     funcao.valorHoraNormal := PontoVirgula(Req.Query['valorHoraNormal']);
-    funcao.valorHora50 := PontoVirgula(Req.Query['valorHora50']);
-    funcao.valorHora100 := PontoVirgula(Req.Query['valorHora100']);
-    funcao.valorAdicionalNoturno := PontoVirgula(Req.Query['valorAdicionalNoturno']);
     funcao.descricao := Req.Query['descricao'];
     funcao.status := Req.Query['status'];
     funcao.limite := strToIntZero(Req.Query['limite']);
@@ -243,9 +240,6 @@ begin
     token := Req.Headers['token'];
     funcao.descricao := body.GetValue<string>('descricao', '');
     funcao.valorHoraNormal := body.GetValue<Double>('valorHoraNormal', 0);
-    funcao.valorHora50 := body.GetValue<Double>('valorHora50', 0);
-    funcao.valorHora100 := body.GetValue<Double>('valorHora100', 0);
-    funcao.valorAdicionalNoturno := body.GetValue<Double>('valorAdicionalNoturno', 0);
     funcao.id := 0;
   except
     on E: Exception do
@@ -359,9 +353,6 @@ begin
     token := Req.Headers['token'];
     funcao.descricao := body.GetValue<string>('descricao', '');
     funcao.valorHoraNormal := body.GetValue<Double>('valorHoraNormal', 0);
-    funcao.valorHora50 := body.GetValue<Double>('valorHora50', 0);
-    funcao.valorHora100 := body.GetValue<Double>('valorHora100', 0);
-    funcao.valorAdicionalNoturno := body.GetValue<Double>('valorAdicionalNoturno', 0);
     funcao.status := body.GetValue<string>('status', 'A');
     funcao.id := strToIntZero(Req.Params['id']);
   except

@@ -27,7 +27,6 @@ type TItem = class
     function calculaValorFinal: Double;
     function calculaValorTotal: Double;
     function contar: integer;
-    function consulxtarCodigo(codigo: integer): TItem;
     function montarItem(query: TZQuery): TItem;
     function consultarCodigo(codigo: integer): TItem;
 
@@ -36,7 +35,6 @@ type TItem = class
     destructor Destroy; override;
 
     property id:Integer read FCodigo write FCodigo;
-
     property ordemServico: TOrdemServico read FOrdemServico write FOrdemServico;
     property descricao: string read FDescricao write FDescricao;
     property quantidade: Double read FQuantidade write FQuantidade;
@@ -45,7 +43,6 @@ type TItem = class
     property desconto: Double read FDesconto write FDesconto;
     property valorDesconto: Double read calculaValorDesconto;
     property valorFinal: Double read calculaValorFinal;
-
     property cadastradoPor: TSessao read FCadastradoPor write FCadastradoPor;
     property alteradoPor: TSessao read FAlteradoPor write FAlteradoPor;
     property dataCadastro: TDateTime read FDataCadastro write FDataCadastro;
@@ -448,11 +445,6 @@ begin
 
   Result := itemConsultado;
   FreeAndNil(sql);
-end;
-
-function TItem.consulxtarCodigo(codigo: integer): TItem;
-begin
-
 end;
 
 function TItem.contar: integer;

@@ -1,19 +1,17 @@
-unit Model.OrdemServico.Produto;
+unit Model.OrdemServico.Custo;
 
 interface
 
-uses Model.Sessao, System.SysUtils, Model.OrdemServico, ZDataset, System.Classes;
+uses Model.Sessao, System.SysUtils, Model.OrdemServico, Model.Grupo, ZDataset, System.Classes;
 
-type TProduto = class
+type TCusto = class
 
   private
     FCodigo: integer;
     FOrdemServico: TOrdemServico;
-    FDescricao: string;
-    FUnidade: string;
+    FGrupo: TGrupo;
     FQuantidade: Double;
     FValorUnitario: Double;
-    FDesconto: Double;
     FCadastradoPor: TSessao;
     FAlteradoPor: TSessao;
     FDataCadastro: TDateTime;
@@ -24,12 +22,10 @@ type TProduto = class
     FRegistrosAfetados: Integer;
     FMaisRegistro: Boolean;
 
-    function calculaValorDesconto: Double;
-    function calculaValorFinal: Double;
     function calculaValorTotal: Double;
     function contar: integer;
-    function consultarCodigo(codigo: integer): TProduto;
-    function montarProduto(query: TZQuery): TProduto;
+    function montarCusto(query: TZQuery): TCusto;
+    function consultarCodigo(codigo: integer): TCusto;
 
   public
     constructor Create;
@@ -37,14 +33,10 @@ type TProduto = class
 
     property id:Integer read FCodigo write FCodigo;
     property ordemServico: TOrdemServico read FOrdemServico write FOrdemServico;
-    property descricao: string read FDescricao write FDescricao;
-    property unidade: string read FUnidade write FUnidade;
+    property grupo: TGrupo read FGrupo write FGrupo;
     property quantidade: Double read FQuantidade write FQuantidade;
     property valorUnitario: Double read FValorUnitario write FValorUnitario;
     property valorTotal: Double read calculaValorTotal;
-    property desconto: Double read FDesconto write FDesconto;
-    property valorDesconto: Double read calculaValorDesconto;
-    property valorFinal: Double read calculaValorFinal;
     property cadastradoPor: TSessao read FCadastradoPor write FCadastradoPor;
     property alteradoPor: TSessao read FAlteradoPor write FAlteradoPor;
     property dataCadastro: TDateTime read FDataCadastro write FDataCadastro;
@@ -58,12 +50,12 @@ type TProduto = class
     procedure limpar;
     procedure atualizarLog(codigo, status: Integer; resposta: string);
 
-    function consultar: TArray<TProduto>;
-    function consultarChave: TProduto;
-    function existeRegistro: TProduto;
-    function cadastrarProduto: TProduto;
-    function alterarProduto: TProduto;
-    function inativarProduto: TProduto;
+    function consultar: TArray<TCusto>;
+    function consultarChave: TCusto;
+    function existeRegistro: TCusto;
+    function cadastrarCusto: TCusto;
+    function alterarCusto: TCusto;
+    function inativarCusto: TCusto;
     function verificarToken(token: string): Boolean;
     function GerarLog(classe, procedimento, requisicao: string): integer;
 end;
@@ -72,13 +64,18 @@ implementation
 
 uses Principal, UFuncao;
 
-{ TProduto }
+{ TCusto }
 
-destructor TProduto.Destroy;
+destructor TCusto.Destroy;
 begin
   if Assigned(FOrdemServico) then
   begin
     FOrdemServico.Destroy;
+  end;
+
+  if Assigned(FGrupo) then
+  begin
+    FGrupo.Destroy;
   end;
 
   if Assigned(FCadastradoPor) then
@@ -94,22 +91,24 @@ begin
   inherited;
 end;
 
-function TProduto.existeRegistro: TProduto;
+function TCusto.existeRegistro: TCusto;
 var
   query: TZQuery;
-  produtoConsultado: TProduto;
+  itemConsultado: TCusto;
   sql: TStringList;
 begin
-  produtoConsultado := TProduto.Create;
+  itemConsultado := TCusto.Create;
   sql := TStringList.Create;
-  sql.Add('SELECT CODIGO_PRODUTO, DESCRICAO, `STATUS`');
-  sql.Add('  FROM ordem_servico_produto');
-  sql.Add(' WHERE CODIGO_OS = ' + IntToStrSenaoZero(FOrdemServico.id));
-  sql.Add('   AND DESCRICAO = ' + QuotedStr(FDescricao));
+  sql.Add('SELECT ordem_servico_custo.CODIGO_CUSTO, grupo.DESCRICAO');
+  sql.Add(', grupo.SUB_DESCRICAO, ordem_servico_custo.`STATUS`');
+  sql.Add('  FROM ordem_servico_custo, grupo');
+  sql.Add(' WHERE ordem_servico_custo.CODIGO_OS = ' + IntToStrSenaoZero(FOrdemServico.id));
+  sql.Add('   AND ordem_servico_custo.CODIGO_GRUPO = ' + IntToStrSenaoZero(FGrupo.id));
+  sql.Add('   AND ordem_servico_custo.CODIGO_GRUPO = grupo.CODIGO_GRUPO');
 
   if (FCodigo > 0) then
   begin
-    sql.Add('   AND CODIGO_PRODUTO <> ' + IntToStrSenaoZero(FCodigo));
+    sql.Add('   AND CODIGO_CUSTO <> ' + IntToStrSenaoZero(FCodigo));
   end;
 
   sql.Add(' LIMIT 1');
@@ -120,53 +119,52 @@ begin
   or (query = nil)
   or (query.RecordCount = 0) then
   begin
-    produtoConsultado.Destroy;
-    produtoConsultado := nil;
+    itemConsultado.Destroy;
+    itemConsultado := nil;
   end
   else
   begin
     query.First;
     FRegistrosAfetados := FConexao.registrosAfetados;
 
-    produtoConsultado.FCodigo := query.FieldByName('CODIGO_PRODUTO').Value;
-    produtoConsultado.FDescricao := query.FieldByName('DESCRICAO').Value;
-    produtoConsultado.FStatus := query.FieldByName('STATUS').Value;
+    itemConsultado.FCodigo := query.FieldByName('CODIGO_CUSTO').Value;
+    itemConsultado.FGrupo.descricao := query.FieldByName('DESCRICAO').Value;
+    itemConsultado.FGrupo.subDescricao := query.FieldByName('SUB_DESCRICAO').Value;
+    itemConsultado.FStatus := query.FieldByName('STATUS').Value;
   end;
 
-  Result := produtoConsultado;
+  Result := itemConsultado;
 
   FreeAndNil(sql);
 end;
 
-function TProduto.GerarLog(classe, procedimento, requisicao: string): integer;
+function TCusto.GerarLog(classe, procedimento, requisicao: string): integer;
 begin
   Result := FConexao.GerarLog(classe, procedimento, requisicao);
 end;
 
-function TProduto.inativarProduto: TProduto;
+function TCusto.inativarCusto: TCusto;
 var
   sql: TStringList;
 begin
   sql := TStringList.Create;
-  sql.Add('UPDATE `ordem_servico_produto`');
+  sql.Add('UPDATE `ordem_servico_custo`');
   sql.Add('   SET `STATUS` = ''I'' ');
   sql.Add('     , CODIGO_SESSAO_ALTERACAO = ' + IntToStrSenaoZero(FConexao.codigoSessao));
-  sql.Add(' WHERE CODIGO_PRODUTO = ' + IntToStrSenaoZero(FCodigo));
+  sql.Add(' WHERE CODIGO_CUSTO = ' + IntToStrSenaoZero(FCodigo));
 
   FConexao.executarComandoDML(sql.Text);
   FreeAndNil(sql);
   Result := consultarCodigo(FCodigo);
 end;
 
-procedure TProduto.limpar;
+procedure TCusto.limpar;
 begin
   FCodigo := 0;
   FOrdemServico.limpar;
-  FDescricao := '';
-  FUnidade := '';
+  FGrupo.limpar;
   FQuantidade := 0;
   FValorUnitario := 0;
-  FDesconto := 0;
   FCadastradoPor.limpar;
   FAlteradoPor.limpar;
   FDataCadastro := Now;
@@ -178,20 +176,20 @@ begin
   FMaisRegistro := False;
 end;
 
-function TProduto.montarProduto(query: TZQuery): TProduto;
+function TCusto.montarCusto(query: TZQuery): TCusto;
 var
-  data: TProduto;
+  data: TCusto;
 begin
   try
-    data := TProduto.Create;
+    data := TCusto.Create;
 
     data.FOrdemServico.id := query.FieldByName('CODIGO_OS').Value;
-    data.FCodigo := query.FieldByName('CODIGO_PRODUTO').Value;
-    data.FDescricao := query.FieldByName('DESCRICAO').Value;
-    data.FUnidade := query.FieldByName('UNIDADE').Value;
+    data.FCodigo := query.FieldByName('CODIGO_CUSTO').Value;
+    data.FGrupo.id := query.FieldByName('CODIGO_GRUPO').Value;
+    data.FGrupo.descricao := query.FieldByName('DESCRICAO').Value;
+    data.FGrupo.subDescricao := query.FieldByName('SUB_DESCRICAO').Value;
     data.FQuantidade := query.FieldByName('QTDE').Value;
     data.FValorUnitario := query.FieldByName('VALOR_UNITARIO').Value;
-    data.FDesconto := query.FieldByName('DESCONTO').Value;
     data.FCadastradoPor.usuario := query.FieldByName('usuarioCadastro').Value;
     data.FAlteradoPor.usuario := query.FieldByName('usuarioAlteracao').Value;
     data.FDataCadastro := query.FieldByName('DATA_CADASTRO').Value;
@@ -202,60 +200,56 @@ begin
   except
     on E: Exception do
     begin
-      raise Exception.Create('Erro ao montar Produto ' + e.Message);
+      raise Exception.Create('Erro ao montar Custo ' + e.Message);
       Result := nil;
     end;
   end;
 end;
 
-function TProduto.verificarToken(token: string): Boolean;
+function TCusto.verificarToken(token: string): Boolean;
 begin
   Result := FConexao.verificarToken(token);
 end;
 
-function TProduto.alterarProduto: TProduto;
+function TCusto.alterarCusto: TCusto;
 var
   sql: TStringList;
 begin
   sql := TStringList.Create;
-  sql.Add('UPDATE `ordem_servico_produto` ');
-  sql.Add('   SET DESCRICAO = ' + QuotedStr(FDescricao));
-  sql.Add('     , UNIDADE = ' + QuotedStr(FUnidade));
+  sql.Add('UPDATE `ordem_servico_custo` ');
+  sql.Add('   SET CODIGO_GRUPO = ' + IntToStrSenaoZero(FGrupo.id));
   sql.Add('     , QTDE = ' + VirgulaPonto(FQuantidade));
   sql.Add('     , VALOR_UNITARIO = ' + VirgulaPonto(FValorUnitario));
-  sql.Add('     , DESCONTO = ' + VirgulaPonto(FDesconto));
   sql.Add('     , `STATUS` = ' + QuotedStr(FStatus));
   sql.Add('     , CODIGO_SESSAO_ALTERACAO = ' + IntToStrSenaoZero(FConexao.codigoSessao));
   sql.Add(' WHERE CODIGO_OS = ' + IntToStrSenaoZero(FOrdemServico.id));
-  sql.Add('   AND CODIGO_PRODUTO = ' + IntToStrSenaoZero(FCodigo));
+  sql.Add('   AND CODIGO_CUSTO = ' + IntToStrSenaoZero(FCodigo));
 
   FConexao.executarComandoDML(sql.Text);
   FreeAndNil(sql);
   Result := consultarCodigo(FCodigo);
 end;
 
-procedure TProduto.atualizarLog(codigo, status: Integer; resposta: string);
+procedure TCusto.atualizarLog(codigo, status: Integer; resposta: string);
 begin
   FConexao.atualizarLog(codigo, status, resposta);
 end;
 
-function TProduto.cadastrarProduto: TProduto;
+function TCusto.cadastrarCusto: TCusto;
 var
   sql: TStringList;
   codigo: Integer;
 begin
-  codigo := FConexao.ultimoRegistro('ordem_servico_produto', 'CODIGO_PRODUTO');
+  codigo := FConexao.ultimoRegistro('ordem_servico_custo', 'CODIGO_CUSTO');
 
   sql := TStringList.Create;
-  sql.Add('INSERT INTO `ordem_servico_produto` (CODIGO_OS, CODIGO_PRODUTO, DESCRICAO, UNIDADE, QTDE');
-  sql.Add(', VALOR_UNITARIO, DESCONTO, CODIGO_SESSAO_CADASTRO, CODIGO_SESSAO_ALTERACAO) VALUES (');
+  sql.Add('INSERT INTO `ordem_servico_custo` (CODIGO_OS, CODIGO_CUSTO, CODIGO_GRUPO, QTDE');
+  sql.Add(', VALOR_UNITARIO, CODIGO_SESSAO_CADASTRO, CODIGO_SESSAO_ALTERACAO) VALUES (');
   sql.Add(' ' + IntToStrSenaoZero(FOrdemServico.id));                           //CODIGO_OS
-  sql.Add(',' + IntToStrSenaoZero(codigo));                                     //CODIGO_PRODUTO
-  sql.Add(',' + QuotedStr(FDescricao));                                         //DESCRICAO
-  sql.Add(',' + QuotedStr(FUnidade));                                           //UNIDADE
+  sql.Add(',' + IntToStrSenaoZero(codigo));                                     //CODIGO_CUSTO
+  sql.Add(',' + IntToStrSenaoZero(FGrupo.id));                                  //CODIGO_GRUPO
   sql.Add(',' + VirgulaPonto(FQuantidade));                                     //QTDE
   sql.Add(',' + VirgulaPonto(FValorUnitario));                                  //VALOR_UNITARIO
-  sql.Add(',' + VirgulaPonto(FDesconto));                                       //DESCONTO
   sql.Add(',' + IntToStrSenaoZero(FConexao.codigoSessao));                      //CODIGO_SESSAO_CADASTRO
   sql.Add(',' + IntToStrSenaoZero(FConexao.codigoSessao));                      //CODIGO_SESSAO_ALTERACAO
   sql.Add(')');
@@ -264,26 +258,15 @@ begin
   FreeAndNil(sql);
   Result := consultarCodigo(codigo);
 end;
-
-function TProduto.calculaValorDesconto: Double;
-begin
-  Result := (calculaValorTotal / 100) * FDesconto;
-end;
-
-function TProduto.calculaValorFinal: Double;
-begin
-  Result := calculaValorTotal - calculaValorDesconto;
-end;
-
-function TProduto.calculaValorTotal: Double;
+function TCusto.calculaValorTotal: Double;
 begin
   Result := FValorUnitario * FQuantidade;
 end;
 
-function TProduto.consultar: TArray<TProduto>;
+function TCusto.consultar: TArray<TCusto>;
 var
   query: TZQuery;
-  contatos: TArray<TProduto>;
+  contatos: TArray<TCusto>;
   contador: Integer;
   sql: TStringList;
   restante: Integer;
@@ -306,33 +289,34 @@ begin
     end;
 
     sql := TStringList.Create;
-    sql.Add('SELECT ordem_servico_produto.CODIGO_OS, ordem_servico_produto.CODIGO_PRODUTO, ordem_servico_produto.DESCRICAO');
-    sql.Add(', ordem_servico_produto.UNIDADE, ordem_servico_produto.QTDE, ordem_servico_produto.VALOR_UNITARIO');
-    sql.Add(', ordem_servico_produto.DESCONTO, ordem_servico_produto.CODIGO_SESSAO_CADASTRO');
-    sql.Add(', ordem_servico_produto.CODIGO_SESSAO_ALTERACAO, ordem_servico_produto.DATA_CADASTRO');
-    sql.Add(', ordem_servico_produto.DATA_ULTIMA_ALTERACAO, ordem_servico_produto.`STATUS`');
+    sql.Add('SELECT ordem_servico_custo.CODIGO_OS, ordem_servico_custo.CODIGO_CUSTO, grupo.DESCRICAO');
+    sql.Add(', ordem_servico_custo.QTDE, ordem_servico_custo.VALOR_UNITARIO, grupo.SUB_DESCRICAO');
+    sql.Add(', ordem_servico_custo.CODIGO_SESSAO_CADASTRO, ordem_servico_custo.CODIGO_SESSAO_ALTERACAO');
+    sql.Add(', ordem_servico_custo.DATA_CADASTRO, ordem_servico_custo.DATA_ULTIMA_ALTERACAO');
+    sql.Add(', ordem_servico_custo.`STATUS`, ordem_servico_custo.`CODIGO_GRUPO`');
     sql.Add('');
     sql.Add(', (SELECT pessoa.RAZAO_SOCIAL ');
     sql.Add('     FROM pessoa, sessao');
     sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
-    sql.Add('      AND sessao.CODIGO_SESSAO = ordem_servico_produto.CODIGO_SESSAO_CADASTRO) usuarioCadastro');
+    sql.Add('      AND sessao.CODIGO_SESSAO = ordem_servico_custo.CODIGO_SESSAO_CADASTRO) usuarioCadastro');
     sql.Add('');
     sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
     sql.Add('     FROM pessoa, sessao');
     sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
-    sql.Add('      AND sessao.CODIGO_SESSAO = ordem_servico_produto.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
+    sql.Add('      AND sessao.CODIGO_SESSAO = ordem_servico_custo.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
     sql.Add('');
-    sql.Add('  FROM ordem_servico_produto');
-    sql.Add(' WHERE ordem_servico_produto.`STATUS` = ' + QuotedStr(FStatus));
+    sql.Add('  FROM ordem_servico_custo, grupo');
+    sql.Add(' WHERE ordem_servico_custo.`STATUS` = ' + QuotedStr(FStatus));
+    sql.Add('   AND ordem_servico_custo.CODIGO_GRUPO = grupo.CODIGO_GRUPO');
 
     if (FOrdemServico.id > 0) then
     begin
-      sql.Add('   AND ordem_servico_produto.CODIGO_OS = ' + IntToStrSenaoZero(FOrdemServico.id));
+      sql.Add('   AND ordem_servico_custo.CODIGO_OS = ' + IntToStrSenaoZero(FOrdemServico.id));
     end;
 
     if (FCodigo > 0) then
     begin
-      sql.Add('   AND ordem_servico_produto.CODIGO_PRODUTO = ' + IntToStrSenaoZero(FCodigo));
+      sql.Add('   AND ordem_servico_custo.CODIGO_CUSTO = ' + IntToStrSenaoZero(FCodigo));
     end;
 
     sql.Add(' LIMIT ' + IntToStrSenaoZero(FOffset) + ', ' + IntToStrSenaoZero(FLimite));
@@ -354,7 +338,7 @@ begin
 
       while not query.Eof do
       begin
-        contatos[contador] := montarProduto(query);
+        contatos[contador] := montarCusto(query);
         query.Next;
         inc(contador);
       end;
@@ -373,18 +357,19 @@ begin
   end;
 end;
 
-function TProduto.consultarChave: TProduto;
+function TCusto.consultarChave: TCusto;
 var
   query: TZQuery;
-  produtoConsultado: TProduto;
+  itemConsultado: TCusto;
   sql: TStringList;
 begin
-  produtoConsultado := TProduto.Create;
+  itemConsultado := TCusto.Create;
   sql := TStringList.Create;
-  sql.Add('SELECT CODIGO_PRODUTO, DESCRICAO');
-  sql.Add('  FROM ordem_servico_produto');
-  sql.Add(' WHERE CODIGO_PRODUTO = ' + IntToStrSenaoZero(FCodigo));
+  sql.Add('SELECT ordem_servico_custo.CODIGO_CUSTO, grupo.DESCRICAO, grupo.SUB_DESCRICAO');
+  sql.Add('  FROM ordem_servico_custo, grupo');
+  sql.Add(' WHERE CODIGO_CUSTO = ' + IntToStrSenaoZero(FCodigo));
   sql.Add('   AND CODIGO_OS = ' + IntToStrSenaoZero(FOrdemServico.id));
+  sql.Add('   AND ordem_servico_custo.CODIGO_GRUPO = grupo.CODIGO_GRUPO');
   sql.Add(' LIMIT 1');
 
   query := FConexao.executarComandoDQL(sql.Text);
@@ -393,48 +378,50 @@ begin
   or (query = nil)
   or (query.RecordCount = 0) then
   begin
-    produtoConsultado.Destroy;
-    produtoConsultado := nil;
+    itemConsultado.Destroy;
+    itemConsultado := nil;
   end
   else
   begin
     query.First;
     FRegistrosAfetados := FConexao.registrosAfetados;
 
-    produtoConsultado.FCodigo := query.FieldByName('CODIGO_PRODUTO').Value;
-    produtoConsultado.FDescricao := query.FieldByName('DESCRICAO').Value;
+    itemConsultado.FCodigo := query.FieldByName('CODIGO_CUSTO').Value;
+    itemConsultado.FGrupo.descricao := query.FieldByName('DESCRICAO').Value;
+    itemConsultado.FGrupo.subDescricao := query.FieldByName('SUB_DESCRICAO').Value;
   end;
 
-  Result := produtoConsultado;
+  Result := itemConsultado;
 
   FreeAndNil(sql);
 end;
 
-function TProduto.consultarCodigo(codigo: integer): TProduto;
+function TCusto.consultarCodigo(codigo: integer): TCusto;
 var
   query: TZQuery;
   sql: TStringList;
-  produtoConsultado: TProduto;
+  itemConsultado: TCusto;
 begin
   sql := TStringList.Create;
-  sql.Add('SELECT ordem_servico_produto.CODIGO_OS, ordem_servico_produto.CODIGO_PRODUTO, ordem_servico_produto.DESCRICAO');
-  sql.Add(', ordem_servico_produto.UNIDADE, ordem_servico_produto.QTDE, ordem_servico_produto.VALOR_UNITARIO');
-  sql.Add(', ordem_servico_produto.DESCONTO, ordem_servico_produto.CODIGO_SESSAO_CADASTRO');
-  sql.Add(', ordem_servico_produto.CODIGO_SESSAO_ALTERACAO, ordem_servico_produto.DATA_CADASTRO');
-  sql.Add(', ordem_servico_produto.DATA_ULTIMA_ALTERACAO, ordem_servico_produto.`STATUS`');
+  sql.Add('SELECT ordem_servico_custo.CODIGO_OS, ordem_servico_custo.CODIGO_CUSTO, grupo.DESCRICAO');
+  sql.Add(', ordem_servico_custo.QTDE, ordem_servico_custo.VALOR_UNITARIO, grupo.SUB_DESCRICAO');
+  sql.Add(', ordem_servico_custo.CODIGO_SESSAO_CADASTRO, ordem_servico_custo.CODIGO_SESSAO_ALTERACAO');
+  sql.Add(', ordem_servico_custo.DATA_CADASTRO, ordem_servico_custo.DATA_ULTIMA_ALTERACAO');
+  sql.Add(', ordem_servico_custo.`STATUS`, ordem_servico_custo.`CODIGO_GRUPO`');
   sql.Add('');
   sql.Add(', (SELECT pessoa.RAZAO_SOCIAL ');
   sql.Add('     FROM pessoa, sessao');
   sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
-  sql.Add('      AND sessao.CODIGO_SESSAO = ordem_servico_produto.CODIGO_SESSAO_CADASTRO) usuarioCadastro');
+  sql.Add('      AND sessao.CODIGO_SESSAO = ordem_servico_custo.CODIGO_SESSAO_CADASTRO) usuarioCadastro');
   sql.Add('');
   sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
   sql.Add('     FROM pessoa, sessao');
   sql.Add('    WHERE pessoa.CODIGO_PESSOA = sessao.CODIGO_PESSOA');
-  sql.Add('      AND sessao.CODIGO_SESSAO = ordem_servico_produto.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
+  sql.Add('      AND sessao.CODIGO_SESSAO = ordem_servico_custo.CODIGO_SESSAO_ALTERACAO) usuarioAlteracao');
   sql.Add('');
-  sql.Add('  FROM ordem_servico_produto');
-  sql.Add(' WHERE ordem_servico_produto.CODIGO_PRODUTO = ' + IntToStrSenaoZero(codigo));
+  sql.Add('  FROM ordem_servico_custo, grupo');
+  sql.Add(' WHERE ordem_servico_custo.CODIGO_CUSTO = ' + IntToStrSenaoZero(codigo));
+  sql.Add('   AND ordem_servico_custo.CODIGO_GRUPO = grupo.CODIGO_GRUPO');
 
   query := FConexao.executarComandoDQL(sql.Text);
 
@@ -442,37 +429,38 @@ begin
   or (query = nil)
   or (query.RecordCount = 0) then
   begin
-    produtoConsultado := nil;
+    itemConsultado := nil;
   end
   else
   begin
     query.First;
     FRegistrosAfetados := FConexao.registrosAfetados;
-    produtoConsultado := montarProduto(query);
+    itemConsultado := montarCusto(query);
   end;
 
-  Result := produtoConsultado;
+  Result := itemConsultado;
   FreeAndNil(sql);
 end;
 
-function TProduto.contar: integer;
+function TCusto.contar: integer;
 var
   query: TZQuery;
   sql: TStringList;
 begin
   sql := TStringList.Create;
-  sql.Add('SELECT COUNT(CODIGO_PRODUTO) TOTAL');
-  sql.Add('  FROM ordem_servico_produto');
-    sql.Add(' WHERE ordem_servico_produto.`STATUS` = ' + QuotedStr(FStatus));
+  sql.Add('SELECT COUNT(CODIGO_CUSTO) TOTAL');
+  sql.Add('  FROM ordem_servico_custo, grupo');
+  sql.Add(' WHERE ordem_servico_custo.`STATUS` = ' + QuotedStr(FStatus));
+  sql.Add('   AND ordem_servico_custo.CODIGO_GRUPO = grupo.CODIGO_GRUPO');
 
   if (FOrdemServico.id > 0) then
   begin
-    sql.Add('   AND ordem_servico_produto.CODIGO_OS = ' + IntToStrSenaoZero(FOrdemServico.id));
+    sql.Add('   AND ordem_servico_custo.CODIGO_OS = ' + IntToStrSenaoZero(FOrdemServico.id));
   end;
 
   if (FCodigo > 0) then
   begin
-    sql.Add('   AND ordem_servico_produto.CODIGO_PRODUTO = ' + IntToStrSenaoZero(FCodigo));
+    sql.Add('   AND ordem_servico_custo.CODIGO_CUSTO = ' + IntToStrSenaoZero(FCodigo));
   end;
 
   query := FConexao.executarComandoDQL(sql.Text);
@@ -491,9 +479,10 @@ begin
   FreeAndNil(sql);
 end;
 
-constructor TProduto.Create;
+constructor TCusto.Create;
 begin
   FOrdemServico := TOrdemServico.Create;
+  FGrupo := TGrupo.Create;
   FCadastradoPor := TSessao.Create;
   FAlteradoPor := TSessao.Create;
 

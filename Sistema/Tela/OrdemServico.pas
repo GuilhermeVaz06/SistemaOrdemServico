@@ -114,6 +114,12 @@ type
     DBEdit20: TDBEdit;
     DBEdit21: TDBEdit;
     DBEdit22: TDBEdit;
+    TabCusto: TTabSheet;
+    Panel4: TPanel;
+    BCadastrarCusto: TSpeedButton;
+    BExcluirCusto: TSpeedButton;
+    GCusto: TDBGrid;
+    CBInativoCusto: TCheckBox;
     procedure BFecharClick(Sender: TObject);
     procedure BCadastrarClick(Sender: TObject);
     procedure BAlterarClick(Sender: TObject);
@@ -147,6 +153,10 @@ type
     procedure CBInativoProdutoClick(Sender: TObject);
     procedure CBMostrarInativoItemClick(Sender: TObject);
     procedure TabResumoShow(Sender: TObject);
+    procedure CBInativoCustoClick(Sender: TObject);
+    procedure GCustoDblClick(Sender: TObject);
+    procedure BCadastrarCustoClick(Sender: TObject);
+    procedure BExcluirCustoClick(Sender: TObject);
   private
     { Private declarations }
     function validarCampos: boolean;
@@ -162,7 +172,7 @@ var
 implementation
 
 uses UFuncao, DMOrdemServico, DMPessoa, SelecaoEnderecoCliente,
-     OrdemServicoProduto, OrdemServicoItem;
+     OrdemServicoProduto, OrdemServicoItem, OrdemServicoCusto;
 
 {$R *.dfm}
 
@@ -192,6 +202,28 @@ begin
   begin
     DBLEmpresa.KeyValue := FDMOrdemServico.QEmpresacodigo.Value;
     FDMOrdemServico.TOrdemServicoempresaCodigo.Value := FDMOrdemServico.QEmpresacodigo.Value;
+  end;
+end;
+
+procedure TFOrdemServico.BCadastrarCustoClick(Sender: TObject);
+begin
+  if not (FDMOrdemServico.TOrdemServicocodigo.Value > 0) and (confirmarCadastro(False) = False) then
+  begin
+    Exit;
+  end;
+
+  try
+    Application.CreateForm(TFOrdemServicoCusto, FOrdemServicoCusto);
+
+    with FDMOrdemServico do
+    begin
+      TCusto.Append;
+      TCustoordem.Value := TOrdemServicocodigo.Value;
+    end;
+
+    FOrdemServicoCusto.ShowModal;
+  finally
+    FreeAndNil(FOrdemServicoCusto);
   end;
 end;
 
@@ -250,7 +282,8 @@ begin
   if (FDMOrdemServico.TOrdemServico.State = dsInsert) and
      (FDMOrdemServico.TOrdemServicocodigo.Value > 0) and
      ((FDMOrdemServico.TItem.RecordCount <= 0) and
-      (FDMOrdemServico.TProduto.RecordCount <= 0)) and
+      (FDMOrdemServico.TProduto.RecordCount <= 0) and
+      (FDMOrdemServico.TCusto.RecordCount <= 0)) and
      (FDMOrdemServico.excluirOrdem = False) then
   begin
     informar('Erro ao cancelar cadastro, contate o suporte!');
@@ -274,6 +307,29 @@ begin
     FDMOrdemServico.consultarDados(0);
   finally
     BConsultar.Enabled := True;
+  end;
+end;
+
+procedure TFOrdemServico.BExcluirCustoClick(Sender: TObject);
+var
+  codigo: integer;
+begin
+  with FDMOrdemServico do
+  begin
+    if not (TCusto.RecordCount > 0) then
+    begin
+      informar('Nenhum registro selecionado!');
+    end
+    else if (confirmar('Realmente deseja inativar o custo: ' + TCustodescricao.Value + '?')) then
+    begin
+      codigo := TCustocodigo.Value;
+
+      if (inativarCusto) then
+      begin
+        consultarDadosCusto(0, True);
+        TCusto.Locate('codigo', codigo, [loCaseInsensitive]);
+      end;
+    end;
   end;
 end;
 
@@ -331,6 +387,11 @@ begin
       end;
     end;
   end;
+end;
+
+procedure TFOrdemServico.CBInativoCustoClick(Sender: TObject);
+begin
+  FDMOrdemServico.consultarDadosCusto(0, False);
 end;
 
 procedure TFOrdemServico.CBInativoProdutoClick(Sender: TObject);
@@ -464,6 +525,22 @@ begin
   else
   begin
     informar('Esse cliente não possui nenhum endereço cadastrado, va ate o cadastro do cliente e insirá um endereço!');
+  end;
+end;
+
+procedure TFOrdemServico.GCustoDblClick(Sender: TObject);
+begin
+  if (FDMOrdemServico.TCusto.RecordCount > 0) then
+  try
+    Application.CreateForm(TFOrdemServicoCusto, FOrdemServicoCusto);
+    FDMOrdemServico.TCusto.Edit;
+    FOrdemServicoCusto.ShowModal;
+  finally
+    FreeAndNil(FOrdemServicoCusto);
+  end
+  else
+  begin
+    informar('Nenhum registro selecionado!');
   end;
 end;
 
@@ -655,6 +732,7 @@ begin
       begin
         consultarDadosItem(0, False);
         consultarDadosProduto(0, False);
+        consultarDadosCusto(0, False);
       end;
     end;
   end;
