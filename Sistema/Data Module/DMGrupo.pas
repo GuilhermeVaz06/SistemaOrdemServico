@@ -18,6 +18,8 @@ type
     TGrupodataAlteracao: TStringField;
     TGrupostatus: TStringField;
     TGrupodescricao: TStringField;
+    TGruposubDescricao: TStringField;
+    TGrupovalor: TFloatField;
   private
 
   public
@@ -46,6 +48,8 @@ begin
   Conexao.metodo := rmPOST;
   Conexao.url := 'grupo';
   Conexao.AtribuirBody('descricao', TGrupodescricao.Value);
+  Conexao.AtribuirBody('subDescricao', TGruposubDescricao.Value);
+  Conexao.AtribuirBody('valor', VirgulaPonto(TGrupovalor.Value));
   Conexao.Enviar;
 
   if not (Conexao.status in[200..202]) then
@@ -87,6 +91,8 @@ begin
   Conexao.metodo := rmPUT;
   Conexao.url := 'grupo/' + IntToStrSenaoZero(TGrupocodigo.Value);
   Conexao.AtribuirBody('descricao', TGrupodescricao.Value);
+  Conexao.AtribuirBody('subDescricao', TGruposubDescricao.Value);
+  Conexao.AtribuirBody('valor', VirgulaPonto(TGrupovalor.Value));
   Conexao.AtribuirBody('status', TGrupostatus.Value);
   Conexao.Enviar;
 
@@ -134,6 +140,11 @@ begin
     if (FGrupo.ELocalizarDescricao.Text <> '') then
     begin
       Conexao.AtribuirParametro('descricao', FGrupo.ELocalizarDescricao.Text);
+    end;
+
+    if (FGrupo.ESubDescricao.Text <> '') then
+    begin
+      Conexao.AtribuirParametro('subDescricao', FGrupo.ESubDescricao.Text);
     end;
 
     if FGrupo.CBMostrarInativo.Checked then

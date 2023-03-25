@@ -199,6 +199,14 @@
             <Form>FSelecaoEnderecoCliente</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="..\Tela\OrdemServicoItem.pas">
+            <Form>FOrdemServicoItem</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="..\Tela\OrdemServicoProduto.pas">
+            <Form>FOrdemServicoProduto</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

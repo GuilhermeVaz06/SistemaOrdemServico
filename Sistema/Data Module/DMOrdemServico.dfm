@@ -48,6 +48,7 @@ object FDMOrdemServico: TFDMOrdemServico
     end
     object TOrdemServicoenderecoCEP: TStringField
       FieldName = 'enderecoCEP'
+      EditMask = '99999-999;0;'
       Size = 10
     end
     object TOrdemServicoenderecoLongradouro: TStringField
@@ -120,9 +121,6 @@ object FDMOrdemServico: TFDMOrdemServico
       FieldName = 'dataOrdemServico'
       Size = 10
     end
-    object TOrdemServicodesconto: TFloatField
-      FieldName = 'desconto'
-    end
     object TOrdemServicodataAlteracao: TStringField
       FieldName = 'dataAlteracao'
     end
@@ -140,6 +138,42 @@ object FDMOrdemServico: TFDMOrdemServico
     object TOrdemServicostatus: TStringField
       FieldName = 'status'
       Size = 1
+    end
+    object TOrdemServicovalorTotalItem: TFloatField
+      FieldName = 'valorTotalItem'
+      currency = True
+    end
+    object TOrdemServicovalorDescontoItem: TFloatField
+      FieldName = 'valorDescontoItem'
+      currency = True
+    end
+    object TOrdemServicovalorFinalItem: TFloatField
+      FieldName = 'valorFinalItem'
+      currency = True
+    end
+    object TOrdemServicovalorTotalProduto: TFloatField
+      FieldName = 'valorTotalProduto'
+      currency = True
+    end
+    object TOrdemServicovalorDescontoProduto: TFloatField
+      FieldName = 'valorDescontoProduto'
+      currency = True
+    end
+    object TOrdemServicovalorFinalProduto: TFloatField
+      FieldName = 'valorFinalProduto'
+      currency = True
+    end
+    object TOrdemServicovalorFinal: TFloatField
+      FieldName = 'valorFinal'
+      currency = True
+    end
+    object TOrdemServicovalorDescontoTotal: TFloatField
+      FieldName = 'valorDescontoTotal'
+      currency = True
+    end
+    object TOrdemServicovalorTotal: TFloatField
+      FieldName = 'valorTotal'
+      currency = True
     end
   end
   object DEmpresa: TDataSource
@@ -184,8 +218,8 @@ object FDMOrdemServico: TFDMOrdemServico
     UpdateOptions.CheckRequired = False
     UpdateOptions.AutoCommitUpdates = True
     StoreDefs = True
-    Left = 241
-    Top = 13
+    Left = 244
+    Top = 17
     object QTipoFretedescricao: TStringField
       FieldName = 'descricao'
       Size = 150
@@ -305,6 +339,175 @@ object FDMOrdemServico: TFDMOrdemServico
     object QEnderecostatus: TStringField
       FieldName = 'status'
       Size = 1
+    end
+  end
+  object DItem: TDataSource
+    DataSet = TItem
+    Left = 59
+    Top = 178
+  end
+  object TItem: TFDMemTable
+    FieldDefs = <>
+    IndexDefs = <>
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired, uvAutoCommitUpdates]
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.AutoCommitUpdates = True
+    StoreDefs = True
+    Left = 58
+    Top = 128
+    object TItemcodigo: TIntegerField
+      FieldName = 'codigo'
+    end
+    object TItemordem: TIntegerField
+      FieldName = 'ordem'
+    end
+    object TItemdescricao: TStringField
+      FieldName = 'descricao'
+      Size = 250
+    end
+    object TItemquantidade: TFloatField
+      FieldName = 'quantidade'
+      DisplayFormat = '###,###,###,##0.00'
+    end
+    object TItemvalorUnitario: TFloatField
+      FieldName = 'valorUnitario'
+      currency = True
+    end
+    object TItemvalorTotal: TFloatField
+      FieldName = 'valorTotal'
+      currency = True
+    end
+    object TItemdesconto: TFloatField
+      FieldName = 'desconto'
+      DisplayFormat = '###,###,###,##0.00 %'
+    end
+    object TItemvalorDesconto: TFloatField
+      FieldName = 'valorDesconto'
+      currency = True
+    end
+    object TItemvalorFinal: TFloatField
+      FieldName = 'valorFinal'
+      currency = True
+    end
+    object TItemcadastradoPor: TStringField
+      FieldName = 'cadastradoPor'
+      Size = 150
+    end
+    object TItemalteradoPor: TStringField
+      FieldName = 'alteradoPor'
+      Size = 150
+    end
+    object TItemdataCadastro: TStringField
+      FieldName = 'dataCadastro'
+    end
+    object TItemdataAlteracao: TStringField
+      FieldName = 'dataAlteracao'
+    end
+    object TItemstatus: TStringField
+      FieldName = 'status'
+      Size = 1
+    end
+  end
+  object DProduto: TDataSource
+    DataSet = TProduto
+    Left = 163
+    Top = 175
+  end
+  object TProduto: TFDMemTable
+    FieldDefs = <>
+    IndexDefs = <>
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired, uvAutoCommitUpdates]
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.AutoCommitUpdates = True
+    StoreDefs = True
+    Left = 163
+    Top = 125
+    object TProdutocodigo: TIntegerField
+      FieldName = 'codigo'
+    end
+    object TProdutoordem: TIntegerField
+      FieldName = 'ordem'
+    end
+    object TProdutodescricao: TStringField
+      FieldName = 'descricao'
+      Size = 250
+    end
+    object TProdutounidade: TStringField
+      FieldName = 'unidade'
+      Size = 10
+    end
+    object TProdutoquantidade: TFloatField
+      FieldName = 'quantidade'
+      DisplayFormat = '###,###,###,##0.00'
+    end
+    object TProdutovalorUnitario: TFloatField
+      FieldName = 'valorUnitario'
+      currency = True
+    end
+    object TProdutovalorTotal: TFloatField
+      FieldName = 'valorTotal'
+      currency = True
+    end
+    object TProdutodesconto: TFloatField
+      FieldName = 'desconto'
+      DisplayFormat = '###,###,###,##0.00 %'
+    end
+    object TProdutovalorDesconto: TFloatField
+      FieldName = 'valorDesconto'
+      currency = True
+    end
+    object TProdutovalorFinal: TFloatField
+      FieldName = 'valorFinal'
+      currency = True
+    end
+    object TProdutocadastradoPor: TStringField
+      FieldName = 'cadastradoPor'
+      Size = 150
+    end
+    object TProdutoalteradoPor: TStringField
+      FieldName = 'alteradoPor'
+      Size = 150
+    end
+    object TProdutodataCadastro: TStringField
+      FieldName = 'dataCadastro'
+    end
+    object TProdutodataAlteracao: TStringField
+      FieldName = 'dataAlteracao'
+    end
+    object TProdutostatus: TStringField
+      FieldName = 'status'
+      Size = 1
+    end
+  end
+  object DUnidade: TDataSource
+    DataSet = QUnidade
+    Left = 245
+    Top = 177
+  end
+  object QUnidade: TFDMemTable
+    FieldDefs = <>
+    IndexDefs = <>
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired, uvAutoCommitUpdates]
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.AutoCommitUpdates = True
+    StoreDefs = True
+    Left = 244
+    Top = 125
+    object QUnidadedescricao: TStringField
+      FieldName = 'descricao'
+      Size = 50
     end
   end
 end

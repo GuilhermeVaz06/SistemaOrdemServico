@@ -48,7 +48,15 @@ begin
   resposta.AddPair('observacao', ordemServicoItem.observacao);
   resposta.AddPair('dataPrazoEntrega', DateToStr(ordemServicoItem.dataEntrega));
   resposta.AddPair('dataOrdemServico', DateToStr(ordemServicoItem.dataOrdem));
-  resposta.AddPair('desconto', TJSONNumber.Create(ordemServicoItem.desconto));
+  resposta.AddPair('valorTotalItem', TJSONNumber.Create(ordemServicoItem.valorTotalItem));
+  resposta.AddPair('valorDescontoItem', TJSONNumber.Create(ordemServicoItem.valorDescontoItem));
+  resposta.AddPair('valorFinalItem', TJSONNumber.Create(ordemServicoItem.valorFinalItem));
+  resposta.AddPair('valorTotalProduto', TJSONNumber.Create(ordemServicoItem.valorTotalProduto));
+  resposta.AddPair('valorDescontoProduto', TJSONNumber.Create(ordemServicoItem.valorDescontoProduto));
+  resposta.AddPair('valorFinalProduto', TJSONNumber.Create(ordemServicoItem.valorFinalProduto));
+  resposta.AddPair('valorTotal', TJSONNumber.Create(ordemServicoItem.valorTotal));
+  resposta.AddPair('valorDescontoTotal', TJSONNumber.Create(ordemServicoItem.valorTotalDesconto));
+  resposta.AddPair('valorFinal', TJSONNumber.Create(ordemServicoItem.valorFinal));
   resposta.AddPair('cadastradoPor',ordemServicoItem.cadastradoPor.usuario);
   resposta.AddPair('alteradoPor',ordemServicoItem.alteradoPor.usuario);
   resposta.AddPair('dataCadastro',DateTimeToStr(ordemServicoItem.dataCadastro));
@@ -293,7 +301,6 @@ begin
     ordemServico.observacao := body.GetValue<string>('observacao', '');
     ordemServico.dataEntrega := StrToDate(body.GetValue<string>('dataEntrega', ''));
     ordemServico.dataOrdem := StrToDate(body.GetValue<string>('dataOrdem', ''));
-    ordemServico.desconto:= body.GetValue<Double>('desconto', 0);
     ordemServico.situacao := 'ORÇAMENTO';
     ordemServico.id := 0;
   except
@@ -504,7 +511,6 @@ begin
     ordemServico.observacao := body.GetValue<string>('observacao', '');
     ordemServico.dataEntrega := StrToDate(body.GetValue<string>('dataEntrega', ''));
     ordemServico.dataOrdem := StrToDate(body.GetValue<string>('dataOrdem', ''));
-    ordemServico.desconto:= body.GetValue<Double>('desconto', 0);
     ordemServico.status := body.GetValue<string>('status', 'A');
     ordemServico.id := strToIntZero(Req.Params['id']);
   except
@@ -691,12 +697,110 @@ begin
   FreeAndNil(resposta);
 end;
 
+procedure excluirOrdem(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+var
+  erros: TStringList;
+  resposta: TJSONObject;
+  arrayResposta: TJSONArray;
+  ordemConsultado: TOrdemServico;
+  i: integer;
+  resultado: Boolean;
+  mensagem: string;
+  codigoLog: integer;
+begin
+  continuar := True;
+  resposta := TJSONObject.Create;
+  codigoLog := gerarLogOrdemServico(Req, Res, 'excluirOrdem', resposta);
+
+  if (continuar) then
+  try
+    token := Req.Headers['token'];
+    ordemServico.id := strToIntZero(Req.Params['id']);
+  except
+    on E: Exception do
+    begin
+      mensagem := 'Erro ao recuperar dados da requisição: ' + e.Message + '!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(JsonErro('ORDEMSERVICO015', mensagem))));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+      continuar := False;
+    end;
+  end;
+
+  if (continuar) and (verificarToken(res, resposta)) then
+  try
+    erros := TStringList.Create;
+    arrayResposta := TJSONArray.Create;
+
+    if not (ordemServico.id > 0) then
+    begin
+      erros.Add('O Codigo da ordem deve ser informado, ou deve ser um numero inteiro valido!');
+    end;
+
+    if (erros.Text = '') then
+    begin
+      ordemConsultado := ordemServico.consultarChave();
+
+      if not (Assigned(ordemConsultado)) then
+      begin
+        erros.Add('Nenhum ordem de serviço encontrado com o codigo [' + IntToStrSenaoZero(ordemServico.id) + ']!');
+      end
+      else
+      begin
+        ordemConsultado.Destroy;
+      end;
+    end;
+
+    if (erros.Text <> '') then
+    begin
+      for i := 0 to erros.Count - 1 do
+      begin
+        arrayResposta.Add(UFuncao.JsonErro('ORDEMSERVICO016',  erros[i]));
+      end;
+
+      resposta.AddPair(TJSONPair.Create('Erros', arrayResposta));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+    end
+    else
+    begin
+      FreeAndNil(arrayResposta);
+      resultado := ordemServico.excluirCadastro;
+
+      if (resultado) then
+      begin
+        resposta.AddPair('tipo', 'Exclusão de Ordem de Serviço');
+        resposta.AddPair('registrosAfetados', TJSONNumber.Create(ordemServico.registrosAfetados));
+        Res.Send<TJSONAncestor>(resposta.Clone).Status(200);
+      end
+      else
+      begin
+        mensagem := 'Não foi possivel excluir a ordem de serviço, pois o mesmo está sendo usado em outro registro!';
+        resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('ORDEMSERVICO017', mensagem))));
+        Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
+      end;
+    end;
+
+    FreeAndNil(erros);
+  except
+    on E: Exception do
+    begin
+      mensagem := 'Erro não tratado ao excluir a ordem de serviço!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('ORDEMSERVICO017', mensagem))));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
+    end;
+  end;
+
+  ordemServico.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
+  limparVariaveis;
+  FreeAndNil(resposta);
+end;
+
 procedure Registry;
 begin
   criarConexao;
   THorse.Get('/ordemServico', buscarOrdensServico);
   THorse.Post('/ordemServico', cadastrarOrdemServico);
   THorse.Put('/ordemServico/:id', alterarOrdemServico);
+  THorse.Delete('/ordemServicoExcluir/:id', excluirOrdem);
 end;
 
 end.

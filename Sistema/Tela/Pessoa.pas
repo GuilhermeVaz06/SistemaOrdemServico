@@ -269,6 +269,10 @@ begin
   CBInativoEndereco.Checked := False;
   CBInativoOutroDocumento.Checked := False;
 
+  CBInativoOutroDocumentoClick(nil);
+  CBInativoEnderecoClick(nil);
+  CBInativoContatoClick(nil);
+
   if (FDMPessoa.TPessoa.State = dsInsert) and
      (FDMPessoa.TPessoacodigo.Value > 0) and
      ((FDMPessoa.TOutroDocumento.RecordCount <= 0) and

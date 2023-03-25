@@ -45,5 +45,13 @@ object FDMGrupo: TFDMGrupo
     object TGrupodataAlteracao: TStringField
       FieldName = 'dataAlteracao'
     end
+    object TGruposubDescricao: TStringField
+      FieldName = 'subDescricao'
+      Size = 150
+    end
+    object TGrupovalor: TFloatField
+      FieldName = 'valor'
+      currency = True
+    end
   end
 end

@@ -22,7 +22,10 @@ type TOrdemServico = class
     FDataEntregafinal: TDate;
     FDataOrdem: Tdate;
     FDataOrdemFinal: Tdate;
-    FDesconto: Double;
+    FValorTotalItem: Double;
+    FValorDescontoItem: Double;
+    FValorTotalProduto: Double;
+    FValorDescontoProduto: Double;
     FCadastradoPor: TSessao;
     FAlteradoPor: TSessao;
     FDataCadastro: TDateTime;
@@ -33,6 +36,11 @@ type TOrdemServico = class
     FRegistrosAfetados: Integer;
     FMaisRegistro: Boolean;
 
+    function calculaValorFinalItem: Double;
+    function calculaValorFinalProduto: Double;
+    function calculaValorTotal: Double;
+    function calculaValorDescontoTotal: Double;
+    function calculaValorFinal: Double;
     function contar: integer;
     function montarOrdemServico(query: TZQuery): TOrdemServico;
     function consultarCodigo(codigo: integer): TOrdemServico;
@@ -55,7 +63,15 @@ type TOrdemServico = class
     property dataEntregaFinal: TDate read FDataEntregaFinal write FDataEntregaFinal;
     property dataOrdem: TDate read FDataOrdem write FDataOrdem;
     property dataOrdemFinal: TDate read FDataOrdemFinal write FDataOrdemFinal;
-    property desconto: Double read FDesconto write FDesconto;
+    property valorTotalItem: Double read FValorTotalItem;
+    property valorDescontoItem: Double read FValorDescontoItem;
+    property valorFinalItem: Double read calculaValorFinalItem;
+    property valorTotalProduto: Double read FValorTotalProduto;
+    property valorDescontoProduto: Double read FValorDescontoProduto;
+    property valorFinalProduto: Double read calculaValorFinalProduto;
+    property valorTotal: Double read calculaValorTotal;
+    property valorTotalDesconto: Double read calculaValorDescontoTotal;
+    property valorFinal: Double read calculaValorFinal;
     property cadastradoPor: TSessao read FCadastradoPor write FCadastradoPor;
     property alteradoPor: TSessao read FAlteradoPor write FAlteradoPor;
     property dataCadastro: TDateTime read FDataCadastro write FDataCadastro;
@@ -76,6 +92,7 @@ type TOrdemServico = class
     function inativarOrdemServico: TOrdemServico;
     function verificarToken(token: string): Boolean;
     function GerarLog(classe, procedimento, requisicao: string): integer;
+    function excluirCadastro: Boolean;
 end;
 
 implementation
@@ -100,7 +117,6 @@ begin
   sql.Add('     , `OBSERVACAO` = ' + QuotedStr(FObservacao));
   sql.Add('     , `DATA_PRAZO_ENTREGA` = ' + DataBD(FDataEntrega));
   sql.Add('     , `DATA_OS` = ' + DataBD(FDataOrdem));
-  sql.Add('     , `DESCONTO` = ' + VirgulaPonto(FDesconto));
   sql.Add('     , `STATUS` = ' + QuotedStr(FStatus));
   sql.Add('     , CODIGO_SESSAO_ALTERACAO = ' + IntToStrSenaoZero(FConexao.codigoSessao));
   sql.Add(' WHERE CODIGO_OS = ' + IntToStrSenaoZero(FCodigo));
@@ -126,7 +142,7 @@ begin
   sql.Add('INSERT INTO `ordem_servico` (`CODIGO_OS`, `CODIGO_EMPRESA`, `CODIGO_CLIENTE`, `CODIGO_ENDERECO`');
   sql.Add(', `CODIGO_TRANSPORTADORA`, `FINALIDADE`, `TIPO_FRETE`, `DETALHAMENTO`, `OBSERVACAO`');
   sql.Add(', `DATA_PRAZO_ENTREGA`, `DATA_OS`, `SITUACAO`');
-  sql.Add(', `DESCONTO`, `CODIGO_SESSAO_CADASTRO`, `CODIGO_SESSAO_ALTERACAO`) VALUES (');
+  sql.Add(', `CODIGO_SESSAO_CADASTRO`, `CODIGO_SESSAO_ALTERACAO`) VALUES (');
   sql.Add(' ' + IntToStrSenaoZero(codigo));                                     //CODIGO_OS
   sql.Add(',' + IntToStrSenaoZero(FEmpresa.id));                                //CODIGO_EMPRESA
   sql.Add(',' + IntToStrSenaoZero(Fcliente.id));                                //CODIGO_CLIENTE
@@ -139,7 +155,6 @@ begin
   sql.Add(',' + DataBD(FDataEntrega));                                          //DATA_PRAZO_ENTREGA
   sql.Add(',' + DataBD(FDataOrdem));                                            //DATA_OS
   sql.Add(',' + QuotedStr(FSituacao));                                          //SITUACAO
-  sql.Add(',' + VirgulaPonto(FDesconto));                                       //DESCONTO
   sql.Add(',' + IntToStrSenaoZero(FConexao.codigoSessao));                      //CODIGO_SESSAO_CADASTRO
   sql.Add(',' + IntToStrSenaoZero(FConexao.codigoSessao));                      //CODIGO_SESSAO_ALTERACAO
   sql.Add(')');
@@ -147,6 +162,31 @@ begin
   FConexao.executarComandoDML(sql.Text);
   FreeAndNil(sql);
   Result := consultarCodigo(codigo);
+end;
+
+function TOrdemServico.calculaValorDescontoTotal: Double;
+begin
+  Result := FValorDescontoItem + FValorDescontoProduto;
+end;
+
+function TOrdemServico.calculaValorFinal: Double;
+begin
+  Result := calculaValorTotal - calculaValorDescontoTotal;
+end;
+
+function TOrdemServico.calculaValorFinalItem: Double;
+begin
+  Result := FValorTotalItem - FValorDescontoItem;
+end;
+
+function TOrdemServico.calculaValorFinalProduto: Double;
+begin
+  Result := FValorTotalProduto - FValorDescontoProduto;
+end;
+
+function TOrdemServico.calculaValorTotal: Double;
+begin
+  Result := FValorTotalItem + FValorTotalProduto;
 end;
 
 function TOrdemServico.consultar: TArray<TOrdemServico>;
@@ -178,10 +218,28 @@ begin
     sql.Add('SELECT ordem_servico.CODIGO_OS, ordem_servico.CODIGO_EMPRESA, ordem_servico.CODIGO_CLIENTE');
     sql.Add(', ordem_servico.CODIGO_ENDERECO, ordem_servico.CODIGO_TRANSPORTADORA, ordem_servico.FINALIDADE');
     sql.Add(', ordem_servico.TIPO_FRETE, ordem_servico.DETALHAMENTO, ordem_servico.OBSERVACAO');
-    sql.Add(', ordem_servico.DATA_PRAZO_ENTREGA, ordem_servico.DATA_OS, ordem_servico.DESCONTO');
+    sql.Add(', ordem_servico.DATA_PRAZO_ENTREGA, ordem_servico.DATA_OS');
     sql.Add(', ordem_servico.CODIGO_SESSAO_CADASTRO, ordem_servico.CODIGO_SESSAO_ALTERACAO');
     sql.Add(', ordem_servico.DATA_CADASTRO, ordem_servico.DATA_ULTIMA_ALTERACAO, ordem_servico.`STATUS`');
     sql.Add(', ordem_servico.SITUACAO');
+    sql.Add('');
+    sql.Add(', (SELECT IFNULL(SUM(IFNULL((ordem_servico_item.VALOR_UNITARIO * ordem_servico_item.QTDE),0)),0)');
+    sql.Add('     FROM ordem_servico_item');
+    sql.Add('    WHERE ordem_servico_item.CODIGO_OS = ordem_servico.CODIGO_OS) valorTotalItem');
+    sql.Add('');
+    sql.Add(', (SELECT IFNULL(SUM(IFNULL(((ordem_servico_item.VALOR_UNITARIO * ordem_servico_item.QTDE) / 100) *');
+    sql.Add('                              ordem_servico_item.DESCONTO,0)),0)');
+    sql.Add('     FROM ordem_servico_item');
+    sql.Add('    WHERE ordem_servico_item.CODIGO_OS = ordem_servico.CODIGO_OS) valorDescontoItem');
+    sql.Add('');
+    sql.Add(', (SELECT IFNULL(SUM(IFNULL((ordem_servico_produto.VALOR_UNITARIO * ordem_servico_produto.QTDE),0)),0)');
+    sql.Add('     FROM ordem_servico_produto');
+    sql.Add('    WHERE ordem_servico_produto.CODIGO_OS = ordem_servico.CODIGO_OS) valorTotalProduto');
+    sql.Add('');
+    sql.Add(', (SELECT IFNULL(SUM(IFNULL(((ordem_servico_produto.VALOR_UNITARIO * ordem_servico_produto.QTDE) / 100) *');
+    sql.Add('                              ordem_servico_produto.DESCONTO,0)),0)');
+    sql.Add('     FROM ordem_servico_produto');
+    sql.Add('    WHERE ordem_servico_produto.CODIGO_OS = ordem_servico.CODIGO_OS) valorDescontoProduto');
     sql.Add('');
     sql.Add(', (SELECT pessoa_endereco.CEP');
     sql.Add('     FROM pessoa_endereco, pessoa');
@@ -421,10 +479,28 @@ begin
   sql.Add('SELECT ordem_servico.CODIGO_OS, ordem_servico.CODIGO_EMPRESA, ordem_servico.CODIGO_CLIENTE');
   sql.Add(', ordem_servico.CODIGO_ENDERECO, ordem_servico.CODIGO_TRANSPORTADORA, ordem_servico.FINALIDADE');
   sql.Add(', ordem_servico.TIPO_FRETE, ordem_servico.DETALHAMENTO, ordem_servico.OBSERVACAO');
-  sql.Add(', ordem_servico.DATA_PRAZO_ENTREGA, ordem_servico.DATA_OS, ordem_servico.DESCONTO');
+  sql.Add(', ordem_servico.DATA_PRAZO_ENTREGA, ordem_servico.DATA_OS');
   sql.Add(', ordem_servico.CODIGO_SESSAO_CADASTRO, ordem_servico.CODIGO_SESSAO_ALTERACAO');
   sql.Add(', ordem_servico.DATA_CADASTRO, ordem_servico.DATA_ULTIMA_ALTERACAO, ordem_servico.`STATUS`');
   sql.Add(', ordem_servico.SITUACAO');
+  sql.Add('');
+  sql.Add(', (SELECT IFNULL(SUM(IFNULL((ordem_servico_item.VALOR_UNITARIO * ordem_servico_item.QTDE),0)),0)');
+    sql.Add('     FROM ordem_servico_item');
+    sql.Add('    WHERE ordem_servico_item.CODIGO_OS = ordem_servico.CODIGO_OS) valorTotalItem');
+    sql.Add('');
+    sql.Add(', (SELECT IFNULL(SUM(IFNULL(((ordem_servico_item.VALOR_UNITARIO * ordem_servico_item.QTDE) / 100) *');
+    sql.Add('                              ordem_servico_item.DESCONTO,0)),0)');
+    sql.Add('     FROM ordem_servico_item');
+    sql.Add('    WHERE ordem_servico_item.CODIGO_OS = ordem_servico.CODIGO_OS) valorDescontoItem');
+    sql.Add('');
+    sql.Add(', (SELECT IFNULL(SUM(IFNULL((ordem_servico_produto.VALOR_UNITARIO * ordem_servico_produto.QTDE),0)),0)');
+    sql.Add('     FROM ordem_servico_produto');
+    sql.Add('    WHERE ordem_servico_produto.CODIGO_OS = ordem_servico.CODIGO_OS) valorTotalProduto');
+    sql.Add('');
+    sql.Add(', (SELECT IFNULL(SUM(IFNULL(((ordem_servico_produto.VALOR_UNITARIO * ordem_servico_produto.QTDE) / 100) *');
+    sql.Add('                              ordem_servico_produto.DESCONTO,0)),0)');
+    sql.Add('     FROM ordem_servico_produto');
+    sql.Add('    WHERE ordem_servico_produto.CODIGO_OS = ordem_servico.CODIGO_OS) valorDescontoProduto');
   sql.Add('');
   sql.Add(', (SELECT pessoa_endereco.CEP');
   sql.Add('     FROM pessoa_endereco, pessoa');
@@ -548,66 +624,66 @@ begin
   sql.Add(' WHERE ordem_servico.`STATUS` = ' + QuotedStr(FStatus));
 
   if  (FCodigo > 0) then
-  begin
-    sql.Add('   AND ordem_servico.CODIGO_OS = ' + IntToStrSenaoZero(FCodigo));
-  end;
+    begin
+      sql.Add('   AND ordem_servico.CODIGO_OS = ' + IntToStrSenaoZero(FCodigo));
+    end;
 
-  if (FFinalidade <> '') then
-  begin
-    sql.Add('   AND ordem_servico.FINALIDADE LIKE ' + QuotedStr('%' + FFinalidade + '%'));
-  end;
+    if (FFinalidade <> '') then
+    begin
+      sql.Add('   AND ordem_servico.FINALIDADE LIKE ' + QuotedStr('%' + FFinalidade + '%'));
+    end;
 
-  if (FFinalidade <> '') then
-  begin
-    sql.Add('   AND ordem_servico.SITUACAO IN(' + QuotedStr(FFinalidade) + ')');
-  end;
+    if (FSituacao <> '') then
+    begin
+      sql.Add('   AND ordem_servico.SITUACAO = ' + QuotedStr(FSituacao));
+    end;
 
-  if (FEmpresa.id > 0) then
-  begin
-    sql.Add('   AND ordem_servico.CODIGO_EMPRESA = ' + IntToStrSenaoZero(FEmpresa.id));
-  end;
+    if (FEmpresa.id > 0) then
+    begin
+      sql.Add('   AND ordem_servico.CODIGO_EMPRESA = ' + IntToStrSenaoZero(FEmpresa.id));
+    end;
 
-  if (FCLiente.id > 0) then
-  begin
-    sql.Add('   AND ordem_servico.CODIGO_CLIENTE = ' + IntToStrSenaoZero(FCLiente.id));
-  end;
+    if (FCLiente.id > 0) then
+    begin
+      sql.Add('   AND ordem_servico.CODIGO_CLIENTE = ' + IntToStrSenaoZero(FCLiente.id));
+    end;
 
-  if (FEndereco.id > 0) then
-  begin
-    sql.Add('   AND ordem_servico.CODIGO_ENDERECO = ' + IntToStrSenaoZero(FEndereco.id));
-  end;
+    if (FEndereco.id > 0) then
+    begin
+      sql.Add('   AND ordem_servico.CODIGO_ENDERECO = ' + IntToStrSenaoZero(FEndereco.id));
+    end;
 
-  if (FTransportador.id > 0) then
-  begin
-    sql.Add('   AND ordem_servico.CODIGO_TRANSPORTADORA = ' + IntToStrSenaoZero(FTransportador.id));
-  end;
+    if (FTransportador.id > 0) then
+    begin
+      sql.Add('   AND ordem_servico.CODIGO_TRANSPORTADORA = ' + IntToStrSenaoZero(FTransportador.id));
+    end;
 
-  if (FTipoFrete <> '') then
-  begin
-    sql.Add('   AND ordem_servico.TIPO_FRETE LIKE ' + QuotedStr('%' + FTipoFrete + '%'));
-  end;
+    if (FTipoFrete <> '') then
+    begin
+      sql.Add('   AND ordem_servico.TIPO_FRETE LIKE ' + QuotedStr('%' + FTipoFrete + '%'));
+    end;
 
-  if (FDetalhamento <> '') then
-  begin
-    sql.Add('   AND ordem_servico.DETALHAMENTO LIKE ' + QuotedStr('%' + FDetalhamento + '%'));
-  end;
+    if (FDetalhamento <> '') then
+    begin
+      sql.Add('   AND ordem_servico.DETALHAMENTO LIKE ' + QuotedStr('%' + FDetalhamento + '%'));
+    end;
 
-  if (FObservacao <> '') then
-  begin
-    sql.Add('   AND ordem_servico.OBSERVACAO LIKE ' + QuotedStr('%' + FObservacao + '%'));
-  end;
+    if (FObservacao <> '') then
+    begin
+      sql.Add('   AND ordem_servico.OBSERVACAO LIKE ' + QuotedStr('%' + FObservacao + '%'));
+    end;
 
-  if (FDataEntrega > 0) and (FDataEntregafinal > 0) then
-  begin
-    sql.Add('   AND ordem_servico.DATA_PRAZO_ENTREGA >= ' + DataBD(FDataEntrega));
-    sql.Add('   AND ordem_servico.DATA_PRAZO_ENTREGA <= ' + DataBD(FDataEntregafinal));
-  end;
+    if (FDataEntrega > StrToDate('31/12/1989')) and (FDataEntregafinal > StrToDate('31/12/1989')) then
+    begin
+      sql.Add('   AND ordem_servico.DATA_PRAZO_ENTREGA >= ' + DataBD(FDataEntrega));
+      sql.Add('   AND ordem_servico.DATA_PRAZO_ENTREGA <= ' + DataBD(FDataEntregafinal));
+    end;
 
-  if (FDataOrdem > 0) and (FDataOrdemFinal > 0) then
-  begin
-    sql.Add('   AND ordem_servico.DATA_OS >= ' + DataBD(FDataOrdem));
-    sql.Add('   AND ordem_servico.DATA_OS <= ' + DataBD(FDataEntregafinal));
-  end;
+    if (FDataOrdem > StrToDate('31/12/1989')) and (FDataOrdemFinal > StrToDate('31/12/1989')) then
+    begin
+      sql.Add('   AND ordem_servico.DATA_OS >= ' + DataBD(FDataOrdem));
+      sql.Add('   AND ordem_servico.DATA_OS <= ' + DataBD(FDataEntregafinal));
+    end;
 
   query := FConexao.executarComandoDQL(sql.Text);
 
@@ -709,7 +785,6 @@ begin
   FDataEntregafinal := 0;
   FDataOrdem := 0;
   FDataOrdemFinal := 0;
-  FDesconto := 0;
   FCadastradoPor.limpar;
   FAlteradoPor.limpar;
   FDataCadastro := Now;
@@ -739,8 +814,11 @@ begin
     data.FDetalhamento := query.FieldByName('DETALHAMENTO').Value;
     data.observacao := query.FieldByName('OBSERVACAO').Value;
     data.FDataEntrega := query.FieldByName('DATA_PRAZO_ENTREGA').Value;
+    data.FValorTotalItem := query.FieldByName('valorTotalItem').Value;
+    data.FValorDescontoItem := query.FieldByName('valorDescontoItem').Value;
+    data.FValorTotalProduto := query.FieldByName('valorTotalProduto').Value;
+    data.FValorDescontoProduto := query.FieldByName('valorDescontoProduto').Value;
     data.FDataOrdem := query.FieldByName('DATA_OS').Value;
-    data.FDesconto := query.FieldByName('DESCONTO').Value;
     data.FEndereco.cep := query.FieldByName('enderecoCep').Value;
     data.FEndereco.longradouro := query.FieldByName('enderecoLongradouro').Value;
     data.FEndereco.numero := query.FieldByName('enderecoNumero').Value;
@@ -773,6 +851,62 @@ end;
 function TOrdemServico.verificarToken(token: string): Boolean;
 begin
   Result := FConexao.verificarToken(token);
+end;
+
+function TOrdemServico.excluirCadastro: Boolean;
+var
+  sql: TStringList;
+  resposta: boolean;
+begin
+  sql := TStringList.Create;
+  resposta := True;
+
+  if (resposta = True) then
+  try
+    sql.Clear;
+    sql.Add('DELETE FROM ordem_servico_item');
+    sql.Add(' WHERE ordem_servico_item.CODIGO_OS = ' + IntToStrSenaoZero(FCodigo));
+    sql.Add('   AND ordem_servico_item.`STATUS` = ''I'' ');
+    FConexao.executarComandoDML(sql.Text);
+    resposta := True;
+  except
+    on E: Exception do
+    begin
+      resposta := False;
+    end;
+  end;
+
+  if (resposta = True) then
+  try
+    sql.Clear;
+    sql.Add('DELETE FROM ordem_servico_produto');
+    sql.Add(' WHERE ordem_servico_produto.CODIGO_OS = ' + IntToStrSenaoZero(FCodigo));
+    sql.Add('   AND ordem_servico_produto.`STATUS` = ''I'' ');
+    FConexao.executarComandoDML(sql.Text);
+    resposta := True;
+  except
+    on E: Exception do
+    begin
+      resposta := False;
+    end;
+  end;
+
+  if (resposta = True) then
+  try
+    sql.Clear;
+    sql.Add('DELETE FROM `ordem_servico`');
+    sql.Add(' WHERE `ordem_servico`.CODIGO_OS = ' + IntToStrSenaoZero(FCodigo));
+    FConexao.executarComandoDML(sql.Text);
+    resposta := True;
+  except
+    on E: Exception do
+    begin
+      resposta := False;
+    end;
+  end;
+
+  Result := resposta;
+  FreeAndNil(sql);
 end;
 
 end.

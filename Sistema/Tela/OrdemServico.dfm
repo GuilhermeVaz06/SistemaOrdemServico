@@ -78,9 +78,7 @@ object FOrdemServico: TFOrdemServico
           Images = FMenuPrincipal.ImageList1
           Enabled = False
           OnClick = BCancelarClick
-          ExplicitLeft = 519
-          ExplicitTop = -4
-          ExplicitHeight = 39
+          ExplicitLeft = 429
         end
         object BInativar: TSpeedButton
           Left = 339
@@ -137,44 +135,45 @@ object FOrdemServico: TFOrdemServico
       end
       object PInfo: TPanel
         Left = 0
-        Top = 530
+        Top = 535
         Width = 1355
-        Height = 53
+        Height = 48
         Align = alBottom
         BevelOuter = bvNone
         Enabled = False
         TabOrder = 3
-        object Label4: TLabel
+        ExplicitTop = 534
+        object Label27: TLabel
           Left = 9
-          Top = 3
+          Top = 0
           Width = 88
           Height = 16
           Caption = 'Cadastrado Por'
         end
-        object Label5: TLabel
+        object Label28: TLabel
           Left = 199
-          Top = 3
+          Top = 0
           Width = 71
           Height = 16
           Caption = 'Alterado Por'
         end
-        object Label6: TLabel
+        object Label29: TLabel
           Left = 388
-          Top = 3
+          Top = 0
           Width = 81
           Height = 16
           Caption = 'Data Cadastro'
         end
-        object Label7: TLabel
+        object Label30: TLabel
           Left = 578
-          Top = 3
+          Top = 0
           Width = 84
           Height = 16
           Caption = 'Data Altera'#231#227'o'
         end
-        object ECadastradoPor: TDBEdit
+        object DBEdit3: TDBEdit
           Left = 9
-          Top = 20
+          Top = 17
           Width = 184
           Height = 24
           TabStop = False
@@ -184,9 +183,9 @@ object FOrdemServico: TFOrdemServico
           ReadOnly = True
           TabOrder = 0
         end
-        object EAlteradoPor: TDBEdit
+        object DBEdit13: TDBEdit
           Left = 199
-          Top = 20
+          Top = 17
           Width = 184
           Height = 24
           TabStop = False
@@ -196,9 +195,9 @@ object FOrdemServico: TFOrdemServico
           ReadOnly = True
           TabOrder = 1
         end
-        object EDataCadastro: TDBEdit
+        object DBEdit15: TDBEdit
           Left = 388
-          Top = 20
+          Top = 17
           Width = 184
           Height = 24
           TabStop = False
@@ -208,9 +207,9 @@ object FOrdemServico: TFOrdemServico
           ReadOnly = True
           TabOrder = 2
         end
-        object EDataAlteracao: TDBEdit
+        object DBEdit16: TDBEdit
           Left = 578
-          Top = 20
+          Top = 17
           Width = 184
           Height = 24
           TabStop = False
@@ -225,13 +224,13 @@ object FOrdemServico: TFOrdemServico
         Left = 0
         Top = 249
         Width = 1355
-        Height = 281
-        ActivePage = TBOutrosDocumentos
+        Height = 286
+        ActivePage = TabResumo
         Align = alClient
         TabOrder = 2
-        Visible = False
-        object TBOutrosDocumentos: TTabSheet
-          Caption = 'Outros Documentos'
+        ExplicitHeight = 240
+        object TBItem: TTabSheet
+          Caption = 'Servi'#231'os'
           object Panel2: TPanel
             Left = 0
             Top = 0
@@ -240,7 +239,7 @@ object FOrdemServico: TFOrdemServico
             Align = alTop
             BevelOuter = bvNone
             TabOrder = 0
-            object BCadastrarDocumento: TSpeedButton
+            object BCadastrarItem: TSpeedButton
               Left = 0
               Top = 0
               Width = 96
@@ -250,10 +249,11 @@ object FOrdemServico: TFOrdemServico
               ImageIndex = 0
               Images = FMenuPrincipal.ImageList1
               Enabled = False
+              OnClick = BCadastrarItemClick
               ExplicitLeft = 8
               ExplicitHeight = 41
             end
-            object BRemoverDocumento: TSpeedButton
+            object BRemoverItem: TSpeedButton
               Left = 96
               Top = 0
               Width = 96
@@ -263,18 +263,19 @@ object FOrdemServico: TFOrdemServico
               ImageIndex = 3
               Images = FMenuPrincipal.ImageList1
               Enabled = False
+              OnClick = BRemoverItemClick
               ExplicitLeft = 1
               ExplicitTop = -1
               ExplicitHeight = 39
             end
           end
-          object GDocumento: TDBGrid
+          object GItem: TDBGrid
             Left = 0
             Top = 29
             Width = 1347
-            Height = 221
+            Height = 209
             Align = alClient
-            DataSource = FDMPessoa.DOutroDocumento
+            DataSource = FDMOrdemServico.DItem
             Enabled = False
             Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
             ReadOnly = True
@@ -285,6 +286,7 @@ object FOrdemServico: TFOrdemServico
             TitleFont.Name = 'Tahoma'
             TitleFont.Style = []
             OnDrawColumnCell = GDadosDrawColumnCell
+            OnDblClick = GItemDblClick
             OnTitleClick = GDadosTitleClick
             Columns = <
               item
@@ -297,245 +299,57 @@ object FOrdemServico: TFOrdemServico
               end
               item
                 Expanded = False
-                FieldName = 'cadastradoPor'
+                FieldName = 'descricao'
                 Title.Alignment = taCenter
-                Title.Caption = 'Cadastrado Por'
-                Width = 143
+                Title.Caption = 'Descri'#231#227'o'
+                Width = 271
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'alteradoPor'
+                FieldName = 'quantidade'
                 Title.Alignment = taCenter
-                Title.Caption = 'Alterado Por'
-                Width = 130
+                Title.Caption = 'Quantidade'
+                Width = 100
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'dataCadastro'
+                FieldName = 'valorUnitario'
                 Title.Alignment = taCenter
-                Title.Caption = 'Data Cadastro'
-                Width = 134
+                Title.Caption = 'Valor Unitario'
+                Width = 100
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'dataAlteracao'
+                FieldName = 'valorTotal'
                 Title.Alignment = taCenter
-                Title.Caption = 'Data Altera'#231#227'o'
-                Width = 153
+                Title.Caption = 'Valor Total'
+                Width = 100
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'status'
+                FieldName = 'desconto'
                 Title.Alignment = taCenter
-                Title.Caption = 'Status'
-                Width = 61
-                Visible = True
-              end>
-          end
-        end
-        object TBEndereco: TTabSheet
-          Caption = 'Endere'#231'o'
-          ImageIndex = 1
-          object Panel1: TPanel
-            Left = 0
-            Top = 0
-            Width = 1347
-            Height = 29
-            Align = alTop
-            BevelOuter = bvNone
-            TabOrder = 0
-            object BCadastrarEndereco: TSpeedButton
-              Left = 0
-              Top = 0
-              Width = 96
-              Height = 29
-              Align = alLeft
-              Caption = 'Cadastrar'
-              ImageIndex = 0
-              Images = FMenuPrincipal.ImageList1
-              Enabled = False
-              ExplicitLeft = 8
-              ExplicitHeight = 41
-            end
-            object BExcluirEndereco: TSpeedButton
-              Left = 96
-              Top = 0
-              Width = 96
-              Height = 29
-              Align = alLeft
-              Caption = 'Excluir'
-              ImageIndex = 3
-              Images = FMenuPrincipal.ImageList1
-              Enabled = False
-              ExplicitLeft = 1
-              ExplicitTop = -1
-              ExplicitHeight = 39
-            end
-          end
-          object CBInativoEndereco: TCheckBox
-            Left = 0
-            Top = 233
-            Width = 1347
-            Height = 17
-            Align = alBottom
-            Caption = 'Mostrar Inativos'
-            Enabled = False
-            TabOrder = 2
-          end
-          object GEndereco: TDBGrid
-            Left = 0
-            Top = 29
-            Width = 1347
-            Height = 204
-            Align = alClient
-            DataSource = FDMPessoa.DEndereco
-            Enabled = False
-            Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
-            ReadOnly = True
-            TabOrder = 1
-            TitleFont.Charset = DEFAULT_CHARSET
-            TitleFont.Color = clWindowText
-            TitleFont.Height = -13
-            TitleFont.Name = 'Tahoma'
-            TitleFont.Style = []
-            OnDrawColumnCell = GDadosDrawColumnCell
-            OnTitleClick = GDadosTitleClick
-            Columns = <
-              item
-                Expanded = False
-                FieldName = 'codigo'
-                Title.Alignment = taCenter
-                Title.Caption = 'Codigo'
-                Width = 65
+                Title.Caption = 'Desconto %'
+                Width = 100
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'cadastradoPor'
+                FieldName = 'valorDesconto'
                 Title.Alignment = taCenter
-                Title.Caption = 'Cadastrado Por'
-                Width = 143
+                Title.Caption = 'Valor Desconto'
+                Width = 100
                 Visible = True
               end
               item
                 Expanded = False
-                FieldName = 'alteradoPor'
+                FieldName = 'valorFinal'
                 Title.Alignment = taCenter
-                Title.Caption = 'Alterado Por'
-                Width = 130
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'dataCadastro'
-                Title.Alignment = taCenter
-                Title.Caption = 'Data Cadastro'
-                Width = 134
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'dataAlteracao'
-                Title.Alignment = taCenter
-                Title.Caption = 'Data Altera'#231#227'o'
-                Width = 153
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'status'
-                Title.Alignment = taCenter
-                Title.Caption = 'Status'
-                Width = 61
-                Visible = True
-              end>
-          end
-        end
-        object TBContato: TTabSheet
-          Caption = 'Outros Contatos'
-          ImageIndex = 2
-          object Panel4: TPanel
-            Left = 0
-            Top = 0
-            Width = 1347
-            Height = 29
-            Align = alTop
-            BevelOuter = bvNone
-            TabOrder = 0
-            object BCadastrarContato: TSpeedButton
-              Left = 0
-              Top = 0
-              Width = 96
-              Height = 29
-              Align = alLeft
-              Caption = 'Cadastrar'
-              ImageIndex = 0
-              Images = FMenuPrincipal.ImageList1
-              Enabled = False
-              ExplicitLeft = 8
-              ExplicitHeight = 41
-            end
-            object BExcluirContato: TSpeedButton
-              Left = 96
-              Top = 0
-              Width = 96
-              Height = 29
-              Align = alLeft
-              Caption = 'Excluir'
-              ImageIndex = 3
-              Images = FMenuPrincipal.ImageList1
-              Enabled = False
-              ExplicitLeft = 1
-              ExplicitTop = -1
-              ExplicitHeight = 39
-            end
-          end
-          object CBInativoContato: TCheckBox
-            Left = 0
-            Top = 233
-            Width = 1347
-            Height = 17
-            Align = alBottom
-            Caption = 'Mostrar Inativos'
-            Enabled = False
-            TabOrder = 2
-          end
-          object GContato: TDBGrid
-            Left = 0
-            Top = 29
-            Width = 1347
-            Height = 204
-            Align = alClient
-            DataSource = FDMPessoa.DContato
-            Enabled = False
-            Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
-            ReadOnly = True
-            TabOrder = 1
-            TitleFont.Charset = DEFAULT_CHARSET
-            TitleFont.Color = clWindowText
-            TitleFont.Height = -13
-            TitleFont.Name = 'Tahoma'
-            TitleFont.Style = []
-            OnDrawColumnCell = GDadosDrawColumnCell
-            OnTitleClick = GDadosTitleClick
-            Columns = <
-              item
-                Expanded = False
-                FieldName = 'codigo'
-                Title.Alignment = taCenter
-                Title.Caption = 'Codigo'
-                Width = 65
-                Visible = True
-              end
-              item
-                Expanded = False
-                FieldName = 'email'
-                Title.Alignment = taCenter
-                Title.Caption = 'Email'
+                Title.Caption = 'Valor Final'
                 Width = 100
                 Visible = True
               end
@@ -579,6 +393,489 @@ object FOrdemServico: TFOrdemServico
                 Width = 61
                 Visible = True
               end>
+          end
+          object CBMostrarInativoItem: TCheckBox
+            Left = 0
+            Top = 238
+            Width = 1347
+            Height = 17
+            Align = alBottom
+            Caption = 'Mostrar Inativos'
+            Enabled = False
+            TabOrder = 2
+            OnClick = CBMostrarInativoItemClick
+            ExplicitTop = 233
+          end
+        end
+        object TBProduto: TTabSheet
+          Caption = 'Produtos'
+          ImageIndex = 1
+          object Panel1: TPanel
+            Left = 0
+            Top = 0
+            Width = 1347
+            Height = 29
+            Align = alTop
+            BevelOuter = bvNone
+            TabOrder = 0
+            object BCadastrarProduto: TSpeedButton
+              Left = 0
+              Top = 0
+              Width = 96
+              Height = 29
+              Align = alLeft
+              Caption = 'Cadastrar'
+              ImageIndex = 0
+              Images = FMenuPrincipal.ImageList1
+              Enabled = False
+              OnClick = BCadastrarProdutoClick
+              ExplicitLeft = 8
+              ExplicitHeight = 41
+            end
+            object BExcluirProduto: TSpeedButton
+              Left = 96
+              Top = 0
+              Width = 96
+              Height = 29
+              Align = alLeft
+              Caption = 'Excluir'
+              ImageIndex = 3
+              Images = FMenuPrincipal.ImageList1
+              Enabled = False
+              OnClick = BExcluirProdutoClick
+              ExplicitLeft = 1
+              ExplicitTop = -1
+              ExplicitHeight = 39
+            end
+          end
+          object CBInativoProduto: TCheckBox
+            Left = 0
+            Top = 238
+            Width = 1347
+            Height = 17
+            Align = alBottom
+            Caption = 'Mostrar Inativos'
+            Enabled = False
+            TabOrder = 2
+            OnClick = CBInativoProdutoClick
+            ExplicitTop = 233
+          end
+          object GProduto: TDBGrid
+            Left = 0
+            Top = 29
+            Width = 1347
+            Height = 209
+            Align = alClient
+            DataSource = FDMOrdemServico.DProduto
+            Enabled = False
+            Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+            ReadOnly = True
+            TabOrder = 1
+            TitleFont.Charset = DEFAULT_CHARSET
+            TitleFont.Color = clWindowText
+            TitleFont.Height = -13
+            TitleFont.Name = 'Tahoma'
+            TitleFont.Style = []
+            OnDrawColumnCell = GDadosDrawColumnCell
+            OnDblClick = GProdutoDblClick
+            OnTitleClick = GDadosTitleClick
+            Columns = <
+              item
+                Expanded = False
+                FieldName = 'codigo'
+                Title.Alignment = taCenter
+                Title.Caption = 'Codigo'
+                Width = 65
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'descricao'
+                Title.Alignment = taCenter
+                Title.Caption = 'Descri'#231#227'o'
+                Width = 170
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'unidade'
+                Title.Alignment = taCenter
+                Title.Caption = 'Unidade'
+                Width = 100
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'quantidade'
+                Title.Alignment = taCenter
+                Title.Caption = 'Quantidade'
+                Width = 100
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'valorUnitario'
+                Title.Alignment = taCenter
+                Title.Caption = 'Valor Unitario'
+                Width = 100
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'valorTotal'
+                Title.Alignment = taCenter
+                Title.Caption = 'Valor Total'
+                Width = 100
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'desconto'
+                Title.Alignment = taCenter
+                Title.Caption = 'Desconto %'
+                Width = 100
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'valorDesconto'
+                Title.Alignment = taCenter
+                Title.Caption = 'Valor Desconto'
+                Width = 100
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'valorFinal'
+                Title.Alignment = taCenter
+                Title.Caption = 'Valor Final'
+                Width = 100
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'cadastradoPor'
+                Title.Alignment = taCenter
+                Title.Caption = 'Cadastrado Por'
+                Width = 143
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'alteradoPor'
+                Title.Alignment = taCenter
+                Title.Caption = 'Alterado Por'
+                Width = 130
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'dataCadastro'
+                Title.Alignment = taCenter
+                Title.Caption = 'Data Cadastro'
+                Width = 134
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'dataAlteracao'
+                Title.Alignment = taCenter
+                Title.Caption = 'Data Altera'#231#227'o'
+                Width = 153
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'status'
+                Title.Alignment = taCenter
+                Title.Caption = 'Status'
+                Width = 61
+                Visible = True
+              end>
+          end
+        end
+        object TabResumo: TTabSheet
+          Caption = 'Resumo Financeiro'
+          ImageIndex = 2
+          OnShow = TabResumoShow
+          object Label4: TLabel
+            Left = 9
+            Top = 3
+            Width = 115
+            Height = 16
+            Caption = 'Valor Total Servi'#231'os'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clGreen
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object Label5: TLabel
+            Left = 166
+            Top = 3
+            Width = 138
+            Height = 16
+            Caption = 'Valor Desconto Servi'#231'os'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clRed
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object Label6: TLabel
+            Left = 323
+            Top = 3
+            Width = 125
+            Height = 16
+            Caption = 'Valor Final Servi'#231'os'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = [fsBold]
+            ParentFont = False
+          end
+          object Label7: TLabel
+            Left = 9
+            Top = 48
+            Width = 117
+            Height = 16
+            Caption = 'Valor Total Produtos'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clGreen
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object Label31: TLabel
+            Left = 166
+            Top = 48
+            Width = 140
+            Height = 16
+            Caption = 'Valor Desconto Produtos'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clRed
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+          end
+          object Label32: TLabel
+            Left = 323
+            Top = 48
+            Width = 129
+            Height = 16
+            Caption = 'Valor Final Produtos'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = [fsBold]
+            ParentFont = False
+          end
+          object Label33: TLabel
+            Left = 9
+            Top = 94
+            Width = 91
+            Height = 16
+            Caption = 'Valor Total OS'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clGreen
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = [fsBold]
+            ParentFont = False
+          end
+          object Label34: TLabel
+            Left = 166
+            Top = 94
+            Width = 135
+            Height = 16
+            Caption = 'Valor Total Desconto'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clRed
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = [fsBold]
+            ParentFont = False
+          end
+          object Label35: TLabel
+            Left = 323
+            Top = 94
+            Width = 87
+            Height = 16
+            Caption = 'Valor Final OS'
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = [fsBold]
+            ParentFont = False
+          end
+          object ECadastradoPor: TDBEdit
+            Left = 9
+            Top = 20
+            Width = 150
+            Height = 24
+            TabStop = False
+            Color = clBtnFace
+            DataField = 'valorTotalItem'
+            DataSource = FDMOrdemServico.DOrdemServico
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clGreen
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            ReadOnly = True
+            TabOrder = 0
+          end
+          object EAlteradoPor: TDBEdit
+            Left = 166
+            Top = 20
+            Width = 150
+            Height = 24
+            TabStop = False
+            Color = clBtnFace
+            DataField = 'valorDescontoItem'
+            DataSource = FDMOrdemServico.DOrdemServico
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clRed
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            ReadOnly = True
+            TabOrder = 1
+          end
+          object EDataCadastro: TDBEdit
+            Left = 323
+            Top = 20
+            Width = 150
+            Height = 24
+            TabStop = False
+            Color = clBtnFace
+            DataField = 'valorFinalItem'
+            DataSource = FDMOrdemServico.DOrdemServico
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = [fsBold]
+            ParentFont = False
+            ReadOnly = True
+            TabOrder = 2
+          end
+          object DBEdit17: TDBEdit
+            Left = 9
+            Top = 65
+            Width = 150
+            Height = 24
+            TabStop = False
+            Color = clBtnFace
+            DataField = 'valorTotalProduto'
+            DataSource = FDMOrdemServico.DOrdemServico
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clGreen
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            ReadOnly = True
+            TabOrder = 3
+          end
+          object DBEdit18: TDBEdit
+            Left = 166
+            Top = 65
+            Width = 150
+            Height = 24
+            TabStop = False
+            Color = clBtnFace
+            DataField = 'valorDescontoProduto'
+            DataSource = FDMOrdemServico.DOrdemServico
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clRed
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = []
+            ParentFont = False
+            ReadOnly = True
+            TabOrder = 4
+          end
+          object DBEdit19: TDBEdit
+            Left = 323
+            Top = 65
+            Width = 150
+            Height = 24
+            TabStop = False
+            Color = clBtnFace
+            DataField = 'valorFinalProduto'
+            DataSource = FDMOrdemServico.DOrdemServico
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = [fsBold]
+            ParentFont = False
+            ReadOnly = True
+            TabOrder = 5
+          end
+          object DBEdit20: TDBEdit
+            Left = 9
+            Top = 111
+            Width = 150
+            Height = 24
+            TabStop = False
+            Color = clBtnFace
+            DataField = 'valorTotal'
+            DataSource = FDMOrdemServico.DOrdemServico
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clGreen
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = [fsBold]
+            ParentFont = False
+            ReadOnly = True
+            TabOrder = 6
+          end
+          object DBEdit21: TDBEdit
+            Left = 166
+            Top = 111
+            Width = 150
+            Height = 24
+            TabStop = False
+            Color = clBtnFace
+            DataField = 'valorDescontoTotal'
+            DataSource = FDMOrdemServico.DOrdemServico
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clRed
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = [fsBold]
+            ParentFont = False
+            ReadOnly = True
+            TabOrder = 7
+          end
+          object DBEdit22: TDBEdit
+            Left = 323
+            Top = 111
+            Width = 150
+            Height = 24
+            TabStop = False
+            Color = clBtnFace
+            DataField = 'valorFinal'
+            DataSource = FDMOrdemServico.DOrdemServico
+            Font.Charset = DEFAULT_CHARSET
+            Font.Color = clWindowText
+            Font.Height = -13
+            Font.Name = 'Tahoma'
+            Font.Style = [fsBold]
+            ParentFont = False
+            ReadOnly = True
+            TabOrder = 8
           end
         end
       end
@@ -1004,7 +1301,6 @@ object FOrdemServico: TFOrdemServico
         Align = alTop
         BevelOuter = bvNone
         TabOrder = 0
-        ExplicitTop = -6
         object BConsultar: TSpeedButton
           Left = 1126
           Top = 16

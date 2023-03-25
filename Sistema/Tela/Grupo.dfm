@@ -2,7 +2,7 @@ object FGrupo: TFGrupo
   Left = 0
   Top = 0
   BorderStyle = bsSingle
-  Caption = 'Cadastro de Tipo de Endere'#231'o'
+  Caption = 'Cadastro de Custos'
   ClientHeight = 531
   ClientWidth = 1363
   Color = clBtnFace
@@ -126,11 +126,13 @@ object FGrupo: TFGrupo
   object PDados: TPanel
     Left = 0
     Top = 29
-    Width = 299
+    Width = 281
     Height = 502
     Align = alLeft
     Enabled = False
     TabOrder = 1
+    ExplicitLeft = -2
+    ExplicitTop = 34
     object Label1: TLabel
       Left = 9
       Top = 3
@@ -144,6 +146,20 @@ object FGrupo: TFGrupo
       Width = 55
       Height = 16
       Caption = 'Descri'#231#227'o'
+    end
+    object Label3: TLabel
+      Left = 10
+      Top = 47
+      Width = 81
+      Height = 16
+      Caption = 'Sub Descri'#231#227'o'
+    end
+    object Label9: TLabel
+      Left = 190
+      Top = 47
+      Width = 30
+      Height = 16
+      Caption = 'Valor'
     end
     object ECodigo: TDBEdit
       Left = 9
@@ -160,7 +176,7 @@ object FGrupo: TFGrupo
     object EDescricao: TDBEdit
       Left = 91
       Top = 20
-      Width = 201
+      Width = 185
       Height = 24
       DataField = 'descricao'
       DataSource = FDMGrupo.DGrupo
@@ -169,25 +185,27 @@ object FGrupo: TFGrupo
     object CBAtivo: TDBCheckBox
       Left = 1
       Top = 484
-      Width = 297
+      Width = 279
       Height = 17
       Align = alBottom
       Caption = 'Ativo'
       DataField = 'status'
       DataSource = FDMGrupo.DGrupo
       Enabled = False
-      TabOrder = 3
+      TabOrder = 5
       ValueChecked = 'A'
       ValueUnchecked = 'I'
+      ExplicitWidth = 297
     end
     object Panel4: TPanel
       Left = 1
       Top = 381
-      Width = 297
+      Width = 279
       Height = 103
       Align = alBottom
       BevelOuter = bvNone
-      TabOrder = 2
+      TabOrder = 4
+      ExplicitWidth = 297
       object Label4: TLabel
         Left = 9
         Top = 3
@@ -265,21 +283,42 @@ object FGrupo: TFGrupo
         TabOrder = 3
       end
     end
+    object DBEdit1: TDBEdit
+      Left = 9
+      Top = 64
+      Width = 174
+      Height = 24
+      DataField = 'subDescricao'
+      DataSource = FDMGrupo.DGrupo
+      TabOrder = 2
+    end
+    object DBEdit2: TDBEdit
+      Left = 189
+      Top = 64
+      Width = 87
+      Height = 24
+      DataField = 'valor'
+      DataSource = FDMGrupo.DGrupo
+      TabOrder = 3
+    end
   end
   object PGrid: TPanel
-    Left = 299
+    Left = 281
     Top = 29
-    Width = 1064
+    Width = 1082
     Height = 502
     Align = alClient
     TabOrder = 2
+    ExplicitLeft = 299
+    ExplicitWidth = 1064
     object Panel2: TPanel
       Left = 1
       Top = 471
-      Width = 1062
+      Width = 1080
       Height = 30
       Align = alBottom
       TabOrder = 2
+      ExplicitWidth = 1062
       object CBMostrarInativo: TCheckBox
         Left = 9
         Top = 6
@@ -293,13 +332,14 @@ object FGrupo: TFGrupo
     object Panel3: TPanel
       Left = 1
       Top = 1
-      Width = 1062
+      Width = 1080
       Height = 52
       Align = alTop
       TabOrder = 0
+      ExplicitWidth = 1062
       object BConsultar: TSpeedButton
-        Left = 413
-        Top = 14
+        Left = 458
+        Top = 13
         Width = 96
         Height = 30
         Caption = 'Consultar'
@@ -314,18 +354,32 @@ object FGrupo: TFGrupo
         Height = 16
         Caption = 'Descri'#231#227'o'
       end
+      object Label8: TLabel
+        Left = 232
+        Top = 0
+        Width = 81
+        Height = 16
+        Caption = 'Sub Descri'#231#227'o'
+      end
       object ELocalizarDescricao: TEdit
         Left = 3
         Top = 18
-        Width = 402
+        Width = 220
         Height = 24
         TabOrder = 0
+      end
+      object ESubDescricao: TEdit
+        Left = 232
+        Top = 18
+        Width = 220
+        Height = 24
+        TabOrder = 1
       end
     end
     object GDados: TDBGrid
       Left = 1
       Top = 53
-      Width = 1062
+      Width = 1080
       Height = 418
       Align = alClient
       DataSource = FDMGrupo.DGrupo
@@ -355,6 +409,22 @@ object FGrupo: TFGrupo
           Title.Alignment = taCenter
           Title.Caption = 'Descri'#231#227'o'
           Width = 154
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'subDescricao'
+          Title.Alignment = taCenter
+          Title.Caption = 'Sub Descri'#231#227'o'
+          Width = 144
+          Visible = True
+        end
+        item
+          Expanded = False
+          FieldName = 'valor'
+          Title.Alignment = taCenter
+          Title.Caption = 'Valor'
+          Width = 97
           Visible = True
         end
         item

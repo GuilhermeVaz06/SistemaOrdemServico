@@ -1025,7 +1025,6 @@ begin
   limparVariaveis;
   FreeAndNil(resposta);
 end;
-
 procedure buscarCliente(Req: THorseRequest; Res: THorseResponse; Next: TProc);
 begin
   buscarPessoa(Req, Res, Next, 'buscarCliente', 'Cliente', tpCliente);
@@ -1182,7 +1181,7 @@ begin
   THorse.Post('/empresa', cadastrarEmpresa);
   THorse.Put('/empresa/:id', alterarEmpresa);
   THorse.Delete('/empresa/:id', inativarEmpresa);
-  THorse.Delete('/empresa/:id', excluirEmpresa);
+  THorse.Delete('/empresaExcluir/:id', excluirEmpresa);
 end;
 
 end.

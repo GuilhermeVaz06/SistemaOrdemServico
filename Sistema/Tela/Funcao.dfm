@@ -2,7 +2,7 @@ object FFuncao: TFFuncao
   Left = 0
   Top = 0
   BorderStyle = bsSingle
-  Caption = 'Cadastro de Tipo de Endere'#231'o'
+  Caption = 'Cadastro de Fun'#231#227'o'
   ClientHeight = 531
   ClientWidth = 1363
   Color = clBtnFace

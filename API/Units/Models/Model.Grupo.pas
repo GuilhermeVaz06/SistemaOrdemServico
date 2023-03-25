@@ -9,6 +9,8 @@ type TGrupo = class
   private
     FCodigo: integer;
     FDescricao: string;
+    FSubDescricao: string;
+    FValor: Double;
     FCadastradoPor: TSessao;
     FAlteradoPor: TSessao;
     FDataCadastro: TDateTime;
@@ -29,6 +31,8 @@ type TGrupo = class
 
     property id:Integer read FCodigo write FCodigo;
     property descricao: string read FDescricao write FDescricao;
+    property subDescricao: string read FSubDescricao write FSubDescricao;
+    property valor: Double read FValor write FValor;
     property cadastradoPor: TSessao read FCadastradoPor write FCadastradoPor;
     property alteradoPor: TSessao read FAlteradoPor write FAlteradoPor;
     property dataCadastro: TDateTime read FDataCadastro write FDataCadastro;
@@ -65,6 +69,8 @@ begin
   sql := TStringList.Create;
   sql.Add('UPDATE `grupo`');
   sql.Add('   SET DESCRICAO = ' + QuotedStr(FDescricao));
+  sql.Add('     , SUB_DESCRICAO = ' + QuotedStr(FSubDescricao));
+  sql.Add('     , VALOR = ' + VirgulaPonto(FValor));
   sql.Add('     , `STATUS` = ' + QuotedStr(FStatus));
   sql.Add('     , CODIGO_SESSAO_ALTERACAO = ' + IntToStrSenaoZero(FConexao.codigoSessao));
   sql.Add(' WHERE CODIGO_GRUPO = ' + IntToStrSenaoZero(FCodigo));
@@ -87,10 +93,12 @@ begin
   codigo := FConexao.ultimoRegistro('grupo', 'CODIGO_GRUPO');
 
   sql := TStringList.Create;
-  sql.Add('INSERT INTO `grupo` (`CODIGO_GRUPO`, `DESCRICAO`');
+  sql.Add('INSERT INTO `grupo` (`CODIGO_GRUPO`, `DESCRICAO`, `SUB_DESCRICAO`, `VALOR`');
   sql.Add(',`CODIGO_SESSAO_CADASTRO`, `CODIGO_SESSAO_ALTERACAO`) VALUES (');
   sql.Add(' ' + IntToStrSenaoZero(codigo));                                     //CODIGO_GRUPO
   sql.Add(',' + QuotedStr(FDescricao));                                         //DESCRICAO
+  sql.Add(',' + QuotedStr(FSubDescricao));                                      //SUB_DESCRICAO
+  sql.Add(',' + VirgulaPonto(FValor));                                          //VALOR
   sql.Add(',' + IntToStrSenaoZero(FConexao.codigoSessao));                      //CODIGO_SESSAO_CADASTRO
   sql.Add(',' + IntToStrSenaoZero(FConexao.codigoSessao));                      //CODIGO_SESSAO_ALTERACAO
   sql.Add(')');
@@ -126,9 +134,9 @@ begin
     end;
 
     sql := TStringList.Create;
-    sql.Add('SELECT grupo.CODIGO_GRUPO, grupo.DESCRICAO, grupo.CODIGO_SESSAO_CADASTRO');
+    sql.Add('SELECT grupo.CODIGO_GRUPO, grupo.DESCRICAO, grupo.SUB_DESCRICAO, grupo.CODIGO_SESSAO_CADASTRO');
     sql.Add(', grupo.CODIGO_SESSAO_ALTERACAO, grupo.DATA_CADASTRO, grupo.DATA_ULTIMA_ALTERACAO');
-    sql.Add(', grupo.`STATUS`');
+    sql.Add(', grupo.`STATUS`, grupo.`VALOR`');
     sql.Add('');
     sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
     sql.Add('     FROM pessoa, sessao ');
@@ -146,6 +154,11 @@ begin
     if (FDescricao <> '') then
     begin
       sql.Add('   AND grupo.DESCRICAO LIKE ' + QuotedStr('%' + FDescricao + '%'));
+    end;
+
+    if (FSubDescricao <> '') then
+    begin
+      sql.Add('   AND grupo.SUB_DESCRICAO LIKE ' + QuotedStr('%' + FSubDescricao + '%'));
     end;
 
     if  (FCodigo > 0) then
@@ -234,9 +247,9 @@ var
   grupoConsultado: TGrupo;
 begin
   sql := TStringList.Create;
-  sql.Add('SELECT grupo.CODIGO_GRUPO, grupo.DESCRICAO, grupo.CODIGO_SESSAO_CADASTRO');
+  sql.Add('SELECT grupo.CODIGO_GRUPO, grupo.DESCRICAO, grupo.SUB_DESCRICAO, grupo.CODIGO_SESSAO_CADASTRO');
   sql.Add(', grupo.CODIGO_SESSAO_ALTERACAO, grupo.DATA_CADASTRO, grupo.DATA_ULTIMA_ALTERACAO');
-  sql.Add(', grupo.`STATUS`');
+  sql.Add(', grupo.`STATUS`, grupo.`VALOR`');
   sql.Add('');
   sql.Add(', (SELECT pessoa.RAZAO_SOCIAL');
   sql.Add('     FROM pessoa, sessao ');
@@ -283,6 +296,11 @@ begin
   if (FDescricao <> '') then
   begin
     sql.Add('   AND grupo.DESCRICAO LIKE ' + QuotedStr('%' + FDescricao + '%'));
+  end;
+
+  if (FSubDescricao <> '') then
+  begin
+    sql.Add('   AND grupo.SUB_DESCRICAO LIKE ' + QuotedStr('%' + FSubDescricao + '%'));
   end;
 
   if  (FCodigo > 0) then
@@ -337,9 +355,10 @@ var
 begin
   grupoConsultado := TGrupo.Create;
   sql := TStringList.Create;
-  sql.Add('SELECT CODIGO_GRUPO, DESCRICAO, `STATUS`');
+  sql.Add('SELECT CODIGO_GRUPO, DESCRICAO, SUB_DESCRICAO, `STATUS`');
   sql.Add('  FROM grupo');
   sql.Add(' WHERE DESCRICAO = ' + QuotedStr(FDescricao));
+  sql.Add('   AND SUB_DESCRICAO = ' + QuotedStr(FSubDescricao));
 
   if (FCodigo > 0) then
   begin
@@ -364,6 +383,7 @@ begin
 
     grupoConsultado.FCodigo := query.FieldByName('CODIGO_GRUPO').Value;
     grupoConsultado.FDescricao := query.FieldByName('DESCRICAO').Value;
+    grupoConsultado.FSubDescricao := query.FieldByName('SUB_DESCRICAO').Value;
     grupoConsultado.FStatus := query.FieldByName('STATUS').Value;
   end;
 
@@ -397,9 +417,11 @@ procedure TGrupo.limpar;
 begin
   FCodigo := 0;
   FDescricao := '';
+  FSubDescricao := '';
   FCadastradoPor.limpar;
   FAlteradoPor.limpar;
   FDataCadastro := Now;
+  FValor := 0;
   FUltimaAlteracao := Now;
   FStatus := 'A';
   FLimite := 0;
@@ -417,6 +439,8 @@ begin
 
     data.FCodigo := query.FieldByName('CODIGO_GRUPO').Value;
     data.FDescricao := query.FieldByName('DESCRICAO').Value;
+    data.FSubDescricao := query.FieldByName('SUB_DESCRICAO').Value;
+    data.FValor := query.FieldByName('VALOR').Value;
     data.FCadastradoPor.usuario := query.FieldByName('usuarioCadastro').Value;
     data.FAlteradoPor.usuario := query.FieldByName('usuarioAlteracao').Value;
     data.FDataCadastro := query.FieldByName('DATA_CADASTRO').Value;

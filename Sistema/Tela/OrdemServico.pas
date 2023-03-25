@@ -26,21 +26,12 @@ type
     BCadastrar: TSpeedButton;
     DBNavigator1: TDBNavigator;
     PInfo: TPanel;
-    Label4: TLabel;
-    Label5: TLabel;
-    Label6: TLabel;
-    Label7: TLabel;
-    ECadastradoPor: TDBEdit;
-    EAlteradoPor: TDBEdit;
-    EDataCadastro: TDBEdit;
-    EDataAlteracao: TDBEdit;
     PCDados: TPageControl;
-    TBOutrosDocumentos: TTabSheet;
+    TBItem: TTabSheet;
     Panel2: TPanel;
-    BCadastrarDocumento: TSpeedButton;
-    BRemoverDocumento: TSpeedButton;
-    TBEndereco: TTabSheet;
-    TBContato: TTabSheet;
+    BCadastrarItem: TSpeedButton;
+    BRemoverItem: TSpeedButton;
+    TBProduto: TTabSheet;
     PDados: TPanel;
     Label1: TLabel;
     Label2: TLabel;
@@ -49,16 +40,11 @@ type
     DBMemo1: TDBMemo;
     SpeedButton1: TSpeedButton;
     Panel1: TPanel;
-    BCadastrarEndereco: TSpeedButton;
-    BExcluirEndereco: TSpeedButton;
-    CBInativoEndereco: TCheckBox;
-    Panel4: TPanel;
-    BCadastrarContato: TSpeedButton;
-    BExcluirContato: TSpeedButton;
-    CBInativoContato: TCheckBox;
-    GEndereco: TDBGrid;
-    GDocumento: TDBGrid;
-    GContato: TDBGrid;
+    BCadastrarProduto: TSpeedButton;
+    BExcluirProduto: TSpeedButton;
+    CBInativoProduto: TCheckBox;
+    GProduto: TDBGrid;
+    GItem: TDBGrid;
     Label13: TLabel;
     Label3: TLabel;
     DBEdit1: TDBEdit;
@@ -100,6 +86,34 @@ type
     DBDataOrdem: TDateTimePicker;
     Label17: TLabel;
     DBLConsultaEmpresa: TDBLookupComboBox;
+    CBMostrarInativoItem: TCheckBox;
+    Label27: TLabel;
+    Label28: TLabel;
+    Label29: TLabel;
+    Label30: TLabel;
+    DBEdit3: TDBEdit;
+    DBEdit13: TDBEdit;
+    DBEdit15: TDBEdit;
+    DBEdit16: TDBEdit;
+    TabResumo: TTabSheet;
+    Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
+    ECadastradoPor: TDBEdit;
+    EAlteradoPor: TDBEdit;
+    EDataCadastro: TDBEdit;
+    Label7: TLabel;
+    Label31: TLabel;
+    Label32: TLabel;
+    DBEdit17: TDBEdit;
+    DBEdit18: TDBEdit;
+    DBEdit19: TDBEdit;
+    Label33: TLabel;
+    Label34: TLabel;
+    Label35: TLabel;
+    DBEdit20: TDBEdit;
+    DBEdit21: TDBEdit;
+    DBEdit22: TDBEdit;
     procedure BFecharClick(Sender: TObject);
     procedure BCadastrarClick(Sender: TObject);
     procedure BAlterarClick(Sender: TObject);
@@ -124,6 +138,15 @@ type
     procedure DBEnderecoDblClick(Sender: TObject);
     procedure DBTransportadoraDblClick(Sender: TObject);
     procedure DBTransportadoraExit(Sender: TObject);
+    procedure BRemoverItemClick(Sender: TObject);
+    procedure BExcluirProdutoClick(Sender: TObject);
+    procedure BCadastrarItemClick(Sender: TObject);
+    procedure BCadastrarProdutoClick(Sender: TObject);
+    procedure GItemDblClick(Sender: TObject);
+    procedure GProdutoDblClick(Sender: TObject);
+    procedure CBInativoProdutoClick(Sender: TObject);
+    procedure CBMostrarInativoItemClick(Sender: TObject);
+    procedure TabResumoShow(Sender: TObject);
   private
     { Private declarations }
     function validarCampos: boolean;
@@ -138,7 +161,8 @@ var
 
 implementation
 
-uses UFuncao, DMOrdemServico, DMPessoa, SelecaoEnderecoCliente;
+uses UFuncao, DMOrdemServico, DMPessoa, SelecaoEnderecoCliente,
+     OrdemServicoProduto, OrdemServicoItem;
 
 {$R *.dfm}
 
@@ -151,6 +175,7 @@ begin
   else
   begin
     UFuncao.desativaBotoes(self);
+    BCancelar.Enabled := False;
     FDMOrdemServico.TOrdemServico.Edit;
   end;
 end;
@@ -170,17 +195,66 @@ begin
   end;
 end;
 
+procedure TFOrdemServico.BCadastrarItemClick(Sender: TObject);
+begin
+  if not (FDMOrdemServico.TOrdemServicocodigo.Value > 0) and (confirmarCadastro(False) = False) then
+  begin
+    Exit;
+  end;
+
+  try
+    Application.CreateForm(TFOrdemServicoItem, FOrdemServicoItem);
+
+    with FDMOrdemServico do
+    begin
+      TItem.Append;
+      TItemordem.Value := TOrdemServicocodigo.Value;
+    end;
+
+    FOrdemServicoItem.ShowModal;
+  finally
+    FreeAndNil(FOrdemServicoItem);
+  end;
+end;
+
+procedure TFOrdemServico.BCadastrarProdutoClick(Sender: TObject);
+begin
+  if not (FDMOrdemServico.TOrdemServicocodigo.Value > 0) and (confirmarCadastro(False) = False) then
+  begin
+    Exit;
+  end;
+
+  try
+    Application.CreateForm(TFOrdemServicoProduto, FOrdemServicoProduto);
+
+    with FDMOrdemServico do
+    begin
+      TProduto.Append;
+      TProdutoordem.Value := TOrdemServicocodigo.Value;
+    end;
+
+    FOrdemServicoProduto.ShowModal;
+  finally
+    FreeAndNil(FOrdemServicoProduto);
+  end;
+end;
+
 procedure TFOrdemServico.BCancelarClick(Sender: TObject);
 begin
-//  if (FDMPessoa.TPessoa.State = dsInsert) and
-//     (FDMPessoa.TPessoacodigo.Value > 0) and
-//     ((FDMPessoa.TOutroDocumento.RecordCount <= 0) and
-//      (FDMPessoa.TContato.RecordCount <= 0) and
-//      (FDMPessoa.TEndereco.RecordCount <= 0)) and
-//     (FDMPessoa.excluirPessoa = False) then
-//  begin
-//    informar('Erro ao cancelar cadastro, contate o suporte!');
-//  end;  vai ser necessario futuramente
+  CBInativoProduto.Checked := False;
+  CBMostrarInativoItem.Checked := False;
+
+  CBInativoProdutoClick(nil);
+  CBMostrarInativoItemClick(nil);
+
+  if (FDMOrdemServico.TOrdemServico.State = dsInsert) and
+     (FDMOrdemServico.TOrdemServicocodigo.Value > 0) and
+     ((FDMOrdemServico.TItem.RecordCount <= 0) and
+      (FDMOrdemServico.TProduto.RecordCount <= 0)) and
+     (FDMOrdemServico.excluirOrdem = False) then
+  begin
+    informar('Erro ao cancelar cadastro, contate o suporte!');
+  end;
 
   Painel.SetFocus;
   FDMOrdemServico.TOrdemServico.Cancel;
@@ -203,6 +277,29 @@ begin
   end;
 end;
 
+procedure TFOrdemServico.BExcluirProdutoClick(Sender: TObject);
+var
+  codigo: integer;
+begin
+  with FDMOrdemServico do
+  begin
+    if not (TProduto.RecordCount > 0) then
+    begin
+      informar('Nenhum registro selecionado!');
+    end
+    else if (confirmar('Realmente deseja inativar o serviço: ' + TProdutodescricao.Value + '?')) then
+    begin
+      codigo := TProdutocodigo.Value;
+
+      if (inativarProduto) then
+      begin
+        consultarDadosProduto(0, True);
+        TProduto.Locate('codigo', codigo, [loCaseInsensitive]);
+      end;
+    end;
+  end;
+end;
+
 procedure TFOrdemServico.BFecharClick(Sender: TObject);
 begin
   close;
@@ -211,6 +308,39 @@ end;
 procedure TFOrdemServico.BInativarClick(Sender: TObject);
 begin
 //  vai ser o excluir ordem de servico
+end;
+
+procedure TFOrdemServico.BRemoverItemClick(Sender: TObject);
+var
+  codigo: integer;
+begin
+  with FDMOrdemServico do
+  begin
+    if not (TItem.RecordCount > 0) then
+    begin
+      informar('Nenhum registro selecionado!');
+    end
+    else if (confirmar('Realmente deseja inativar o serviço: ' + TItemdescricao.Value + '?')) then
+    begin
+      codigo := TItemcodigo.Value;
+
+      if (inativarItem) then
+      begin
+        consultarDadosItem(0, True);
+        TItem.Locate('codigo', codigo, [loCaseInsensitive]);
+      end;
+    end;
+  end;
+end;
+
+procedure TFOrdemServico.CBInativoProdutoClick(Sender: TObject);
+begin
+  FDMOrdemServico.consultarDadosProduto(0, False);
+end;
+
+procedure TFOrdemServico.CBMostrarInativoItemClick(Sender: TObject);
+begin
+  FDMOrdemServico.consultarDadosItem(0, False);
 end;
 
 function TFOrdemServico.confirmarCadastro(confirmar: boolean): Boolean;
@@ -236,18 +366,14 @@ begin
       resposta := FDMOrdemServico.alterarOrdemServico;
     end;
 
-//    if (FDMPessoa.TOrdemServico.State = dsInsert) and vai ser necessario futuramente
-//       (confirmar) and
-//       ((FDMPessoa.TOutroDocumento.RecordCount <= 0) and
-//        (FDMPessoa.TContato.RecordCount <= 0) and
-//        (FDMPessoa.TEndereco.RecordCount <= 0)) and
-//       (UFuncao.confirmar(mensagem + ' foi adicionado a esse ' + FDMPessoa.tipoCadastro  +
-//                          ' realmente deseja continuar?') = False) then
-//    begin
-////   se cair aqui não faz nada
-//    end
-//    else
-    if (resposta) and (confirmar) then
+    if (FDMOrdemServico.TOrdemServico.State = dsInsert) and
+       (confirmar) and
+       ((FDMOrdemServico.TItem.RecordCount <= 0) and
+        (FDMOrdemServico.TProduto.RecordCount <= 0)) then
+    begin
+      informar('Insira pelo menos um serviço ou produto!');
+    end
+    else if (resposta) and (confirmar) then
     begin
       FDMOrdemServico.TOrdemServico.Post;
       UFuncao.desativaBotoes(self);
@@ -401,6 +527,7 @@ var
   i: Integer;
 begin
   PCTela.ActivePage := TBConsulta;
+  PCDados.ActivePage := TBItem;
   FDMOrdemServico.consultarEmpresa;
   BConsultarClick(nil);
 end;
@@ -424,6 +551,94 @@ begin
   OrdenarGrid(Column);
 end;
 
+procedure TFOrdemServico.GItemDblClick(Sender: TObject);
+begin
+  if (FDMOrdemServico.TItem.RecordCount > 0) then
+  try
+    Application.CreateForm(TFOrdemServicoItem, FOrdemServicoItem);
+    FDMOrdemServico.TItem.Edit;
+    FOrdemServicoItem.ShowModal;
+  finally
+    FreeAndNil(FOrdemServicoItem);
+  end
+  else
+  begin
+    informar('Nenhum registro selecionado!');
+  end;
+end;
+
+procedure TFOrdemServico.GProdutoDblClick(Sender: TObject);
+begin
+  if (FDMOrdemServico.TProduto.RecordCount > 0) then
+  try
+    Application.CreateForm(TFOrdemServicoProduto, FOrdemServicoProduto);
+    FDMOrdemServico.TProduto.Edit;
+    FOrdemServicoProduto.ShowModal;
+  finally
+    FreeAndNil(FOrdemServicoProduto);
+  end
+  else
+  begin
+    informar('Nenhum registro selecionado!');
+  end;
+end;
+
+procedure TFOrdemServico.TabResumoShow(Sender: TObject);
+var
+  valorTotal, desconto, valorFinal: Double;
+begin
+  if (FDMOrdemServico.TOrdemServico.State in[dsInsert, dsEdit]) then
+  begin
+    CBInativoProduto.Checked := False;
+    CBMostrarInativoItem.Checked := False;
+
+    CBInativoProdutoClick(nil);
+    CBMostrarInativoItemClick(nil);
+
+    valorTotal := 0;
+    desconto := 0;
+    valorFinal := 0;
+
+    FDMOrdemServico.TItem.First;
+    while not FDMOrdemServico.TItem.Eof do
+    begin
+      valorTotal := valorTotal + FDMOrdemServico.TItemvalorTotal.Value;
+      desconto := desconto + FDMOrdemServico.TItemvalorDesconto.Value;
+      valorFinal := valorFinal + FDMOrdemServico.TItemvalorFinal.Value;
+      FDMOrdemServico.TItem.Next;
+    end;
+
+    FDMOrdemServico.TOrdemServicovalorTotalItem.Value := valorTotal;
+    FDMOrdemServico.TOrdemServicovalorDescontoItem.Value := desconto;
+    FDMOrdemServico.TOrdemServicovalorFinalItem.Value := valorFinal;
+    valorTotal := 0;
+    desconto := 0;
+    valorFinal := 0;
+
+    FDMOrdemServico.TProduto.First;
+    while not FDMOrdemServico.TProduto.Eof do
+    begin
+      valorTotal := valorTotal + FDMOrdemServico.TProdutovalorTotal.Value;
+      desconto := desconto + FDMOrdemServico.TProdutovalorDesconto.Value;
+      valorFinal := valorFinal + FDMOrdemServico.TProdutovalorFinal.Value;
+      FDMOrdemServico.TProduto.Next;
+    end;
+
+    FDMOrdemServico.TOrdemServicovalorTotalProduto.Value := valorTotal;
+    FDMOrdemServico.TOrdemServicovalorDescontoProduto.Value := desconto;
+    FDMOrdemServico.TOrdemServicovalorFinalProduto.Value := valorFinal;
+
+    FDMOrdemServico.TOrdemServicovalorTotal.Value := FDMOrdemServico.TOrdemServicovalorTotalProduto.Value +
+                                                     FDMOrdemServico.TOrdemServicovalorTotalItem.Value;
+
+    FDMOrdemServico.TOrdemServicovalorDescontoTotal.Value := FDMOrdemServico.TOrdemServicovalorDescontoItem.Value +
+                                                             FDMOrdemServico.TOrdemServicovalorDescontoProduto.Value;
+
+    FDMOrdemServico.TOrdemServicovalorFinal.Value := FDMOrdemServico.TOrdemServicovalorTotal.Value -
+                                                     FDMOrdemServico.TOrdemServicovalorDescontoTotal.Value;
+  end;
+end;
+
 procedure TFOrdemServico.TBCadastroShow(Sender: TObject);
 begin
   with FDMOrdemServico do
@@ -433,17 +648,16 @@ begin
       FOrdemServico.DBDataOrdem.Date := StrToDate(TOrdemServicodataOrdemServico.Value);
       FOrdemServico.DBPrazoEntrega.Date := StrToDate(TOrdemServicodataPrazoEntrega.Value);
     end;
-  end;
 
-//  with FDMPessoa do
-//  begin
-//    if (dadosPessoaConsultados <> TPessoacodigo.Value) then
-//    begin
-//      consultarDadosOutroDocumento(0, False);
-//      consultarDadosEndereco(0, False);
-//      consultarDadosContato(0, False);
-//    end;
-//  end;
+    with FOrdemServico do
+    begin
+      if (dadosOrdemConsultados <> TOrdemServicocodigo.Value) then
+      begin
+        consultarDadosItem(0, False);
+        consultarDadosProduto(0, False);
+      end;
+    end;
+  end;
 end;
 
 function TFOrdemServico.validarCampos: boolean;

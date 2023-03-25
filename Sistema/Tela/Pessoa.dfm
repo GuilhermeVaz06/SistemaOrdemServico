@@ -240,7 +240,7 @@ object FPessoa: TFPessoa
         Top = 201
         Width = 1355
         Height = 312
-        ActivePage = TBEndereco
+        ActivePage = TBOutrosDocumentos
         Align = alClient
         TabOrder = 2
         object TBOutrosDocumentos: TTabSheet

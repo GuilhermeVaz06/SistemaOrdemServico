@@ -295,6 +295,11 @@ begin
       erros.Add('A quantidade deve ser informada!');
     end;
 
+    if (item.desconto > 100) then
+    begin
+      erros.Add('O desconto informado não pode ser maior que 100%!');
+    end;
+
     if not (item.valorUnitario > 0) then
     begin
       erros.Add('O valor unitario deve ser informado!');
@@ -440,6 +445,11 @@ begin
     if not (item.quantidade > 0) then
     begin
       erros.Add('A quantidade deve ser informada!');
+    end;
+
+    if (item.desconto > 100) then
+    begin
+      erros.Add('O desconto informado não pode ser maior que 100%!');
     end;
 
     if not (item.valorUnitario > 0) then

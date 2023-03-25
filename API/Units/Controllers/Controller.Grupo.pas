@@ -25,6 +25,8 @@ procedure montarGrupo(grupoItem: TGrupo; out resposta: TJSONObject);
 begin
   resposta.AddPair('codigo',TJSONNumber.Create(grupoItem.id));
   resposta.AddPair('descricao',grupoItem.descricao);
+  resposta.AddPair('subDescricao',grupoItem.subDescricao);
+  resposta.AddPair('valor', TJSONNumber.Create(grupoItem.valor));
   resposta.AddPair('cadastradoPor',grupoItem.cadastradoPor.usuario);
   resposta.AddPair('alteradoPor',grupoItem.alteradoPor.usuario);
   resposta.AddPair('dataCadastro',DateTimeToStr(grupoItem.dataCadastro));
@@ -120,6 +122,7 @@ begin
     token := Req.Headers['token'];
     grupo.id := strToIntZero(Req.Query['codigo']);
     grupo.descricao := Req.Query['descricao'];
+    grupo.subDescricao := Req.Query['subDescricao'];
     grupo.status := Req.Query['status'];
     grupo.limite := strToIntZero(Req.Query['limite']);
     grupo.offset := strToIntZero(Req.Query['offset']);
@@ -234,6 +237,8 @@ begin
 
     token := Req.Headers['token'];
     grupo.descricao := body.GetValue<string>('descricao', '');
+    grupo.valor := body.GetValue<Double>('valor', 0);
+    grupo.subDescricao := body.GetValue<string>('subDescricao', '');
     grupo.id := 0;
   except
     on E: Exception do
@@ -265,6 +270,24 @@ begin
       erros.Add('A descrição deve conter no maximo 150 caracteres validos!');
     end;
 
+    if (grupo.subDescricao = '') then
+    begin
+      erros.Add('A sub Descrição deve ser informada!');
+    end
+    else if (Length(Trim(grupo.subDescricao)) <= 1) then
+    begin
+      erros.Add('A Descrição deve conter no minimo 2 caracteres validos!');
+    end
+    else if (Length(Trim(grupo.subDescricao)) > 150) then
+    begin
+      erros.Add('A Descrição deve conter no maximo 150 caracteres validos!');
+    end;
+
+    if not (grupo.valor > 0) then
+    begin
+      erros.Add('O valor do custo deve ser informado!');
+    end;
+
     if (erros.Text = '') then
     begin
       grupoConsultado := grupo.existeRegistro();
@@ -273,7 +296,8 @@ begin
       begin
         erros.Add('Já existe um grupo [' + IntToStrSenaoZero(grupoConsultado.id) +
                   ' - ' + grupoConsultado.descricao +
-                  ' - ' + grupoConsultado.status + '], cadastrado com essa descrição!');
+                  ' - ' + grupoConsultado.subDescricao +
+                  ' - ' + grupoConsultado.status + '], cadastrado com essa descrição e sub Descrição!');
         grupoConsultado.Destroy;
       end;
     end;
@@ -346,6 +370,8 @@ begin
 
     token := Req.Headers['token'];
     grupo.descricao := body.GetValue<string>('descricao', '');
+    grupo.subDescricao := body.GetValue<string>('subDescricao', '');
+    grupo.valor := body.GetValue<Double>('valor', 0);
     grupo.status := body.GetValue<string>('status', 'A');
     grupo.id := strToIntZero(Req.Params['id']);
   except
@@ -383,6 +409,24 @@ begin
       erros.Add('A descrição deve conter no maximo 150 caracteres validos!');
     end;
 
+    if (grupo.subDescricao = '') then
+    begin
+      erros.Add('A sub Descrição deve ser informada!');
+    end
+    else if (Length(Trim(grupo.subDescricao)) <= 1) then
+    begin
+      erros.Add('A Descrição deve conter no minimo 2 caracteres validos!');
+    end
+    else if (Length(Trim(grupo.subDescricao)) > 150) then
+    begin
+      erros.Add('A Descrição deve conter no maximo 150 caracteres validos!');
+    end;
+
+    if not (grupo.valor > 0) then
+    begin
+      erros.Add('O valor do custo deve ser informado!');
+    end;
+
     if (grupo.status <> 'A') and (grupo.status <> 'I') then
     begin
       erros.Add('O Status informado é invalido!');
@@ -404,8 +448,9 @@ begin
         if (Assigned(grupoConsultado)) then
         begin
           erros.Add('Já existe um grupo [' + IntToStrSenaoZero(grupoConsultado.id) +
-                  ' - ' + grupoConsultado.descricao +
-                  ' - ' + grupoConsultado.status + '], cadastrado com essa descrição!');
+                    ' - ' + grupoConsultado.descricao +
+                    ' - ' + grupoConsultado.subDescricao +
+                    ' - ' + grupoConsultado.status + '], cadastrado com essa descrição e sub Descrição!');
           grupoConsultado.Destroy;
         end;
       end;

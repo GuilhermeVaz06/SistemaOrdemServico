@@ -26,7 +26,9 @@ uses
   Grupo in '..\Tela\Grupo.pas' {FGrupo},
   OrdemServico in '..\Tela\OrdemServico.pas' {FOrdemServico},
   DMOrdemServico in '..\Data Module\DMOrdemServico.pas' {FDMOrdemServico: TDataModule},
-  SelecaoEnderecoCliente in '..\Tela\SelecaoEnderecoCliente.pas' {FSelecaoEnderecoCliente};
+  SelecaoEnderecoCliente in '..\Tela\SelecaoEnderecoCliente.pas' {FSelecaoEnderecoCliente},
+  OrdemServicoItem in '..\Tela\OrdemServicoItem.pas' {FOrdemServicoItem},
+  OrdemServicoProduto in '..\Tela\OrdemServicoProduto.pas' {FOrdemServicoProduto};
 
 {$R *.res}
 
