@@ -120,6 +120,12 @@ type
     BExcluirCusto: TSpeedButton;
     GCusto: TDBGrid;
     CBInativoCusto: TCheckBox;
+    TabCustoFuncionario: TTabSheet;
+    Panel5: TPanel;
+    BFuncionarioCadastrar: TSpeedButton;
+    BFuncionarioExcluir: TSpeedButton;
+    GFuncionario: TDBGrid;
+    CBInativoFuncionario: TCheckBox;
     procedure BFecharClick(Sender: TObject);
     procedure BCadastrarClick(Sender: TObject);
     procedure BAlterarClick(Sender: TObject);
@@ -157,6 +163,10 @@ type
     procedure GCustoDblClick(Sender: TObject);
     procedure BCadastrarCustoClick(Sender: TObject);
     procedure BExcluirCustoClick(Sender: TObject);
+    procedure CBInativoFuncionarioClick(Sender: TObject);
+    procedure GFuncionarioDblClick(Sender: TObject);
+    procedure BFuncionarioCadastrarClick(Sender: TObject);
+    procedure BFuncionarioExcluirClick(Sender: TObject);
   private
     { Private declarations }
     function validarCampos: boolean;
@@ -172,7 +182,8 @@ var
 implementation
 
 uses UFuncao, DMOrdemServico, DMPessoa, SelecaoEnderecoCliente,
-     OrdemServicoProduto, OrdemServicoItem, OrdemServicoCusto;
+     OrdemServicoProduto, OrdemServicoItem, OrdemServicoCusto,
+     OrdemServicoFuncionario;
 
 {$R *.dfm}
 
@@ -361,6 +372,51 @@ begin
   close;
 end;
 
+procedure TFOrdemServico.BFuncionarioCadastrarClick(Sender: TObject);
+begin
+  if not (FDMOrdemServico.TOrdemServicocodigo.Value > 0) and (confirmarCadastro(False) = False) then
+  begin
+    Exit;
+  end;
+
+  try
+    Application.CreateForm(TFOrdemServicoFuncionario, FOrdemServicoFuncionario);
+
+    with FDMOrdemServico do
+    begin
+      TFuncionario.Append;
+      TFuncionarioordem.Value := TOrdemServicocodigo.Value;
+    end;
+
+    FOrdemServicoFuncionario.ShowModal;
+  finally
+    FreeAndNil(FOrdemServicoFuncionario);
+  end;
+end;
+
+procedure TFOrdemServico.BFuncionarioExcluirClick(Sender: TObject);
+var
+  codigo: integer;
+begin
+  with FDMOrdemServico do
+  begin
+    if not (TFuncionario.RecordCount > 0) then
+    begin
+      informar('Nenhum registro selecionado!');
+    end
+    else if (confirmar('Realmente deseja inativar o custo de funcionario: ' + TFuncionariodescricao.Value + '?')) then
+    begin
+      codigo := TFuncionariocodigo.Value;
+
+      if (inativarFuncionario) then
+      begin
+        consultarDadosFuncionario(0, True);
+        TFuncionario.Locate('codigo', codigo, [loCaseInsensitive]);
+      end;
+    end;
+  end;
+end;
+
 procedure TFOrdemServico.BInativarClick(Sender: TObject);
 begin
 //  vai ser o excluir ordem de servico
@@ -392,6 +448,11 @@ end;
 procedure TFOrdemServico.CBInativoCustoClick(Sender: TObject);
 begin
   FDMOrdemServico.consultarDadosCusto(0, False);
+end;
+
+procedure TFOrdemServico.CBInativoFuncionarioClick(Sender: TObject);
+begin
+  FDMOrdemServico.consultarDadosFuncionario(0, False);
 end;
 
 procedure TFOrdemServico.CBInativoProdutoClick(Sender: TObject);
@@ -438,6 +499,7 @@ begin
     begin
       FDMOrdemServico.TOrdemServico.Post;
       UFuncao.desativaBotoes(self);
+      BCancelar.Enabled := False;
     end;
   end;
 
@@ -628,6 +690,22 @@ begin
   OrdenarGrid(Column);
 end;
 
+procedure TFOrdemServico.GFuncionarioDblClick(Sender: TObject);
+begin
+  if (FDMOrdemServico.TFuncionario.RecordCount > 0) then
+  try
+    Application.CreateForm(TFOrdemServicoFuncionario, FOrdemServicoFuncionario);
+    FDMOrdemServico.TFuncionario.Edit;
+    FOrdemServicoFuncionario.ShowModal;
+  finally
+    FreeAndNil(FOrdemServicoFuncionario);
+  end
+  else
+  begin
+    informar('Nenhum registro selecionado!');
+  end;
+end;
+
 procedure TFOrdemServico.GItemDblClick(Sender: TObject);
 begin
   if (FDMOrdemServico.TItem.RecordCount > 0) then
@@ -733,6 +811,7 @@ begin
         consultarDadosItem(0, False);
         consultarDadosProduto(0, False);
         consultarDadosCusto(0, False);
+        consultarDadosFuncionario(0, False);
       end;
     end;
   end;

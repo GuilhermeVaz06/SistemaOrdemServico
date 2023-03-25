@@ -211,6 +211,10 @@
             <Form>FOrdemServicoCusto</Form>
             <FormType>dfm</FormType>
         </DCCReference>
+        <DCCReference Include="..\Tela\OrdemServicoFuncionario.pas">
+            <Form>FOrdemServicoFuncionario</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
         <BuildConfiguration Include="Release">
             <Key>Cfg_2</Key>
             <CfgParent>Base</CfgParent>

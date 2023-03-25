@@ -54,6 +54,8 @@ begin
   resposta.AddPair('valorTotalProduto', TJSONNumber.Create(ordemServicoItem.valorTotalProduto));
   resposta.AddPair('valorDescontoProduto', TJSONNumber.Create(ordemServicoItem.valorDescontoProduto));
   resposta.AddPair('valorFinalProduto', TJSONNumber.Create(ordemServicoItem.valorFinalProduto));
+  resposta.AddPair('valorTotalCusto', TJSONNumber.Create(ordemServicoItem.valorTotalCusto));
+  resposta.AddPair('valorTotalCustoFuncionario', TJSONNumber.Create(ordemServicoItem.valorTotalCustoFuncionario));
   resposta.AddPair('valorTotal', TJSONNumber.Create(ordemServicoItem.valorTotal));
   resposta.AddPair('valorDescontoTotal', TJSONNumber.Create(ordemServicoItem.valorTotalDesconto));
   resposta.AddPair('valorFinal', TJSONNumber.Create(ordemServicoItem.valorFinal));

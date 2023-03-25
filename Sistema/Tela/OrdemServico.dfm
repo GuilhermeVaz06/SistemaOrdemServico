@@ -224,7 +224,7 @@ object FOrdemServico: TFOrdemServico
         Top = 249
         Width = 1355
         Height = 286
-        ActivePage = TabCusto
+        ActivePage = TabCustoFuncionario
         Align = alClient
         TabOrder = 2
         object TBItem: TTabSheet
@@ -601,7 +601,6 @@ object FOrdemServico: TFOrdemServico
             Align = alTop
             BevelOuter = bvNone
             TabOrder = 0
-            ExplicitTop = 8
             object BCadastrarCusto: TSpeedButton
               Left = 0
               Top = 0
@@ -751,6 +750,248 @@ object FOrdemServico: TFOrdemServico
             Enabled = False
             TabOrder = 2
             OnClick = CBInativoCustoClick
+          end
+        end
+        object TabCustoFuncionario: TTabSheet
+          Caption = 'Custo com Funcionarios'
+          ImageIndex = 4
+          object Panel5: TPanel
+            Left = 0
+            Top = 0
+            Width = 1347
+            Height = 29
+            Align = alTop
+            BevelOuter = bvNone
+            TabOrder = 0
+            object BFuncionarioCadastrar: TSpeedButton
+              Left = 0
+              Top = 0
+              Width = 96
+              Height = 29
+              Align = alLeft
+              Caption = 'Cadastrar'
+              ImageIndex = 0
+              Images = FMenuPrincipal.ImageList1
+              Enabled = False
+              OnClick = BFuncionarioCadastrarClick
+              ExplicitLeft = 8
+              ExplicitHeight = 41
+            end
+            object BFuncionarioExcluir: TSpeedButton
+              Left = 96
+              Top = 0
+              Width = 96
+              Height = 29
+              Align = alLeft
+              Caption = 'Excluir'
+              ImageIndex = 3
+              Images = FMenuPrincipal.ImageList1
+              Enabled = False
+              OnClick = BFuncionarioExcluirClick
+              ExplicitLeft = 1
+              ExplicitTop = -1
+              ExplicitHeight = 39
+            end
+          end
+          object GFuncionario: TDBGrid
+            Left = 0
+            Top = 29
+            Width = 1347
+            Height = 209
+            Align = alClient
+            DataSource = FDMOrdemServico.DFuncionario
+            Enabled = False
+            Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
+            ReadOnly = True
+            TabOrder = 1
+            TitleFont.Charset = DEFAULT_CHARSET
+            TitleFont.Color = clWindowText
+            TitleFont.Height = -13
+            TitleFont.Name = 'Tahoma'
+            TitleFont.Style = []
+            OnDrawColumnCell = GDadosDrawColumnCell
+            OnDblClick = GFuncionarioDblClick
+            OnTitleClick = GDadosTitleClick
+            Columns = <
+              item
+                Expanded = False
+                FieldName = 'codigo'
+                Title.Alignment = taCenter
+                Title.Caption = 'Codigo'
+                Width = 65
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'descricao'
+                Title.Alignment = taCenter
+                Title.Caption = 'Descri'#231#227'o'
+                Width = 170
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'nomeFuncionario'
+                Title.Alignment = taCenter
+                Title.Caption = 'Funcionario'
+                Width = 145
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'qtdeHoraNormal'
+                Title.Alignment = taCenter
+                Title.Caption = 'Qtde Hora Normal'
+                Width = 131
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'valorHoraNormal'
+                Title.Alignment = taCenter
+                Title.Caption = 'Valor Hora Normal'
+                Width = 138
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'valorTotalNormal'
+                Title.Alignment = taCenter
+                Title.Caption = 'Valor Total Normal'
+                Width = 134
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'qtdeHora50'
+                Title.Alignment = taCenter
+                Title.Caption = 'Qtde Hora 50%'
+                Width = 124
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'valorHora50'
+                Title.Alignment = taCenter
+                Title.Caption = 'Valor Hora 50%'
+                Width = 123
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'valorTotal50'
+                Title.Alignment = taCenter
+                Title.Caption = 'Valor Total 50%'
+                Width = 120
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'qtdeHora100'
+                Title.Alignment = taCenter
+                Title.Caption = 'Qtde Hora 100%'
+                Width = 126
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'valorHora100'
+                Title.Alignment = taCenter
+                Title.Caption = 'Valor Hora 100%'
+                Width = 136
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'valorTotal100'
+                Title.Alignment = taCenter
+                Title.Caption = 'Valor Total 100%'
+                Width = 147
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'qtdeHoraAdNoturno'
+                Title.Alignment = taCenter
+                Title.Caption = 'Qtde Hora Ad. Noturno'
+                Width = 147
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'valorHoraAdNoturno'
+                Title.Alignment = taCenter
+                Title.Caption = 'Valor Hora Ad. Noturno'
+                Width = 163
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'valorTotalAdNoturno'
+                Title.Alignment = taCenter
+                Title.Caption = 'Valor Total Ad. Noturno'
+                Width = 172
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'valorTotal'
+                Title.Alignment = taCenter
+                Title.Caption = 'Valor Total'
+                Width = 108
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'cadastradoPor'
+                Title.Alignment = taCenter
+                Title.Caption = 'Cadastrado Por'
+                Width = 143
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'alteradoPor'
+                Title.Alignment = taCenter
+                Title.Caption = 'Alterado Por'
+                Width = 130
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'dataCadastro'
+                Title.Alignment = taCenter
+                Title.Caption = 'Data Cadastro'
+                Width = 134
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'dataAlteracao'
+                Title.Alignment = taCenter
+                Title.Caption = 'Data Altera'#231#227'o'
+                Width = 153
+                Visible = True
+              end
+              item
+                Expanded = False
+                FieldName = 'status'
+                Title.Alignment = taCenter
+                Title.Caption = 'Status'
+                Width = 61
+                Visible = True
+              end>
+          end
+          object CBInativoFuncionario: TCheckBox
+            Left = 0
+            Top = 238
+            Width = 1347
+            Height = 17
+            Align = alBottom
+            Caption = 'Mostrar Inativos'
+            Enabled = False
+            TabOrder = 2
+            OnClick = CBInativoFuncionarioClick
           end
         end
         object TabResumo: TTabSheet

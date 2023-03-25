@@ -29,7 +29,8 @@ uses
   SelecaoEnderecoCliente in '..\Tela\SelecaoEnderecoCliente.pas' {FSelecaoEnderecoCliente},
   OrdemServicoItem in '..\Tela\OrdemServicoItem.pas' {FOrdemServicoItem},
   OrdemServicoProduto in '..\Tela\OrdemServicoProduto.pas' {FOrdemServicoProduto},
-  OrdemServicoCusto in '..\Tela\OrdemServicoCusto.pas' {FOrdemServicoCusto};
+  OrdemServicoCusto in '..\Tela\OrdemServicoCusto.pas' {FOrdemServicoCusto},
+  OrdemServicoFuncionario in '..\Tela\OrdemServicoFuncionario.pas' {FOrdemServicoFuncionario};
 
 {$R *.res}
 
@@ -49,6 +50,5 @@ begin
   Application.CreateForm(TFDMFuncao, FDMFuncao);
   Application.CreateForm(TFDMGrupo, FDMGrupo);
   Application.CreateForm(TFDMOrdemServico, FDMOrdemServico);
-  Application.CreateForm(TFOrdemServicoCusto, FOrdemServicoCusto);
   Application.Run;
 end.

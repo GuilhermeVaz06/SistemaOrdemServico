@@ -129,7 +129,7 @@ begin
   sql := TStringList.Create;
   sql.Add('SELECT ordem_servico_funcionario.CODIGO_FUNCIONARIO, funcao.DESCRICAO');
   sql.Add('');
-  sql.Add(',(SELECT pessoa.RAZAO_SOCIAL ');
+  sql.Add(',(SELECT IFNULL(pessoa.RAZAO_SOCIAL,'''') ');
   sql.Add('    FROM pessoa ');
   sql.Add('   WHERE pessoa.CODIGO_PESSOA  = ordem_servico_funcionario.CODIGO_PESSOA) nomeFuncionario');
   sql.Add('');
@@ -163,7 +163,7 @@ begin
 
     itemConsultado.FCodigo := query.FieldByName('CODIGO_FUNCIONARIO').Value;
     itemConsultado.FFuncao.descricao := query.FieldByName('DESCRICAO').Value;
-    itemConsultado.FFuncionario.razaoSocial := query.FieldByName('nomeFuncionario').Value;
+    itemConsultado.FFuncionario.razaoSocial := query.FieldByName('nomeFuncionario').AsString;
     itemConsultado.FStatus := query.FieldByName('STATUS').Value;
   end;
 
@@ -226,7 +226,7 @@ begin
     data.FFuncao.id := query.FieldByName('CODIGO_FUNCAO').Value;
     data.FFuncao.descricao := query.FieldByName('DESCRICAO').Value;
     data.FFuncionario.id := query.FieldByName('CODIGO_PESSOA').Value;
-    data.FFuncionario.razaoSocial := query.FieldByName('nomeFuncionario').Value;
+    data.FFuncionario.razaoSocial := query.FieldByName('nomeFuncionario').AsString;
     data.FQtdeHoraNormal := query.FieldByName('QTDE_HORAS_NORMAL').Value;
     data.FQtdeHora50 := query.FieldByName('QTDE_HORA_50').Value;
     data.FQtdeHora100 := query.FieldByName('QTDE_HORA_100').Value;
@@ -387,7 +387,7 @@ begin
     sql.Add(', ordem_servico_funcionario.DATA_CADASTRO, ordem_servico_funcionario.DATA_ULTIMA_ALTERACAO');
     sql.Add(', ordem_servico_funcionario.`STATUS`, ordem_servico_funcionario.`CODIGO_FUNCAO`');
     sql.Add('');
-    sql.Add(',(SELECT pessoa.RAZAO_SOCIAL ');
+    sql.Add(',(SELECT IFNULL(pessoa.RAZAO_SOCIAL,'''') ');
     sql.Add('    FROM pessoa ');
     sql.Add('   WHERE pessoa.CODIGO_PESSOA  = ordem_servico_funcionario.CODIGO_PESSOA) nomeFuncionario');
     sql.Add('');
@@ -507,7 +507,7 @@ begin
   sql.Add(', ordem_servico_funcionario.DATA_CADASTRO, ordem_servico_funcionario.DATA_ULTIMA_ALTERACAO');
   sql.Add(', ordem_servico_funcionario.`STATUS`, ordem_servico_funcionario.`CODIGO_FUNCAO`');
   sql.Add('');
-  sql.Add(',(SELECT pessoa.RAZAO_SOCIAL ');
+  sql.Add(',(SELECT IFNULL(pessoa.RAZAO_SOCIAL,'''') ');
   sql.Add('    FROM pessoa ');
   sql.Add('   WHERE pessoa.CODIGO_PESSOA  = ordem_servico_funcionario.CODIGO_PESSOA) nomeFuncionario');
   sql.Add('');

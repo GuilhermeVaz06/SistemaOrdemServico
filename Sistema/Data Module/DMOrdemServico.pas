@@ -133,6 +133,32 @@ type
     TCustodataCadastro: TStringField;
     TCustodataAlteracao: TStringField;
     TCustostatus: TStringField;
+    DFuncionario: TDataSource;
+    TFuncionario: TFDMemTable;
+    TFuncionariocodigo: TIntegerField;
+    TFuncionarioordem: TIntegerField;
+    TFuncionariocodigoFuncao: TIntegerField;
+    TFuncionariodescricao: TStringField;
+    TFuncionariocodigoFuncionario: TIntegerField;
+    TFuncionarionomeFuncionario: TStringField;
+    TFuncionarioqtdeHoraNormal: TIntegerField;
+    TFuncionarioqtdeHora50: TIntegerField;
+    TFuncionarioqtdeHora100: TIntegerField;
+    TFuncionarioqtdeHoraAdNoturno: TIntegerField;
+    TFuncionariovalorHoraNormal: TFloatField;
+    TFuncionariovalorHora50: TFloatField;
+    TFuncionariovalorHora100: TFloatField;
+    TFuncionariovalorHoraAdNoturno: TFloatField;
+    TFuncionariovalorTotalNormal: TFloatField;
+    TFuncionariovalorTotal50: TFloatField;
+    TFuncionariovalorTotal100: TFloatField;
+    TFuncionariovalorTotalAdNoturno: TFloatField;
+    TFuncionariovalorTotal: TFloatField;
+    TFuncionariocadastradoPor: TStringField;
+    TFuncionarioalteradoPor: TStringField;
+    TFuncionariodataCadastro: TStringField;
+    TFuncionariodataAlteracao: TStringField;
+    TFuncionariostatus: TStringField;
     procedure GetText(Sender: TField; var Text: string;
       DisplayText: Boolean);
     procedure TOrdemServicoAfterScroll(DataSet: TDataSet);
@@ -149,15 +175,19 @@ type
     procedure consultarDadosItem(codigo: integer; mostrarErro: Boolean);
     procedure consultarDadosProduto(codigo: integer; mostrarErro: Boolean);
     procedure consultarDadosCusto(codigo: integer; mostrarErro: Boolean);
+    procedure consultarDadosFuncionario(codigo: integer; mostrarErro: Boolean);
     function alterarItem: Boolean;
     function alterarProduto: Boolean;
+    function alterarFuncionario: Boolean;
     function alterarCusto: Boolean;
     function cadastrarItem: Boolean;
     function cadastrarProduto: Boolean;
     function cadastrarCusto: Boolean;
+    function cadastrarFuncionario: Boolean;
     function inativarItem: Boolean;
     function inativarProduto: Boolean;
     function inativarCusto: Boolean;
+    function inativarFuncionario: Boolean;
     function excluirOrdem: Boolean;
   end;
 
@@ -248,6 +278,40 @@ begin
   Conexao.metodo := rmDELETE;
   Conexao.url := 'ordemServicoCusto/' + IntToStrSenaoZero(TOrdemServicocodigo.Value) +
                  '/' + IntToStrSenaoZero(TCustocodigo.Value);
+  Conexao.Enviar;
+
+  if not (Conexao.status in[200..202]) then
+  begin
+    informar(Conexao.erro);
+    Result := False;
+  end
+  else
+  begin
+    json := converterJsonTextoJsonValue(Conexao.resposta);
+
+    if (Assigned(json)) then
+    begin
+      Result := True;
+    end
+    else
+    begin
+      Result := False;
+    end;
+  end;
+
+  Conexao.Destroy;
+end;
+
+function TFDMOrdemServico.inativarFuncionario: Boolean;
+var
+  Conexao: TConexao;
+  json: TJSONValue;
+begin
+  Conexao := TConexao.Create;
+
+  Conexao.metodo := rmDELETE;
+  Conexao.url := 'ordemServicoFuncionario/' + IntToStrSenaoZero(TOrdemServicocodigo.Value) +
+                 '/' + IntToStrSenaoZero(TFuncionariocodigo.Value);
   Conexao.Enviar;
 
   if not (Conexao.status in[200..202]) then
@@ -414,6 +478,55 @@ begin
   Conexao.Destroy;
 end;
 
+function TFDMOrdemServico.cadastrarFuncionario: Boolean;
+var
+  Conexao: TConexao;
+  json: TJSONValue;
+begin
+  Conexao := TConexao.Create;
+
+  Conexao.metodo := rmPOST;
+  Conexao.url := 'ordemServicoFuncionario';
+  Conexao.AtribuirBody('ordem', IntToStrSenaoZero(TOrdemServicocodigo.Value));
+  Conexao.AtribuirBody('codigoFuncao', IntToStrSenaoZero(TFuncionariocodigoFuncao.Value));
+  Conexao.AtribuirBody('codigoFuncionario', IntToStrSenaoZero(TFuncionariocodigoFuncionario.Value));
+  Conexao.AtribuirBody('qtdeHoraNormal', VirgulaPonto(TFuncionarioqtdeHoraNormal.Value));
+  Conexao.AtribuirBody('qtdeHora50', VirgulaPonto(TFuncionarioqtdeHora50.Value));
+  Conexao.AtribuirBody('qtdeHora100', VirgulaPonto(TFuncionarioqtdeHora100.Value));
+  Conexao.AtribuirBody('qtdeHoraAdNoturno', VirgulaPonto(TFuncionarioqtdeHoraAdNoturno.Value));
+  Conexao.AtribuirBody('valorHoraNormal', VirgulaPonto(TFuncionariovalorHoraNormal.Value));
+  Conexao.Enviar;
+
+  if not (Conexao.status in[200..202]) then
+  begin
+    informar(Conexao.erro);
+    Result := False;
+  end
+  else
+  begin
+    json := converterJsonTextoJsonValue(Conexao.resposta);
+
+    if (Assigned(json)) then
+    begin
+      TFuncionariocodigo.Value := json.GetValue<Integer>('codigo', 0);
+      TFuncionariocadastradoPor.Value := json.GetValue<string>('cadastradoPor', '');
+      TFuncionariovalorTotal.Value := json.GetValue<Double>('valorTotal', 0);
+      TFuncionarioalteradoPor.Value := json.GetValue<string>('alteradoPor', '');
+      TFuncionariodataCadastro.Value := json.GetValue<string>('dataCadastro', '');
+      TFuncionariodataAlteracao.Value := json.GetValue<string>('dataAlteracao', '');
+      TFuncionariostatus.Value := json.GetValue<string>('status', 'A');
+
+      Result := True;
+    end
+    else
+    begin
+      Result := False;
+    end;
+  end;
+
+  Conexao.Destroy;
+end;
+
 function TFDMOrdemServico.alterarProduto: Boolean;
 var
   Conexao: TConexao;
@@ -553,6 +666,58 @@ begin
       TCustodataCadastro.Value := json.GetValue<string>('dataCadastro', '');
       TCustodataAlteracao.Value := json.GetValue<string>('dataAlteracao', '');
       TCustostatus.Value := json.GetValue<string>('status', 'A');
+
+      Result := True;
+    end
+    else
+    begin
+      Result := False;
+    end;
+  end;
+
+  Conexao.Destroy;
+end;
+
+function TFDMOrdemServico.alterarFuncionario: Boolean;
+var
+  Conexao: TConexao;
+  json: TJSONValue;
+begin
+  Conexao := TConexao.Create;
+
+  Conexao.metodo := rmPUT;
+  Conexao.url := 'ordemServicoFuncionario/' + IntToStrSenaoZero(TOrdemServicocodigo.Value) +
+                 '/' + IntToStrSenaoZero(TFuncionariocodigo.Value);
+
+  Conexao.AtribuirBody('ordem', IntToStrSenaoZero(TOrdemServicocodigo.Value));
+  Conexao.AtribuirBody('codigoFuncao', IntToStrSenaoZero(TFuncionariocodigoFuncao.Value));
+  Conexao.AtribuirBody('codigoFuncionario', IntToStrSenaoZero(TFuncionariocodigoFuncionario.Value));
+  Conexao.AtribuirBody('qtdeHoraNormal', VirgulaPonto(TFuncionarioqtdeHoraNormal.Value));
+  Conexao.AtribuirBody('qtdeHora50', VirgulaPonto(TFuncionarioqtdeHora50.Value));
+  Conexao.AtribuirBody('qtdeHora100', VirgulaPonto(TFuncionarioqtdeHora100.Value));
+  Conexao.AtribuirBody('qtdeHoraAdNoturno', VirgulaPonto(TFuncionarioqtdeHoraAdNoturno.Value));
+  Conexao.AtribuirBody('valorHoraNormal', VirgulaPonto(TFuncionariovalorHoraNormal.Value));
+  Conexao.AtribuirBody('status', TFuncionariostatus.Value);
+  Conexao.Enviar;
+
+  if not (Conexao.status in[200..202]) then
+  begin
+    informar(Conexao.erro);
+    Result := False;
+  end
+  else
+  begin
+    json := converterJsonTextoJsonValue(Conexao.resposta);
+
+    if (Assigned(json)) then
+    begin
+      TFuncionariocodigo.Value := json.GetValue<Integer>('codigo', 0);
+      TFuncionariocadastradoPor.Value := json.GetValue<string>('cadastradoPor', '');
+      TFuncionariovalorTotal.Value := json.GetValue<Double>('valorTotal', 0);
+      TFuncionarioalteradoPor.Value := json.GetValue<string>('alteradoPor', '');
+      TFuncionariodataCadastro.Value := json.GetValue<string>('dataCadastro', '');
+      TFuncionariodataAlteracao.Value := json.GetValue<string>('dataAlteracao', '');
+      TFuncionariostatus.Value := json.GetValue<string>('status', 'A');
 
       Result := True;
     end
@@ -711,6 +876,82 @@ begin
     begin
       TCusto.Close;
       TCusto.Open;
+    end;
+
+    Conexao.Destroy;
+  end;
+end;
+
+procedure TFDMOrdemServico.consultarDadosFuncionario(codigo: integer; mostrarErro: Boolean);
+var
+  Conexao: TConexao;
+  master, item: TJSONArray;
+  json: TJSONValue;
+  limite, offset: integer;
+  continuar: Boolean;
+begin
+  if (TOrdemServicocodigo.Value > 0) or (TOrdemServico.State = dsInsert) then
+  begin
+    Conexao := TConexao.Create;
+
+    if (codigo > 0) then
+    begin
+      Conexao.AtribuirParametro('codigo', IntToStrSenaoZero(codigo));
+    end;
+
+    if (Assigned(FOrdemServico)) then
+    begin
+      if FOrdemServico.CBInativoFuncionario.Checked then
+      begin
+        Conexao.AtribuirParametro('status', 'I');
+      end
+      else
+      begin
+        Conexao.AtribuirParametro('status', 'A');
+      end;
+    end;
+
+    dadosOrdemConsultados := TOrdemServicocodigo.Value;
+
+    Conexao.metodo := rmGET;
+    Conexao.url := 'ordemServicoFuncionario/' + IntToStrSenaoZero(TOrdemServicocodigo.Value);
+    master := TJSONArray.Create;
+    limite := 500;
+    offset := 0;
+
+    repeat
+      Conexao.AtribuirParametro('limite', IntToStrSenaoZero(limite));
+      Conexao.AtribuirParametro('offset', IntToStrSenaoZero(offset));
+      Conexao.Enviar;
+      continuar := False;
+      offset := offset + limite;
+
+      if not (Conexao.status in[200..202]) and (mostrarErro) then
+      begin
+        informar(Conexao.erro);
+        Break;
+      end
+      else if (Conexao.status in[200..202]) then
+      begin
+        json := converterJsonTextoJsonValue(Conexao.resposta);
+        item := converterJsonValueJsonArray(json, 'dados');
+        continuar := json.GetValue<Boolean>('maisRegistros', False);
+        copiarItemJsonArray(item, master);
+      end
+      else if not (Conexao.status in[200..202]) and (mostrarErro = False) then
+      begin
+        Break;
+      end;
+    until not continuar;
+
+    if (Assigned(master)) and (master.Count > 0) then
+    begin
+      converterArrayJsonQuery(converterJsonArrayRestResponse(master), TFuncionario);
+    end
+    else
+    begin
+      TFuncionario.Close;
+      TFuncionario.Open;
     end;
 
     Conexao.Destroy;
@@ -1198,6 +1439,7 @@ begin
     consultarDadosItem(0, False);
     consultarDadosProduto(0, False);
     consultarDadosCusto(0, False);
+    consultarDadosFuncionario(0, False);
 
     if (TOrdemServicodataOrdemServico.Value <> '') then
     begin

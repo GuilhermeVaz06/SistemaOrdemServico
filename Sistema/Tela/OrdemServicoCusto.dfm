@@ -90,8 +90,6 @@ object FOrdemServicoCusto: TFOrdemServicoCusto
       TabOrder = 6
       ValueChecked = 'A'
       ValueUnchecked = 'I'
-      ExplicitTop = 95
-      ExplicitWidth = 574
     end
     object DBEdit1: TDBEdit
       Left = 477
@@ -130,6 +128,7 @@ object FOrdemServicoCusto: TFOrdemServicoCusto
       Top = 19
       Width = 88
       Height = 24
+      TabStop = False
       DataField = 'codigoGrupo'
       DataSource = FDMOrdemServico.DCusto
       TabOrder = 0
@@ -156,8 +155,6 @@ object FOrdemServicoCusto: TFOrdemServicoCusto
     Align = alTop
     BevelOuter = bvNone
     TabOrder = 1
-    ExplicitTop = 112
-    ExplicitWidth = 574
     object BConfirmar: TSpeedButton
       Left = 662
       Top = 0

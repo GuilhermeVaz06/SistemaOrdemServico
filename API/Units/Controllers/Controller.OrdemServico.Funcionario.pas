@@ -329,6 +329,7 @@ begin
           else if (funcionario.funcionario.id > 0) then
           begin
             funcionarioConsultado.funcionario.Destroy;
+            funcionario.funcionario.tipoPessoa.id := tpFuncionario;
             funcionarioConsultado.funcionario := funcionario.funcionario.consultarChave();
 
             if not (Assigned(funcionarioConsultado.funcionario)) then

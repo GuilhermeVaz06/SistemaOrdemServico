@@ -576,4 +576,109 @@ object FDMOrdemServico: TFDMOrdemServico
       Size = 1
     end
   end
+  object DFuncionario: TDataSource
+    DataSet = TFuncionario
+    Left = 412
+    Top = 174
+  end
+  object TFuncionario: TFDMemTable
+    FieldDefs = <>
+    IndexDefs = <>
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired, uvAutoCommitUpdates]
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.AutoCommitUpdates = True
+    StoreDefs = True
+    Left = 413
+    Top = 124
+    object TFuncionariocodigo: TIntegerField
+      FieldName = 'codigo'
+    end
+    object TFuncionarioordem: TIntegerField
+      FieldName = 'ordem'
+    end
+    object TFuncionariocodigoFuncao: TIntegerField
+      FieldName = 'codigoFuncao'
+    end
+    object TFuncionariodescricao: TStringField
+      FieldName = 'descricao'
+      Size = 150
+    end
+    object TFuncionariocodigoFuncionario: TIntegerField
+      FieldName = 'codigoFuncionario'
+    end
+    object TFuncionarionomeFuncionario: TStringField
+      FieldName = 'nomeFuncionario'
+      Size = 150
+    end
+    object TFuncionarioqtdeHoraNormal: TIntegerField
+      FieldName = 'qtdeHoraNormal'
+    end
+    object TFuncionarioqtdeHora50: TIntegerField
+      FieldName = 'qtdeHora50'
+    end
+    object TFuncionarioqtdeHora100: TIntegerField
+      FieldName = 'qtdeHora100'
+    end
+    object TFuncionarioqtdeHoraAdNoturno: TIntegerField
+      FieldName = 'qtdeHoraAdNoturno'
+    end
+    object TFuncionariovalorHoraNormal: TFloatField
+      FieldName = 'valorHoraNormal'
+      currency = True
+    end
+    object TFuncionariovalorHora50: TFloatField
+      FieldName = 'valorHora50'
+      currency = True
+    end
+    object TFuncionariovalorHora100: TFloatField
+      FieldName = 'valorHora100'
+      currency = True
+    end
+    object TFuncionariovalorHoraAdNoturno: TFloatField
+      FieldName = 'valorHoraAdNoturno'
+      currency = True
+    end
+    object TFuncionariovalorTotalNormal: TFloatField
+      FieldName = 'valorTotalNormal'
+      currency = True
+    end
+    object TFuncionariovalorTotal50: TFloatField
+      FieldName = 'valorTotal50'
+      currency = True
+    end
+    object TFuncionariovalorTotal100: TFloatField
+      FieldName = 'valorTotal100'
+      currency = True
+    end
+    object TFuncionariovalorTotalAdNoturno: TFloatField
+      FieldName = 'valorTotalAdNoturno'
+      currency = True
+    end
+    object TFuncionariovalorTotal: TFloatField
+      FieldName = 'valorTotal'
+      currency = True
+    end
+    object TFuncionariocadastradoPor: TStringField
+      FieldName = 'cadastradoPor'
+      Size = 150
+    end
+    object TFuncionarioalteradoPor: TStringField
+      FieldName = 'alteradoPor'
+      Size = 150
+    end
+    object TFuncionariodataCadastro: TStringField
+      FieldName = 'dataCadastro'
+    end
+    object TFuncionariodataAlteracao: TStringField
+      FieldName = 'dataAlteracao'
+    end
+    object TFuncionariostatus: TStringField
+      FieldName = 'status'
+      Size = 1
+    end
+  end
 end
