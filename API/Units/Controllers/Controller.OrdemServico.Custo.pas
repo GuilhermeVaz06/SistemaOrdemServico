@@ -228,6 +228,130 @@ begin
   FreeAndNil(resposta);
 end;
 
+procedure buscarCustosAgrupado(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+var
+  resposta, temporario: TJSONObject;
+  quantidade, i: integer;
+  arrayResposta: TJSONArray;
+  custos: TArray<TCusto>;
+  filtrado: Boolean;
+  mensagem: string;
+  codigoLog: integer;
+begin
+  continuar := True;
+  resposta := TJSONObject.Create;
+  codigoLog := gerarLogCusto(Req, Res, 'buscarCustosAgrupado', resposta);
+
+  if (continuar) then
+  try
+    token := Req.Headers['token'];
+    custo.status := Req.Query['status'];
+    custo.limite := strToIntZero(Req.Query['limite']);
+    custo.offset := strToIntZero(Req.Query['offset']);
+    custo.ordemServico.id := strToIntZero(Req.Params['ordem']);
+  except
+    on E: Exception do
+    begin
+      mensagem := 'Erro não tratado ao recuperar informações da requisição!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('CUSTO010', mensagem))));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+      continuar := False;
+    end;
+  end;
+
+  if not (custo.ordemServico.id > 0) then
+  begin
+    mensagem := 'O codigo da ordem deve ser informado!';
+    resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('CUSTO019', mensagem))));
+    Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+    continuar := False;
+  end;
+
+  if (custo.status = '') then
+  begin
+    custo.status := 'A';
+  end;
+
+  if (continuar) and (verificarToken(res, resposta)) then
+  try
+    if (custo.ordemServico.id > 0) or
+       (custo.id > 0) then
+    begin
+      filtrado := True;
+    end
+    else
+    begin
+      filtrado := False;
+    end;
+
+    custos := custo.consultarCustoAgrupado();
+    quantidade := Length(custos);
+
+    resposta.AddPair('tipo', 'consulta Custos Agrupado');
+    resposta.AddPair('filtrado', TJSONBool.Create(filtrado));
+    resposta.AddPair('maisRegistros', TJSONBool.Create(custo.maisRegistro));
+    resposta.AddPair('qtdeRegistros', TJSONNumber.Create(quantidade));
+    resposta.AddPair('limite', TJSONNumber.Create(custo.limite));
+    resposta.AddPair('offset', TJSONNumber.Create(custo.offset));
+
+    if not Assigned(custos) then
+    begin
+      if (Length(custos) = 0) then
+      begin
+        resposta.AddPair(TJSONPair.Create('dados', TJSONArray.Create));
+        Res.Send<TJSONAncestor>(resposta.Clone).Status(200);
+      end
+      else
+      begin
+        mensagem := 'Erro ao consultar os Custos!';
+        resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('CUSTO002', mensagem))));
+        Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
+      end;
+    end
+    else
+    begin
+      arrayResposta := TJSONArray.Create;
+
+      for i := 0 to quantidade - 1 do
+      begin
+        temporario := TJSONObject.Create;
+
+        temporario.AddPair('descricao', custos[i].grupo.descricao);
+        temporario.AddPair('subDescricao', custos[i].grupo.subDescricao);
+        temporario.AddPair('quantidade', TJSONNumber.Create(custos[i].quantidade));
+        temporario.AddPair('valorTotal', TJSONNumber.Create(custos[i].valorUnitario));
+
+        arrayResposta.Add(temporario);
+      end;
+
+      resposta.AddPair(TJSONPair.Create('dados', arrayResposta));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(200);
+    end;
+
+    for i := 0 to quantidade - 1 do
+    begin
+      custos[i].destroy;
+    end;
+
+  except
+    on E: Exception do
+    begin
+      if not (Assigned(arrayResposta)) then
+      begin
+        arrayResposta := TJSONArray.Create;
+      end;
+
+      arrayResposta.Add(UFuncao.JsonErro('CUSTO003', 'Erro não tratado ao listar todos os Custos Agrupados!'));
+      resposta.AddPair(TJSONPair.Create('Erros', arrayResposta));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
+    end;
+  end;
+
+  custo.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
+  limparVariaveis;
+  FreeAndNil(resposta);
+end;
+
 procedure cadastrarCusto(Req: THorseRequest; Res: THorseResponse; Next: TProc);
 var
   erros: TStringList;
@@ -648,6 +772,7 @@ procedure Registry;
 begin
   criarConexao;
   THorse.Get('/ordemServicoCusto/:ordem', buscarCustos);
+  THorse.Get('/ordemServicoCustoAgrupado/:ordem', buscarCustosAgrupado);
   THorse.Post('/ordemServicoCusto', cadastrarCusto);
   THorse.Put('/ordemServicoCusto/:ordem/:id', alterarCusto);
   THorse.Delete('/ordemServicoCusto/:ordem/:id', inativarCusto);

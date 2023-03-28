@@ -461,12 +461,10 @@ var
 begin
   itemConsultado := TFuncionario.Create;
   sql := TStringList.Create;
-  sql.Add('SELECT ordem_servico_funcionario.CODIGO_FUNCIONARIO, funcao.DESCRICAO');
-  sql.Add('  FROM ordem_servico_funcionario, funcao');
+  sql.Add('SELECT ordem_servico_funcionario.CODIGO_FUNCIONARIO');
+  sql.Add('  FROM ordem_servico_funcionario');
   sql.Add(' WHERE CODIGO_FUNCIONARIO = ' + IntToStrSenaoZero(FCodigo));
   sql.Add('   AND CODIGO_OS = ' + IntToStrSenaoZero(FOrdemServico.id));
-  sql.Add('   AND CODIGO_PESSOA = ' + IntToStrSenaoZero(FFuncionario.id));
-  sql.Add('   AND ordem_servico_funcionario.CODIGO_FUNCAO = funcao.CODIGO_FUNCAO');
   sql.Add(' LIMIT 1');
 
   query := FConexao.executarComandoDQL(sql.Text);
@@ -484,7 +482,6 @@ begin
     FRegistrosAfetados := FConexao.registrosAfetados;
 
     itemConsultado.FCodigo := query.FieldByName('CODIGO_FUNCIONARIO').Value;
-    itemConsultado.FFuncao.descricao := query.FieldByName('DESCRICAO').Value;
   end;
 
   Result := itemConsultado;

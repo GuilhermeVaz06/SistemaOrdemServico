@@ -4,7 +4,7 @@ interface
 
 uses Data.DB, Vcl.Grids, Vcl.DBGrids, Vcl.StdCtrls, Vcl.DBCtrls, Vcl.Mask,
   Vcl.Controls, Vcl.Buttons, System.Classes, Vcl.ExtCtrls, System.SysUtils,
-  Vcl.Forms, Winapi.Windows, Vcl.ComCtrls;
+  Vcl.Forms, Winapi.Windows, Vcl.ComCtrls, Vcl.Graphics;
 
 type
   TFOrdemServico = class(TForm)
@@ -14,7 +14,7 @@ type
     Panel3: TPanel;
     BConsultar: TSpeedButton;
     LConsultaRazaoSocial: TLabel;
-    ERazaoSocial: TEdit;
+    EDetalhamento: TEdit;
     GDados: TDBGrid;
     CBMostrarInativo: TCheckBox;
     Painel: TPanel;
@@ -96,24 +96,6 @@ type
     DBEdit15: TDBEdit;
     DBEdit16: TDBEdit;
     TabResumo: TTabSheet;
-    Label4: TLabel;
-    Label5: TLabel;
-    Label6: TLabel;
-    ECadastradoPor: TDBEdit;
-    EAlteradoPor: TDBEdit;
-    EDataCadastro: TDBEdit;
-    Label7: TLabel;
-    Label31: TLabel;
-    Label32: TLabel;
-    DBEdit17: TDBEdit;
-    DBEdit18: TDBEdit;
-    DBEdit19: TDBEdit;
-    Label33: TLabel;
-    Label34: TLabel;
-    Label35: TLabel;
-    DBEdit20: TDBEdit;
-    DBEdit21: TDBEdit;
-    DBEdit22: TDBEdit;
     TabCusto: TTabSheet;
     Panel4: TPanel;
     BCadastrarCusto: TSpeedButton;
@@ -126,6 +108,15 @@ type
     BFuncionarioExcluir: TSpeedButton;
     GFuncionario: TDBGrid;
     CBInativoFuncionario: TCheckBox;
+    BReplicar: TSpeedButton;
+    Panel7: TPanel;
+    GValoresCusto: TDBGrid;
+    GValoresOrdem: TDBGrid;
+    Panel8: TPanel;
+    LLucroPercentual: TLabel;
+    LLucro: TLabel;
+    DBLucroPercentual: TDBEdit;
+    DBLucro: TDBEdit;
     procedure BFecharClick(Sender: TObject);
     procedure BCadastrarClick(Sender: TObject);
     procedure BAlterarClick(Sender: TObject);
@@ -167,6 +158,11 @@ type
     procedure GFuncionarioDblClick(Sender: TObject);
     procedure BFuncionarioCadastrarClick(Sender: TObject);
     procedure BFuncionarioExcluirClick(Sender: TObject);
+    procedure BReplicarClick(Sender: TObject);
+    procedure GValoresOrdemDrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure GValoresCustoDrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
   private
     { Private declarations }
     function validarCampos: boolean;
@@ -443,6 +439,11 @@ begin
       end;
     end;
   end;
+end;
+
+procedure TFOrdemServico.BReplicarClick(Sender: TObject);
+begin
+  FDMOrdemServico.replicarOrdem;
 end;
 
 procedure TFOrdemServico.CBInativoCustoClick(Sender: TObject);
@@ -738,59 +739,165 @@ begin
   end;
 end;
 
+procedure TFOrdemServico.GValoresCustoDrawColumnCell(Sender: TObject;
+  const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
+begin
+  if (GValoresCusto.DataSource.DataSet.RecNo mod 2) = 0 then
+  begin
+    GValoresCusto.Canvas.Brush.Color := clActiveCaption;
+    GValoresCusto.Canvas.Font.Color := clBlack;
+  end
+  else
+  begin
+    GValoresCusto.Canvas.Brush.Color := clWhite;
+    GValoresCusto.Canvas.Font.Color := clBlack;
+  end;
+
+  if (FDMOrdemServico.QCustoTotaldescricao.Value = 'Total Custo Geral') or
+     (FDMOrdemServico.QCustoTotaldescricao.Value = 'Total Custo Funcionario') or
+     (FDMOrdemServico.QCustoTotaldescricao.Value = 'Total Custos') then
+  begin
+    GValoresCusto.Canvas.Font.Style := GValoresCusto.Canvas.Font.Style + [fsbold];
+    GValoresCusto.Canvas.Font.Size := GValoresCusto.Canvas.Font.Size + 1;
+  end
+  else if (FDMOrdemServico.QCustoTotaldescricao.Value = '') then
+  begin
+    GValoresCusto.Canvas.Brush.Color := clWhite;
+    GValoresCusto.Canvas.Font.Color := clWhite;
+  end;
+
+  GValoresCusto.DefaultDrawColumnCell(Rect, DataCol, Column, State);
+end;
+
+procedure TFOrdemServico.GValoresOrdemDrawColumnCell(Sender: TObject;
+  const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
+begin
+  if (GValoresOrdem.DataSource.DataSet.RecNo mod 2) = 0 then
+  begin
+    GValoresOrdem.Canvas.Brush.Color := clActiveCaption;
+    GValoresOrdem.Canvas.Font.Color := clBlack;
+  end
+  else
+  begin
+    GValoresOrdem.Canvas.Brush.Color := clWhite;
+    GValoresOrdem.Canvas.Font.Color := clBlack;
+  end;
+
+  if (FDMOrdemServico.QValorTotaldescricao.Value = 'Total') then
+  begin
+    GValoresOrdem.Canvas.Font.Style := GValoresOrdem.Canvas.Font.Style + [fsbold];
+    GValoresOrdem.Canvas.Font.Size := GValoresOrdem.Canvas.Font.Size + 1;
+  end;
+
+  GValoresOrdem.DefaultDrawColumnCell(Rect, DataCol, Column, State);
+end;
+
 procedure TFOrdemServico.TabResumoShow(Sender: TObject);
 var
   valorTotal, desconto, valorFinal: Double;
 begin
-  if (FDMOrdemServico.TOrdemServico.State in[dsInsert, dsEdit]) then
+  with FDMOrdemServico do
   begin
-    CBInativoProduto.Checked := False;
-    CBMostrarInativoItem.Checked := False;
-
-    CBInativoProdutoClick(nil);
-    CBMostrarInativoItemClick(nil);
-
-    valorTotal := 0;
-    desconto := 0;
-    valorFinal := 0;
-
-    FDMOrdemServico.TItem.First;
-    while not FDMOrdemServico.TItem.Eof do
+    if (TOrdemServico.State in[dsInsert, dsEdit]) then
     begin
-      valorTotal := valorTotal + FDMOrdemServico.TItemvalorTotal.Value;
-      desconto := desconto + FDMOrdemServico.TItemvalorDesconto.Value;
-      valorFinal := valorFinal + FDMOrdemServico.TItemvalorFinal.Value;
-      FDMOrdemServico.TItem.Next;
+      CBInativoProduto.Checked := False;
+      CBMostrarInativoItem.Checked := False;
+      CBInativoCusto.Checked := False;
+      CBInativoFuncionario.Checked := False;
+
+      CBInativoProdutoClick(nil);
+      CBMostrarInativoItemClick(nil);
+      CBInativoCustoClick(nil);
+      CBInativoFuncionarioClick(nil);
+
+      valorTotal := 0;
+      desconto := 0;
+      valorFinal := 0;
+
+      TItem.First;
+      while not TItem.Eof do
+      begin
+        valorTotal := valorTotal + TItemvalorTotal.Value;
+        desconto := desconto + TItemvalorDesconto.Value;
+        valorFinal := valorFinal + TItemvalorFinal.Value;
+        TItem.Next;
+      end;
+
+      TOrdemServicovalorTotalItem.Value := valorTotal;
+      TOrdemServicovalorDescontoItem.Value := desconto;
+      TOrdemServicovalorFinalItem.Value := valorFinal;
+      valorTotal := 0;
+      desconto := 0;
+      valorFinal := 0;
+
+      TProduto.First;
+      while not TProduto.Eof do
+      begin
+        valorTotal := valorTotal + TProdutovalorTotal.Value;
+        desconto := desconto + TProdutovalorDesconto.Value;
+        valorFinal := valorFinal + TProdutovalorFinal.Value;
+        TProduto.Next;
+      end;
+
+      TOrdemServicovalorTotalProduto.Value := valorTotal;
+      TOrdemServicovalorDescontoProduto.Value := desconto;
+      TOrdemServicovalorFinalProduto.Value := valorFinal;
+      valorTotal := 0;
+
+      TCusto.First;
+      while not TCusto.Eof do
+      begin
+        valorTotal := valorTotal + TCustovalorTotal.Value;
+        TCusto.Next;
+      end;
+
+      TOrdemServicovalorTotalCusto.Value := valorTotal;
+      valorTotal := 0;
+
+      TFuncionario.First;
+      while not TFuncionario.Eof do
+      begin
+        valorTotal := valorTotal + TFuncionariovalorTotal.Value;
+        TFuncionario.Next;
+      end;
+
+      TOrdemServicovalorTotalCustoFuncionario.Value := valorTotal;
+
+      TOrdemServicovalorTotal.Value := TOrdemServicovalorTotalProduto.Value +
+                                       TOrdemServicovalorTotalItem.Value;
+
+      TOrdemServicovalorDescontoTotal.Value := TOrdemServicovalorDescontoItem.Value +
+                                               TOrdemServicovalorDescontoProduto.Value;
+
+      TOrdemServicovalorFinal.Value := TOrdemServicovalorTotal.Value -
+                                       TOrdemServicovalorDescontoTotal.Value;
+
+      TOrdemServicovalorFinalCusto.Value := TOrdemServicovalorTotalCustoFuncionario.Value +
+                                            TOrdemServicovalorTotalCusto.Value;
+
+      TOrdemServicovalorLucro.Value := TOrdemServicovalorFinal.Value -
+                                       TOrdemServicovalorFinalCusto.Value;
+
+      TOrdemServicovalorLucroPercentual.Value := (TOrdemServicovalorLucro.Value /
+                                                  TOrdemServicovalorFinal.Value) * 100;
     end;
 
-    FDMOrdemServico.TOrdemServicovalorTotalItem.Value := valorTotal;
-    FDMOrdemServico.TOrdemServicovalorDescontoItem.Value := desconto;
-    FDMOrdemServico.TOrdemServicovalorFinalItem.Value := valorFinal;
-    valorTotal := 0;
-    desconto := 0;
-    valorFinal := 0;
-
-    FDMOrdemServico.TProduto.First;
-    while not FDMOrdemServico.TProduto.Eof do
+    if (TOrdemServicovalorLucro.Value <= 0) then
     begin
-      valorTotal := valorTotal + FDMOrdemServico.TProdutovalorTotal.Value;
-      desconto := desconto + FDMOrdemServico.TProdutovalorDesconto.Value;
-      valorFinal := valorFinal + FDMOrdemServico.TProdutovalorFinal.Value;
-      FDMOrdemServico.TProduto.Next;
+      LLucroPercentual.Font.Color := clRed;
+      LLucro.Font.Color := clRed;
+      DBLucroPercentual.Font.Color := clRed;
+      DBLucro.Font.Color := clRed;
+    end
+    else
+    begin
+      LLucroPercentual.Font.Color := clGreen;
+      LLucro.Font.Color := clGreen;
+      DBLucroPercentual.Font.Color := clGreen;
+      DBLucro.Font.Color := clGreen;
     end;
 
-    FDMOrdemServico.TOrdemServicovalorTotalProduto.Value := valorTotal;
-    FDMOrdemServico.TOrdemServicovalorDescontoProduto.Value := desconto;
-    FDMOrdemServico.TOrdemServicovalorFinalProduto.Value := valorFinal;
-
-    FDMOrdemServico.TOrdemServicovalorTotal.Value := FDMOrdemServico.TOrdemServicovalorTotalProduto.Value +
-                                                     FDMOrdemServico.TOrdemServicovalorTotalItem.Value;
-
-    FDMOrdemServico.TOrdemServicovalorDescontoTotal.Value := FDMOrdemServico.TOrdemServicovalorDescontoItem.Value +
-                                                             FDMOrdemServico.TOrdemServicovalorDescontoProduto.Value;
-
-    FDMOrdemServico.TOrdemServicovalorFinal.Value := FDMOrdemServico.TOrdemServicovalorTotal.Value -
-                                                     FDMOrdemServico.TOrdemServicovalorDescontoTotal.Value;
+    carregarAbaResumo;
   end;
 end;
 
@@ -800,19 +907,16 @@ begin
   begin
     if (TOrdemServico.RecordCount > 0) then
     begin
-      FOrdemServico.DBDataOrdem.Date := StrToDate(TOrdemServicodataOrdemServico.Value);
-      FOrdemServico.DBPrazoEntrega.Date := StrToDate(TOrdemServicodataPrazoEntrega.Value);
+      DBDataOrdem.Date := StrToDate(TOrdemServicodataOrdemServico.Value);
+      DBPrazoEntrega.Date := StrToDate(TOrdemServicodataPrazoEntrega.Value);
     end;
 
-    with FOrdemServico do
+    if (dadosOrdemConsultados <> TOrdemServicocodigo.Value) then
     begin
-      if (dadosOrdemConsultados <> TOrdemServicocodigo.Value) then
-      begin
-        consultarDadosItem(0, False);
-        consultarDadosProduto(0, False);
-        consultarDadosCusto(0, False);
-        consultarDadosFuncionario(0, False);
-      end;
+      consultarDadosItem(0, False);
+      consultarDadosProduto(0, False);
+      consultarDadosCusto(0, False);
+      consultarDadosFuncionario(0, False);
     end;
   end;
 end;

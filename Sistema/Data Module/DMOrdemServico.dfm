@@ -175,6 +175,26 @@ object FDMOrdemServico: TFDMOrdemServico
       FieldName = 'valorTotal'
       currency = True
     end
+    object TOrdemServicovalorTotalCusto: TFloatField
+      FieldName = 'valorTotalCusto'
+      currency = True
+    end
+    object TOrdemServicovalorTotalCustoFuncionario: TFloatField
+      FieldName = 'valorTotalCustoFuncionario'
+      currency = True
+    end
+    object TOrdemServicovalorLucro: TFloatField
+      FieldName = 'valorLucro'
+      currency = True
+    end
+    object TOrdemServicovalorFinalCusto: TFloatField
+      FieldName = 'valorFinalCusto'
+      currency = True
+    end
+    object TOrdemServicovalorLucroPercentual: TFloatField
+      FieldName = 'valorLucroPercentual'
+      DisplayFormat = '###,###,###,##0.00'
+    end
   end
   object DEmpresa: TDataSource
     DataSet = QEmpresa
@@ -680,5 +700,76 @@ object FDMOrdemServico: TFDMOrdemServico
       FieldName = 'status'
       Size = 1
     end
+  end
+  object QValorTotal: TFDMemTable
+    FieldDefs = <>
+    IndexDefs = <>
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired, uvAutoCommitUpdates]
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.AutoCommitUpdates = True
+    StoreDefs = True
+    Left = 57
+    Top = 232
+    object QValorTotaldescricao: TStringField
+      FieldName = 'descricao'
+      Size = 150
+    end
+    object QValorTotalvalorBruto: TFloatField
+      FieldName = 'valorBruto'
+      currency = True
+    end
+    object QValorTotaldesconto: TFloatField
+      FieldName = 'desconto'
+      DisplayFormat = '###,###,###,##0.00 %'
+      currency = True
+    end
+    object QValorTotalvalorFinal: TFloatField
+      FieldName = 'valorFinal'
+      currency = True
+    end
+  end
+  object DValorTotal: TDataSource
+    DataSet = QValorTotal
+    Left = 55
+    Top = 280
+  end
+  object QCustoTotal: TFDMemTable
+    FieldDefs = <>
+    IndexDefs = <>
+    FetchOptions.AssignedValues = [evMode]
+    FetchOptions.Mode = fmAll
+    ResourceOptions.AssignedValues = [rvSilentMode]
+    ResourceOptions.SilentMode = True
+    UpdateOptions.AssignedValues = [uvCheckRequired, uvAutoCommitUpdates]
+    UpdateOptions.CheckRequired = False
+    UpdateOptions.AutoCommitUpdates = True
+    StoreDefs = True
+    Left = 162
+    Top = 228
+    object QCustoTotaldescricao: TStringField
+      FieldName = 'descricao'
+      Size = 150
+    end
+    object QCustoTotalsubDescricao: TStringField
+      FieldName = 'subDescricao'
+      Size = 150
+    end
+    object QCustoTotalquantidade: TFloatField
+      FieldName = 'quantidade'
+      DisplayFormat = '###,###,###,##0.00'
+    end
+    object QCustoTotalvalorTotal: TFloatField
+      FieldName = 'valorTotal'
+      currency = True
+    end
+  end
+  object DCustoTotal: TDataSource
+    DataSet = QCustoTotal
+    Left = 160
+    Top = 276
   end
 end

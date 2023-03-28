@@ -43,6 +43,9 @@ type TOrdemServico = class
     function calculaValorTotal: Double;
     function calculaValorDescontoTotal: Double;
     function calculaValorFinal: Double;
+    function calculaCustoTotal: Double;
+    function calculaLucroPercentual: Double;
+    function calculaLucro: Double;
     function contar: integer;
     function montarOrdemServico(query: TZQuery): TOrdemServico;
     function consultarCodigo(codigo: integer): TOrdemServico;
@@ -71,6 +74,9 @@ type TOrdemServico = class
     property valorTotalProduto: Double read FValorTotalProduto;
     property valorTotalCustoFuncionario: Double read FValorTotalFuncionario;
     property valorTotalCusto: Double read FValorTotalCusto;
+    property valorFinalCusto: Double read calculaCustoTotal;
+    property valorLucro: Double read calculaLucro;
+    property valorLucroPercentual: Double read calculaLucroPercentual;
     property valorDescontoProduto: Double read FValorDescontoProduto;
     property valorFinalProduto: Double read calculaValorFinalProduto;
     property valorTotal: Double read calculaValorTotal;
@@ -166,6 +172,28 @@ begin
   FConexao.executarComandoDML(sql.Text);
   FreeAndNil(sql);
   Result := consultarCodigo(codigo);
+end;
+
+function TOrdemServico.calculaCustoTotal: Double;
+begin
+  Result := FValorTotalCusto + FValorTotalFuncionario;
+end;
+
+function TOrdemServico.calculaLucro: Double;
+begin
+  Result := calculaValorFinal - calculaCustoTotal;
+end;
+
+function TOrdemServico.calculaLucroPercentual: Double;
+begin
+  if (calculaValorFinal > 0) then
+  begin
+    Result := (calculaLucro / calculaValorFinal) * 100;
+  end
+  else
+  begin
+    Result := 0;
+  end;
 end;
 
 function TOrdemServico.calculaValorDescontoTotal: Double;

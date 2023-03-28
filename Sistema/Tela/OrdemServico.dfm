@@ -39,7 +39,7 @@ object FOrdemServico: TFOrdemServico
         BevelOuter = bvNone
         TabOrder = 0
         object BFechar: TSpeedButton
-          Left = 627
+          Left = 723
           Top = 0
           Width = 96
           Height = 29
@@ -53,7 +53,7 @@ object FOrdemServico: TFOrdemServico
           ExplicitHeight = 39
         end
         object BConfirmar: TSpeedButton
-          Left = 531
+          Left = 627
           Top = 0
           Width = 96
           Height = 29
@@ -68,7 +68,7 @@ object FOrdemServico: TFOrdemServico
           ExplicitHeight = 39
         end
         object BCancelar: TSpeedButton
-          Left = 435
+          Left = 531
           Top = 0
           Width = 96
           Height = 29
@@ -121,6 +121,19 @@ object FOrdemServico: TFOrdemServico
           ExplicitLeft = 1
           ExplicitTop = -1
           ExplicitHeight = 39
+        end
+        object BReplicar: TSpeedButton
+          Left = 435
+          Top = 0
+          Width = 96
+          Height = 29
+          Align = alLeft
+          Caption = 'Replicar'
+          ImageIndex = 8
+          Images = FMenuPrincipal.ImageList1
+          OnClick = BReplicarClick
+          ExplicitLeft = 451
+          ExplicitTop = -6
         end
         object DBNavigator1: TDBNavigator
           Left = 0
@@ -224,7 +237,7 @@ object FOrdemServico: TFOrdemServico
         Top = 249
         Width = 1355
         Height = 286
-        ActivePage = TabCustoFuncionario
+        ActivePage = TabResumo
         Align = alClient
         TabOrder = 2
         object TBItem: TTabSheet
@@ -591,7 +604,7 @@ object FOrdemServico: TFOrdemServico
           end
         end
         object TabCusto: TTabSheet
-          Caption = 'Custos'
+          Caption = 'Custos Gerais'
           ImageIndex = 3
           object Panel4: TPanel
             Left = 0
@@ -998,284 +1011,125 @@ object FOrdemServico: TFOrdemServico
           Caption = 'Resumo Financeiro'
           ImageIndex = 2
           OnShow = TabResumoShow
-          object Label4: TLabel
-            Left = 9
-            Top = 3
-            Width = 115
-            Height = 16
-            Caption = 'Valor Total Servi'#231'os'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clGreen
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-          end
-          object Label5: TLabel
-            Left = 166
-            Top = 3
-            Width = 138
-            Height = 16
-            Caption = 'Valor Desconto Servi'#231'os'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clRed
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-          end
-          object Label6: TLabel
-            Left = 323
-            Top = 3
-            Width = 125
-            Height = 16
-            Caption = 'Valor Final Servi'#231'os'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = [fsBold]
-            ParentFont = False
-          end
-          object Label7: TLabel
-            Left = 9
-            Top = 48
-            Width = 117
-            Height = 16
-            Caption = 'Valor Total Produtos'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clGreen
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-          end
-          object Label31: TLabel
-            Left = 166
-            Top = 48
-            Width = 140
-            Height = 16
-            Caption = 'Valor Desconto Produtos'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clRed
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-          end
-          object Label32: TLabel
-            Left = 323
-            Top = 48
-            Width = 129
-            Height = 16
-            Caption = 'Valor Final Produtos'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = [fsBold]
-            ParentFont = False
-          end
-          object Label33: TLabel
-            Left = 9
-            Top = 94
-            Width = 91
-            Height = 16
-            Caption = 'Valor Total OS'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clGreen
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = [fsBold]
-            ParentFont = False
-          end
-          object Label34: TLabel
-            Left = 166
-            Top = 94
-            Width = 135
-            Height = 16
-            Caption = 'Valor Total Desconto'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clRed
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = [fsBold]
-            ParentFont = False
-          end
-          object Label35: TLabel
-            Left = 323
-            Top = 94
-            Width = 87
-            Height = 16
-            Caption = 'Valor Final OS'
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = [fsBold]
-            ParentFont = False
-          end
-          object ECadastradoPor: TDBEdit
-            Left = 9
-            Top = 20
-            Width = 150
-            Height = 24
-            TabStop = False
-            Color = clBtnFace
-            DataField = 'valorTotalItem'
-            DataSource = FDMOrdemServico.DOrdemServico
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clGreen
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            ReadOnly = True
+          object Panel7: TPanel
+            Left = 0
+            Top = 0
+            Width = 1347
+            Height = 255
+            Align = alClient
+            BevelOuter = bvNone
             TabOrder = 0
-          end
-          object EAlteradoPor: TDBEdit
-            Left = 166
-            Top = 20
-            Width = 150
-            Height = 24
-            TabStop = False
-            Color = clBtnFace
-            DataField = 'valorDescontoItem'
-            DataSource = FDMOrdemServico.DOrdemServico
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clRed
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            ReadOnly = True
-            TabOrder = 1
-          end
-          object EDataCadastro: TDBEdit
-            Left = 323
-            Top = 20
-            Width = 150
-            Height = 24
-            TabStop = False
-            Color = clBtnFace
-            DataField = 'valorFinalItem'
-            DataSource = FDMOrdemServico.DOrdemServico
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = [fsBold]
-            ParentFont = False
-            ReadOnly = True
-            TabOrder = 2
-          end
-          object DBEdit17: TDBEdit
-            Left = 9
-            Top = 65
-            Width = 150
-            Height = 24
-            TabStop = False
-            Color = clBtnFace
-            DataField = 'valorTotalProduto'
-            DataSource = FDMOrdemServico.DOrdemServico
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clGreen
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            ReadOnly = True
-            TabOrder = 3
-          end
-          object DBEdit18: TDBEdit
-            Left = 166
-            Top = 65
-            Width = 150
-            Height = 24
-            TabStop = False
-            Color = clBtnFace
-            DataField = 'valorDescontoProduto'
-            DataSource = FDMOrdemServico.DOrdemServico
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clRed
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = []
-            ParentFont = False
-            ReadOnly = True
-            TabOrder = 4
-          end
-          object DBEdit19: TDBEdit
-            Left = 323
-            Top = 65
-            Width = 150
-            Height = 24
-            TabStop = False
-            Color = clBtnFace
-            DataField = 'valorFinalProduto'
-            DataSource = FDMOrdemServico.DOrdemServico
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = [fsBold]
-            ParentFont = False
-            ReadOnly = True
-            TabOrder = 5
-          end
-          object DBEdit20: TDBEdit
-            Left = 9
-            Top = 111
-            Width = 150
-            Height = 24
-            TabStop = False
-            Color = clBtnFace
-            DataField = 'valorTotal'
-            DataSource = FDMOrdemServico.DOrdemServico
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clGreen
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = [fsBold]
-            ParentFont = False
-            ReadOnly = True
-            TabOrder = 6
-          end
-          object DBEdit21: TDBEdit
-            Left = 166
-            Top = 111
-            Width = 150
-            Height = 24
-            TabStop = False
-            Color = clBtnFace
-            DataField = 'valorDescontoTotal'
-            DataSource = FDMOrdemServico.DOrdemServico
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clRed
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = [fsBold]
-            ParentFont = False
-            ReadOnly = True
-            TabOrder = 7
-          end
-          object DBEdit22: TDBEdit
-            Left = 323
-            Top = 111
-            Width = 150
-            Height = 24
-            TabStop = False
-            Color = clBtnFace
-            DataField = 'valorFinal'
-            DataSource = FDMOrdemServico.DOrdemServico
-            Font.Charset = DEFAULT_CHARSET
-            Font.Color = clWindowText
-            Font.Height = -13
-            Font.Name = 'Tahoma'
-            Font.Style = [fsBold]
-            ParentFont = False
-            ReadOnly = True
-            TabOrder = 8
+            ExplicitWidth = 490
+            object GValoresCusto: TDBGrid
+              Left = 0
+              Top = 118
+              Width = 1347
+              Height = 137
+              Align = alClient
+              DataSource = FDMOrdemServico.DCustoTotal
+              ReadOnly = True
+              TabOrder = 0
+              TitleFont.Charset = DEFAULT_CHARSET
+              TitleFont.Color = clWindowText
+              TitleFont.Height = -13
+              TitleFont.Name = 'Tahoma'
+              TitleFont.Style = []
+              OnDrawColumnCell = GValoresCustoDrawColumnCell
+              OnTitleClick = GDadosTitleClick
+              Columns = <
+                item
+                  Expanded = False
+                  FieldName = 'descricao'
+                  Title.Alignment = taCenter
+                  Title.Caption = 'Descri'#231#227'o'
+                  Width = 323
+                  Visible = True
+                end
+                item
+                  Expanded = False
+                  FieldName = 'subDescricao'
+                  Title.Alignment = taCenter
+                  Title.Caption = 'Itens'
+                  Width = 138
+                  Visible = True
+                end
+                item
+                  Expanded = False
+                  FieldName = 'quantidade'
+                  Title.Alignment = taCenter
+                  Title.Caption = 'Quantidade'
+                  Width = 120
+                  Visible = True
+                end
+                item
+                  Expanded = False
+                  FieldName = 'valorTotal'
+                  Title.Alignment = taCenter
+                  Title.Caption = 'Valor Total'
+                  Width = 166
+                  Visible = True
+                end>
+            end
+            object GValoresOrdem: TDBGrid
+              Left = 0
+              Top = 0
+              Width = 1347
+              Height = 95
+              Align = alTop
+              DataSource = FDMOrdemServico.DValorTotal
+              ReadOnly = True
+              TabOrder = 1
+              TitleFont.Charset = DEFAULT_CHARSET
+              TitleFont.Color = clWindowText
+              TitleFont.Height = -13
+              TitleFont.Name = 'Tahoma'
+              TitleFont.Style = []
+              OnDrawColumnCell = GValoresOrdemDrawColumnCell
+              OnTitleClick = GDadosTitleClick
+              Columns = <
+                item
+                  Expanded = False
+                  FieldName = 'descricao'
+                  Title.Alignment = taCenter
+                  Title.Caption = 'Descri'#231#227'o'
+                  Width = 326
+                  Visible = True
+                end
+                item
+                  Expanded = False
+                  FieldName = 'valorBruto'
+                  Title.Alignment = taCenter
+                  Title.Caption = 'Valor Bruto'
+                  Width = 135
+                  Visible = True
+                end
+                item
+                  Expanded = False
+                  FieldName = 'desconto'
+                  Title.Alignment = taCenter
+                  Title.Caption = 'Desconto'
+                  Width = 114
+                  Visible = True
+                end
+                item
+                  Expanded = False
+                  FieldName = 'valorFinal'
+                  Title.Alignment = taCenter
+                  Title.Caption = 'Valor Final'
+                  Width = 172
+                  Visible = True
+                end>
+            end
+            object Panel8: TPanel
+              Left = 0
+              Top = 95
+              Width = 1347
+              Height = 23
+              Align = alTop
+              BevelOuter = bvNone
+              TabOrder = 2
+              ExplicitWidth = 923
+            end
           end
         end
       end
@@ -1434,6 +1288,32 @@ object FOrdemServico: TFOrdemServico
           Width = 47
           Height = 16
           Caption = 'Data OS'
+        end
+        object LLucroPercentual: TLabel
+          Left = 1026
+          Top = 17
+          Width = 114
+          Height = 16
+          Caption = 'Lucro/Prejuizo %'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clGreen
+          Font.Height = -13
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+        end
+        object LLucro: TLabel
+          Left = 1036
+          Top = 72
+          Width = 117
+          Height = 16
+          Caption = 'Lucro/Prejuizo R$'
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clGreen
+          Font.Height = -13
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
         end
         object ECodigo: TDBEdit
           Left = 9
@@ -1688,6 +1568,42 @@ object FOrdemServico: TFOrdemServico
           TabOrder = 2
           OnChange = DBDataOrdemChange
         end
+        object DBLucroPercentual: TDBEdit
+          Left = 1019
+          Top = 39
+          Width = 271
+          Height = 24
+          TabStop = False
+          Color = clBtnFace
+          DataField = 'valorLucroPercentual'
+          DataSource = FDMOrdemServico.DOrdemServico
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clGreen
+          Font.Height = -13
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          ReadOnly = True
+          TabOrder = 23
+        end
+        object DBLucro: TDBEdit
+          Left = 1029
+          Top = 94
+          Width = 246
+          Height = 24
+          TabStop = False
+          Color = clBtnFace
+          DataField = 'valorLucro'
+          DataSource = FDMOrdemServico.DOrdemServico
+          Font.Charset = DEFAULT_CHARSET
+          Font.Color = clGreen
+          Font.Height = -13
+          Font.Name = 'Tahoma'
+          Font.Style = [fsBold]
+          ParentFont = False
+          ReadOnly = True
+          TabOrder = 24
+        end
       end
     end
     object TBConsulta: TTabSheet
@@ -1735,7 +1651,7 @@ object FOrdemServico: TFOrdemServico
           Height = 16
           Caption = 'Empresa'
         end
-        object ERazaoSocial: TEdit
+        object EDetalhamento: TEdit
           Left = 3
           Top = 18
           Width = 149

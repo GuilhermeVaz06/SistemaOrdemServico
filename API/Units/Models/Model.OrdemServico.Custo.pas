@@ -52,6 +52,7 @@ type TCusto = class
 
     function consultar: TArray<TCusto>;
     function consultarChave: TCusto;
+    function consultarCustoAgrupado: TArray<TCusto>;
     function existeRegistro: TCusto;
     function cadastrarCusto: TCusto;
     function alterarCusto: TCusto;
@@ -94,10 +95,10 @@ end;
 function TCusto.existeRegistro: TCusto;
 var
   query: TZQuery;
-  itemConsultado: TCusto;
+  custoConsultado: TCusto;
   sql: TStringList;
 begin
-  itemConsultado := TCusto.Create;
+  custoConsultado := TCusto.Create;
   sql := TStringList.Create;
   sql.Add('SELECT ordem_servico_custo.CODIGO_CUSTO, grupo.DESCRICAO');
   sql.Add(', grupo.SUB_DESCRICAO, ordem_servico_custo.`STATUS`');
@@ -119,21 +120,21 @@ begin
   or (query = nil)
   or (query.RecordCount = 0) then
   begin
-    itemConsultado.Destroy;
-    itemConsultado := nil;
+    custoConsultado.Destroy;
+    custoConsultado := nil;
   end
   else
   begin
     query.First;
     FRegistrosAfetados := FConexao.registrosAfetados;
 
-    itemConsultado.FCodigo := query.FieldByName('CODIGO_CUSTO').Value;
-    itemConsultado.FGrupo.descricao := query.FieldByName('DESCRICAO').Value;
-    itemConsultado.FGrupo.subDescricao := query.FieldByName('SUB_DESCRICAO').Value;
-    itemConsultado.FStatus := query.FieldByName('STATUS').Value;
+    custoConsultado.FCodigo := query.FieldByName('CODIGO_CUSTO').Value;
+    custoConsultado.FGrupo.descricao := query.FieldByName('DESCRICAO').Value;
+    custoConsultado.FGrupo.subDescricao := query.FieldByName('SUB_DESCRICAO').Value;
+    custoConsultado.FStatus := query.FieldByName('STATUS').Value;
   end;
 
-  Result := itemConsultado;
+  Result := custoConsultado;
 
   FreeAndNil(sql);
 end;
@@ -266,7 +267,7 @@ end;
 function TCusto.consultar: TArray<TCusto>;
 var
   query: TZQuery;
-  contatos: TArray<TCusto>;
+  custos: TArray<TCusto>;
   contador: Integer;
   sql: TStringList;
   restante: Integer;
@@ -333,17 +334,17 @@ begin
     begin
       query.First;
       FRegistrosAfetados := FConexao.registrosAfetados;
-      SetLength(contatos, query.RecordCount);
+      SetLength(custos, query.RecordCount);
       contador := 0;
 
       while not query.Eof do
       begin
-        contatos[contador] := montarCusto(query);
+        custos[contador] := montarCusto(query);
         query.Next;
         inc(contador);
       end;
 
-      Result := contatos;
+      Result := custos;
     end;
 
     FreeAndNil(sql);
@@ -360,10 +361,10 @@ end;
 function TCusto.consultarChave: TCusto;
 var
   query: TZQuery;
-  itemConsultado: TCusto;
+  custoConsultado: TCusto;
   sql: TStringList;
 begin
-  itemConsultado := TCusto.Create;
+  custoConsultado := TCusto.Create;
   sql := TStringList.Create;
   sql.Add('SELECT ordem_servico_custo.CODIGO_CUSTO, grupo.DESCRICAO, grupo.SUB_DESCRICAO');
   sql.Add('  FROM ordem_servico_custo, grupo');
@@ -378,20 +379,20 @@ begin
   or (query = nil)
   or (query.RecordCount = 0) then
   begin
-    itemConsultado.Destroy;
-    itemConsultado := nil;
+    custoConsultado.Destroy;
+    custoConsultado := nil;
   end
   else
   begin
     query.First;
     FRegistrosAfetados := FConexao.registrosAfetados;
 
-    itemConsultado.FCodigo := query.FieldByName('CODIGO_CUSTO').Value;
-    itemConsultado.FGrupo.descricao := query.FieldByName('DESCRICAO').Value;
-    itemConsultado.FGrupo.subDescricao := query.FieldByName('SUB_DESCRICAO').Value;
+    custoConsultado.FCodigo := query.FieldByName('CODIGO_CUSTO').Value;
+    custoConsultado.FGrupo.descricao := query.FieldByName('DESCRICAO').Value;
+    custoConsultado.FGrupo.subDescricao := query.FieldByName('SUB_DESCRICAO').Value;
   end;
 
-  Result := itemConsultado;
+  Result := custoConsultado;
 
   FreeAndNil(sql);
 end;
@@ -400,7 +401,7 @@ function TCusto.consultarCodigo(codigo: integer): TCusto;
 var
   query: TZQuery;
   sql: TStringList;
-  itemConsultado: TCusto;
+  custoConsultado: TCusto;
 begin
   sql := TStringList.Create;
   sql.Add('SELECT ordem_servico_custo.CODIGO_OS, ordem_servico_custo.CODIGO_CUSTO, grupo.DESCRICAO');
@@ -429,16 +430,175 @@ begin
   or (query = nil)
   or (query.RecordCount = 0) then
   begin
-    itemConsultado := nil;
+    custoConsultado := nil;
   end
   else
   begin
     query.First;
     FRegistrosAfetados := FConexao.registrosAfetados;
-    itemConsultado := montarCusto(query);
+    custoConsultado := montarCusto(query);
   end;
 
-  Result := itemConsultado;
+  Result := custoConsultado;
+  FreeAndNil(sql);
+end;
+
+function TCusto.consultarCustoAgrupado: TArray<TCusto>;
+var
+  custos: TArray<TCusto>;
+  contador: Integer;
+  query: TZQuery;
+  data: TCusto;
+  sql: TStringList;
+  custoConsultado: TCusto;
+begin
+  sql := TStringList.Create;
+  sql.Add('SELECT X.DESCRICAO');
+  sql.Add(', GROUP_CONCAT(DISTINCT X.SUB_DESCRICAO) SUB_DESCRICAO');
+  sql.Add(', IFNULL(IFNULL(SUM(X.QTDE),0),0) QTDE');
+  sql.Add(', IFNULL(IFNULL(SUM(X.VALOR_FINAL),0),0) VALOR_FINAL');
+  sql.Add('  FROM (');
+  sql.Add('SELECT IFNULL(ordem_servico_custo.QTDE,0) QTDE');
+  sql.Add(', IFNULL(ordem_servico_custo.QTDE * ordem_servico_custo.VALOR_UNITARIO,0) VALOR_FINAL');
+  sql.Add(', (SELECT grupo.DESCRICAO FROM grupo WHERE grupo.CODIGO_GRUPO = ordem_servico_custo.CODIGO_GRUPO) DESCRICAO');
+  sql.Add(', (SELECT grupo.SUB_DESCRICAO FROM grupo WHERE grupo.CODIGO_GRUPO = ordem_servico_custo.CODIGO_GRUPO) SUB_DESCRICAO');
+  sql.Add('  FROM ordem_servico_custo');
+  sql.Add(' WHERE ordem_servico_custo.CODIGO_OS = ' + IntToStrSenaoZero(FOrdemServico.id));
+  sql.Add('   AND ordem_servico_custo.`STATUS` = ''A'') X');
+  sql.Add(' GROUP BY x.DESCRICAO');
+  sql.Add('');
+  sql.Add(' UNION ALL');
+  sql.Add(' ');
+  sql.Add('SELECT ''Total Custo Geral'' DESCRICAO, '''' SUB_DESCRICAO ');
+  sql.Add(', COUNT(Y.QTDE) QTDE');
+  sql.Add(', IFNULL(IFNULL(SUM(Y.VALOR_FINAL),0),0) VALOR_FINAL');
+  sql.Add('FROM (');
+  sql.Add('SELECT COUNT(X.QTDE) QTDE');
+  sql.Add(', IFNULL(IFNULL(SUM(X.VALOR_FINAL),0),0) VALOR_FINAL');
+  sql.Add('  FROM (');
+  sql.Add('SELECT IFNULL(ordem_servico_custo.QTDE,0) QTDE ');
+  sql.Add(', IFNULL(ordem_servico_custo.QTDE * ordem_servico_custo.VALOR_UNITARIO,0) VALOR_FINAL');
+  sql.Add(', (SELECT grupo.DESCRICAO FROM grupo WHERE grupo.CODIGO_GRUPO = ordem_servico_custo.CODIGO_GRUPO) DESCRICAO');
+  sql.Add(', (SELECT grupo.SUB_DESCRICAO FROM grupo WHERE grupo.CODIGO_GRUPO = ordem_servico_custo.CODIGO_GRUPO) SUB_DESCRICAO');
+  sql.Add('  FROM ordem_servico_custo');
+  sql.Add(' WHERE ordem_servico_custo.CODIGO_OS = ' + IntToStrSenaoZero(FOrdemServico.id));
+  sql.Add('   AND ordem_servico_custo.`STATUS` = ''A'') X');
+  sql.Add(' GROUP BY x.DESCRICAO ) Y');
+  sql.Add('');
+  sql.Add('UNION ALL');
+  sql.Add('');
+  sql.Add('SELECT '''' DESCRICAO, '''' SUB_DESCRICAO, NULL QTDE, NULL VALOR_FINAL');
+  sql.Add('');
+  sql.Add('UNION ALL');
+  sql.Add('');
+  sql.Add('SELECT X.NOME_FUNCAO DESCRICAO');
+  sql.Add(', GROUP_CONCAT(DISTINCT X.NOME_FUNCIONARIO) SUB_DESCRICAO');
+  sql.Add(', COUNT(X.NOME_FUNCAO) QTDE');
+  sql.Add(', IFNULL(IFNULL(SUM(X.VALOR_TOTAL),0),0) VALOR_FINAL');
+  sql.Add('  FROM (');
+  sql.Add('SELECT IFNULL(');
+  sql.Add('	    (ordem_servico_funcionario.VALOR_HORA_NORMAL * ordem_servico_funcionario.QTDE_HORAS_NORMAL) +');
+  sql.Add('	    ((((ordem_servico_funcionario.VALOR_HORA_NORMAL / 100) * 50) +ordem_servico_funcionario.VALOR_HORA_NORMAL) * ordem_servico_funcionario.QTDE_HORA_50) +');
+  sql.Add('	    ((((ordem_servico_funcionario.VALOR_HORA_NORMAL / 100) * 100) +ordem_servico_funcionario.VALOR_HORA_NORMAL) * ordem_servico_funcionario.QTDE_HORA_100) +');
+  sql.Add('	    ((((ordem_servico_funcionario.VALOR_HORA_NORMAL / 100) * 20) +ordem_servico_funcionario.VALOR_HORA_NORMAL) * ordem_servico_funcionario.QTDE_HORA_AD_NOTURNO)');
+  sql.Add('	    ,0) VALOR_TOTAL');
+  sql.Add(', (SELECT funcao.DESCRICAO FROM funcao WHERE funcao.CODIGO_FUNCAO = ordem_servico_funcionario.CODIGO_FUNCAO) NOME_FUNCAO ');
+  sql.Add(', (SELECT pessoa.RAZAO_SOCIAL FROM pessoa WHERE pessoa.CODIGO_PESSOA = ordem_servico_funcionario.CODIGO_PESSOA) NOME_FUNCIONARIO');
+  sql.Add('  FROM ordem_servico_funcionario');
+  sql.Add(' WHERE ordem_servico_funcionario.CODIGO_OS = ' + IntToStrSenaoZero(FOrdemServico.id));
+  sql.Add('   AND ordem_servico_funcionario.`STATUS` = ''A'') X');
+  sql.Add(' GROUP BY X.NOME_FUNCAO');
+  sql.Add('');
+  sql.Add('UNION ALL');
+  sql.Add('');
+  sql.Add('SELECT ''Total Custo Funcionario'' DESCRICAO, '''' SUB_DESCRICAO');
+  sql.Add(', COUNT(Y.QTDE) QTDE');
+  sql.Add(', IFNULL(IFNULL(SUM(Y.VALOR_FINAL),0),0) VALOR_FINAL');
+  sql.Add('  FROM (');
+  sql.Add('SELECT X.NOME_FUNCAO DESCRICAO');
+  sql.Add(', GROUP_CONCAT(DISTINCT X.NOME_FUNCIONARIO) SUB_DESCRICAO');
+  sql.Add(', COUNT(X.NOME_FUNCAO) QTDE');
+  sql.Add(', IFNULL(IFNULL(SUM(X.VALOR_TOTAL),0),0) VALOR_FINAL');
+  sql.Add('  FROM (');
+  sql.Add('SELECT IFNULL(');
+  sql.Add('	    (ordem_servico_funcionario.VALOR_HORA_NORMAL * ordem_servico_funcionario.QTDE_HORAS_NORMAL) +');
+  sql.Add('	    ((((ordem_servico_funcionario.VALOR_HORA_NORMAL / 100) * 50) +ordem_servico_funcionario.VALOR_HORA_NORMAL) * ordem_servico_funcionario.QTDE_HORA_50) +');
+  sql.Add('	    ((((ordem_servico_funcionario.VALOR_HORA_NORMAL / 100) * 100) +ordem_servico_funcionario.VALOR_HORA_NORMAL) * ordem_servico_funcionario.QTDE_HORA_100) +');
+  sql.Add('	    ((((ordem_servico_funcionario.VALOR_HORA_NORMAL / 100) * 20) +ordem_servico_funcionario.VALOR_HORA_NORMAL) * ordem_servico_funcionario.QTDE_HORA_AD_NOTURNO)');
+  sql.Add('	    ,0) VALOR_TOTAL');
+  sql.Add(', (SELECT funcao.DESCRICAO FROM funcao WHERE funcao.CODIGO_FUNCAO = ordem_servico_funcionario.CODIGO_FUNCAO) NOME_FUNCAO');
+  sql.Add(', (SELECT pessoa.RAZAO_SOCIAL FROM pessoa WHERE pessoa.CODIGO_PESSOA = ordem_servico_funcionario.CODIGO_PESSOA) NOME_FUNCIONARIO');
+  sql.Add('  FROM ordem_servico_funcionario');
+  sql.Add(' WHERE ordem_servico_funcionario.CODIGO_OS = ' + IntToStrSenaoZero(FOrdemServico.id));
+  sql.Add('   AND ordem_servico_funcionario.`STATUS` = ''A'') X');
+  sql.Add(' GROUP BY X.NOME_FUNCAO) Y');
+  sql.Add('');
+  sql.Add('UNION ALL');
+  sql.Add('');
+  sql.Add('SELECT '''' DESCRICAO, '''' SUB_DESCRICAO, NULL QTDE, NULL VALOR_FINAL');
+  sql.Add('');
+  sql.Add('UNION ALL');
+  sql.Add(' ');
+  sql.Add('SELECT ''Total Custos'' DESCRICAO, '''' SUB_DESCRICAO ');
+  sql.Add(', COUNT(X.VALOR_FINAL) QTDE, IFNULL(SUM(IFNULL(X.VALOR_FINAL,0)),0) VALOR_FINAL');
+  sql.Add('  FROM (');
+  sql.Add('SELECT IFNULL(SUM(IFNULL(ordem_servico_custo.QTDE * ordem_servico_custo.VALOR_UNITARIO,0)),0) VALOR_FINAL');
+  sql.Add('  FROM ordem_servico_custo');
+  sql.Add(' WHERE ordem_servico_custo.CODIGO_OS = ' + IntToStrSenaoZero(FOrdemServico.id));
+  sql.Add('   AND ordem_servico_custo.`STATUS` = ''A'' ');
+  sql.Add('');
+  sql.Add('UNION ALL');
+  sql.Add('');
+  sql.Add('SELECT IFNULL(SUM(IFNULL(');
+  sql.Add('	    (ordem_servico_funcionario.VALOR_HORA_NORMAL * ordem_servico_funcionario.QTDE_HORAS_NORMAL) + ');
+  sql.Add('	    ((((ordem_servico_funcionario.VALOR_HORA_NORMAL / 100) * 50) +ordem_servico_funcionario.VALOR_HORA_NORMAL) * ordem_servico_funcionario.QTDE_HORA_50) +');
+  sql.Add('	    ((((ordem_servico_funcionario.VALOR_HORA_NORMAL / 100) * 100) +ordem_servico_funcionario.VALOR_HORA_NORMAL) * ordem_servico_funcionario.QTDE_HORA_100) +');
+  sql.Add('	    ((((ordem_servico_funcionario.VALOR_HORA_NORMAL / 100) * 20) +ordem_servico_funcionario.VALOR_HORA_NORMAL) * ordem_servico_funcionario.QTDE_HORA_AD_NOTURNO)');
+  sql.Add('	    ,0)),0) VALOR_TOTAL');
+  sql.Add('  FROM ordem_servico_funcionario');
+  sql.Add('WHERE ordem_servico_funcionario.CODIGO_OS = ' + IntToStrSenaoZero(FOrdemServico.id));
+  sql.Add('   AND ordem_servico_funcionario.`STATUS` = ''A'') X');
+
+  query := FConexao.executarComandoDQL(sql.Text);
+
+  if not Assigned(query)
+  or (query = nil)
+  or (query.RecordCount = 0) then
+  begin
+    Result := [];
+  end
+  else
+  begin
+    query.First;
+    FRegistrosAfetados := FConexao.registrosAfetados;
+    SetLength(custos, query.RecordCount);
+    contador := 0;
+
+    while not query.Eof do
+    begin
+      try
+        data := TCusto.Create;
+
+        data.FGrupo.descricao := query.FieldByName('DESCRICAO').AsString;
+        data.FGrupo.subDescricao := query.FieldByName('SUB_DESCRICAO').AsString;
+        data.FQuantidade := query.FieldByName('QTDE').AsFloat;
+        data.FValorUnitario := query.FieldByName('VALOR_FINAL').AsFloat;
+      except
+        on E: Exception do
+        begin
+          raise Exception.Create('Erro ao montar Custo agrupado ' + e.Message);
+          data := nil;
+        end;
+      end;
+
+      custos[contador] := data;
+      query.Next;
+      inc(contador);
+    end;
+
+    Result := custos;
+  end;
+
   FreeAndNil(sql);
 end;
 

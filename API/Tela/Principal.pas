@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes,
   Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.ExtCtrls, Vcl.StdCtrls, Vcl.Buttons,
-  model.Connection, Horse, Horse.Jhonson, Vcl.Graphics;
+  model.Connection, Horse, Horse.Jhonson, Vcl.Graphics, Horse.CORS;
 
 type
   TFPrincipal = class(TForm)
@@ -113,6 +113,7 @@ begin
 
     THorse.Listen(FPorta, FIP);
     THorse.Use(Jhonson());
+    THorse.Use(CORS);
 
     PStatus.Caption := 'Status: Iniciado';
     PStatus.Font.Color := clGreen;
