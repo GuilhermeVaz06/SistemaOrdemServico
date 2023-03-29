@@ -326,6 +326,16 @@ begin
         begin
           erros.Add('Nenhuma ordem com o codigo [' + IntToStrSenaoZero(item.ordemServico.id) + ']!');
         end
+        else if (itemConsultado.ordemServico.situacao = 'EXCLUIDO') or
+                (itemConsultado.ordemServico.situacao = 'CONCLUIDO') or
+                (itemConsultado.ordemServico.situacao = 'FATURADO') or
+                (itemConsultado.ordemServico.situacao = 'APROVADO') or
+                (itemConsultado.ordemServico.situacao = 'EXECUTANDO') or
+                (itemConsultado.ordemServico.situacao = 'REPROVADO') then
+        begin
+          erros.Add('A situação ' + itemConsultado.ordemServico.situacao + ' não permite que seja cadastrada!');
+          itemConsultado.Destroy;
+        end
         else
         begin
           itemConsultado.Destroy;
@@ -492,6 +502,16 @@ begin
       begin
         erros.Add('Nenhuma ordem encontrada com o codigo [' + IntToStrSenaoZero(itemConsultado.ordemServico.id) + ']!');
       end
+      else if (itemConsultado.ordemServico.situacao = 'EXCLUIDO') or
+              (itemConsultado.ordemServico.situacao = 'CONCLUIDO') or
+              (itemConsultado.ordemServico.situacao = 'FATURADO') or
+              (itemConsultado.ordemServico.situacao = 'APROVADO') or
+              (itemConsultado.ordemServico.situacao = 'EXECUTANDO') or
+              (itemConsultado.ordemServico.situacao = 'REPROVADO') then
+      begin
+        erros.Add('A situação ' + itemConsultado.ordemServico.situacao + ' não permite que seja alterada!');
+        itemConsultado.Destroy;
+      end
       else
       begin
         itemConsultado.Destroy;
@@ -599,7 +619,27 @@ begin
       end
       else
       begin
-        itemConsultado.Destroy;
+        itemConsultado.ordemServico.Destroy;
+        itemConsultado.ordemServico := item.ordemServico.consultarChave();
+
+        if not (Assigned(itemConsultado.ordemServico)) then
+        begin
+          erros.Add('Nenhuma ordem com o codigo [' + IntToStrSenaoZero(item.ordemServico.id) + ']!');
+        end
+        else if (itemConsultado.ordemServico.situacao = 'EXCLUIDO') or
+                (itemConsultado.ordemServico.situacao = 'CONCLUIDO') or
+                (itemConsultado.ordemServico.situacao = 'FATURADO') or
+                (itemConsultado.ordemServico.situacao = 'APROVADO') or
+                (itemConsultado.ordemServico.situacao = 'EXECUTANDO') or
+                (itemConsultado.ordemServico.situacao = 'REPROVADO') then
+        begin
+          erros.Add('A situação ' + itemConsultado.ordemServico.situacao + ' não permite que seja inativado!');
+          itemConsultado.Destroy;
+        end
+        else
+        begin
+          itemConsultado.Destroy;
+        end;
       end;
     end;
 

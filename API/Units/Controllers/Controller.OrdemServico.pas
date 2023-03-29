@@ -346,6 +346,7 @@ begin
         and (ordemServico.situacao <> 'APROVADO')
         and (ordemServico.situacao <> 'EXECUTANDO')
         and (ordemServico.situacao <> 'CONCLUIDO')
+        and (ordemServico.situacao <> 'REPROVADO')
         and (ordemServico.situacao <> 'FATURADO') then
     begin
       erros.Add('A situação informada é invalida ela deve ser ORÇAMENTO ou EXCLUIDO ou APROVADO ou EXECUTANDO ou CONCLUIDO ou FATURADO!');
@@ -606,6 +607,13 @@ begin
       if not (Assigned(ordemServicoConsultado)) then
       begin
         erros.Add('Nenhuma ordem de serviço encontrada com o codigo [' + IntToStrSenaoZero(ordemServico.id) + ']!');
+      end
+      else if (ordemServicoConsultado.situacao = 'EXCLUIDO') or
+              (ordemServicoConsultado.situacao = 'CONCLUIDO') or
+              (ordemServicoConsultado.situacao = 'FATURADO') or
+              (ordemServicoConsultado.situacao = 'REPROVADO') then
+      begin
+        erros.Add('A situação ' + ordemServicoConsultado.situacao + ' não permite que seja alterada a ordem de serviço!');
       end;
 
       ordemServicoConsultado.Destroy;
@@ -751,6 +759,11 @@ begin
       end
       else
       begin
+        if (ordemConsultado.situacao <> 'ORÇAMENTO') then
+        begin
+          erros.Add('Somente é possivel excluir ordens de serviço com situação ''ORÇAMENTO''!');
+        end;
+
         ordemConsultado.Destroy;
       end;
     end;
@@ -789,7 +802,749 @@ begin
     on E: Exception do
     begin
       mensagem := 'Erro não tratado ao excluir a ordem de serviço!';
-      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('ORDEMSERVICO017', mensagem))));
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('mudarSituacaoExcluida', mensagem))));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
+    end;
+  end;
+
+  ordemServico.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
+  limparVariaveis;
+  FreeAndNil(resposta);
+end;
+
+procedure mudarSituacaoExcluido(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+var
+  erros: TStringList;
+  resposta: TJSONObject;
+  arrayResposta: TJSONArray;
+  ordemConsultado: TOrdemServico;
+  i: integer;
+  resultado: Boolean;
+  mensagem: string;
+  codigoLog: integer;
+begin
+  continuar := True;
+  resposta := TJSONObject.Create;
+  codigoLog := gerarLogOrdemServico(Req, Res, 'mudarSituacaoExcluida', resposta);
+
+  if (continuar) then
+  try
+    token := Req.Headers['token'];
+    ordemServico.id := strToIntZero(Req.Params['id']);
+    ordemServico.situacao := 'EXCLUIDO';
+  except
+    on E: Exception do
+    begin
+      mensagem := 'Erro ao recuperar dados da requisição: ' + e.Message + '!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(JsonErro('ORDEMSERVICO019', mensagem))));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+      continuar := False;
+    end;
+  end;
+
+  if (continuar) and (verificarToken(res, resposta)) then
+  try
+    erros := TStringList.Create;
+    arrayResposta := TJSONArray.Create;
+
+    if not (ordemServico.id > 0) then
+    begin
+      erros.Add('O Codigo da ordem deve ser informado, ou deve ser um numero inteiro valido!');
+    end;
+
+    if (erros.Text = '') then
+    begin
+      ordemConsultado := ordemServico.consultarChave();
+
+      if not (Assigned(ordemConsultado)) then
+      begin
+        erros.Add('Nenhum ordem de serviço encontrado com o codigo [' + IntToStrSenaoZero(ordemServico.id) + ']!');
+      end
+      else
+      begin
+        if (ordemConsultado.situacao <> 'ORÇAMENTO') then
+        begin
+          erros.Add('Somente é possivel excluir ordens de serviço com situação ''ORÇAMENTO''!');
+        end;
+
+        ordemConsultado.Destroy;
+      end;
+    end;
+
+    if (erros.Text <> '') then
+    begin
+      for i := 0 to erros.Count - 1 do
+      begin
+        arrayResposta.Add(UFuncao.JsonErro('ORDEMSERVICO020',  erros[i]));
+      end;
+
+      resposta.AddPair(TJSONPair.Create('Erros', arrayResposta));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+    end
+    else
+    begin
+      FreeAndNil(arrayResposta);
+      ordemConsultado := ordemServico.mudarSituacaoOrdem;
+
+      if (Assigned(ordemConsultado)) then
+      begin
+        resposta.AddPair('tipo', 'Mudança de situação Ordem de Serviço');
+        resposta.AddPair('registrosAfetados', TJSONNumber.Create(ordemServico.registrosAfetados));
+        montarOrdemServico(ordemConsultado, resposta);
+        Res.Send<TJSONAncestor>(resposta.Clone).Status(200);
+
+        ordemConsultado.Destroy;
+      end
+      else
+      begin
+        mensagem := 'Erro ao excluir uma ordem de serviço contate o suporte!';
+        resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('ORDEMSERVICO021', mensagem))));
+        Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
+      end;
+    end;
+
+    FreeAndNil(erros);
+  except
+    on E: Exception do
+    begin
+      mensagem := 'Erro não tratado ao excluir a ordem de serviço!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('ORDEMSERVICO021', mensagem))));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
+    end;
+  end;
+
+  ordemServico.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
+  limparVariaveis;
+  FreeAndNil(resposta);
+end;
+
+procedure mudarSituacaoAprovado(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+var
+  erros: TStringList;
+  resposta: TJSONObject;
+  arrayResposta: TJSONArray;
+  ordemConsultado: TOrdemServico;
+  i: integer;
+  resultado: Boolean;
+  mensagem: string;
+  codigoLog: integer;
+begin
+  continuar := True;
+  resposta := TJSONObject.Create;
+  codigoLog := gerarLogOrdemServico(Req, Res, 'mudarSituacaoAprovado', resposta);
+
+  if (continuar) then
+  try
+    token := Req.Headers['token'];
+    ordemServico.id := strToIntZero(Req.Params['id']);
+    ordemServico.situacao := 'APROVADO';
+  except
+    on E: Exception do
+    begin
+      mensagem := 'Erro ao recuperar dados da requisição: ' + e.Message + '!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(JsonErro('ORDEMSERVICO022', mensagem))));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+      continuar := False;
+    end;
+  end;
+
+  if (continuar) and (verificarToken(res, resposta)) then
+  try
+    erros := TStringList.Create;
+    arrayResposta := TJSONArray.Create;
+
+    if not (ordemServico.id > 0) then
+    begin
+      erros.Add('O Codigo da ordem deve ser informado, ou deve ser um numero inteiro valido!');
+    end;
+
+    if (erros.Text = '') then
+    begin
+      ordemConsultado := ordemServico.consultarChave();
+
+      if not (Assigned(ordemConsultado)) then
+      begin
+        erros.Add('Nenhum ordem de serviço encontrado com o codigo [' + IntToStrSenaoZero(ordemServico.id) + ']!');
+      end
+      else
+      begin
+        if (ordemConsultado.situacao <> 'ORÇAMENTO') then
+        begin
+          erros.Add('Somente é possivel aprovar ordens de serviço com situação ''ORÇAMENTO''!');
+        end;
+
+        ordemConsultado.Destroy;
+      end;
+    end;
+
+    if (erros.Text <> '') then
+    begin
+      for i := 0 to erros.Count - 1 do
+      begin
+        arrayResposta.Add(UFuncao.JsonErro('ORDEMSERVICO023',  erros[i]));
+      end;
+
+      resposta.AddPair(TJSONPair.Create('Erros', arrayResposta));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+    end
+    else
+    begin
+      FreeAndNil(arrayResposta);
+      ordemConsultado := ordemServico.mudarSituacaoOrdem;
+
+      if (Assigned(ordemConsultado)) then
+      begin
+        resposta.AddPair('tipo', 'Mudança de situação Ordem de Serviço');
+        resposta.AddPair('registrosAfetados', TJSONNumber.Create(ordemServico.registrosAfetados));
+        montarOrdemServico(ordemConsultado, resposta);
+        Res.Send<TJSONAncestor>(resposta.Clone).Status(200);
+
+        ordemConsultado.Destroy;
+      end
+      else
+      begin
+        mensagem := 'Erro ao aprovar uma ordem de serviço contate o suporte!';
+        resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('ORDEMSERVICO024', mensagem))));
+        Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
+      end;
+    end;
+
+    FreeAndNil(erros);
+  except
+    on E: Exception do
+    begin
+      mensagem := 'Erro não tratado ao aprovar a ordem de serviço!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('ORDEMSERVICO024', mensagem))));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
+    end;
+  end;
+
+  ordemServico.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
+  limparVariaveis;
+  FreeAndNil(resposta);
+end;
+
+procedure mudarSituacaoReprovado(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+var
+  erros: TStringList;
+  resposta: TJSONObject;
+  arrayResposta: TJSONArray;
+  ordemConsultado: TOrdemServico;
+  i: integer;
+  resultado: Boolean;
+  mensagem: string;
+  codigoLog: integer;
+begin
+  continuar := True;
+  resposta := TJSONObject.Create;
+  codigoLog := gerarLogOrdemServico(Req, Res, 'mudarSituacaoReprovado', resposta);
+
+  if (continuar) then
+  try
+    token := Req.Headers['token'];
+    ordemServico.id := strToIntZero(Req.Params['id']);
+    ordemServico.situacao := 'REPROVADO';
+  except
+    on E: Exception do
+    begin
+      mensagem := 'Erro ao recuperar dados da requisição: ' + e.Message + '!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(JsonErro('ORDEMSERVICO025', mensagem))));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+      continuar := False;
+    end;
+  end;
+
+  if (continuar) and (verificarToken(res, resposta)) then
+  try
+    erros := TStringList.Create;
+    arrayResposta := TJSONArray.Create;
+
+    if not (ordemServico.id > 0) then
+    begin
+      erros.Add('O Codigo da ordem deve ser informado, ou deve ser um numero inteiro valido!');
+    end;
+
+    if (erros.Text = '') then
+    begin
+      ordemConsultado := ordemServico.consultarChave();
+
+      if not (Assigned(ordemConsultado)) then
+      begin
+        erros.Add('Nenhum ordem de serviço encontrado com o codigo [' + IntToStrSenaoZero(ordemServico.id) + ']!');
+      end
+      else
+      begin
+        if (ordemConsultado.situacao <> 'ORÇAMENTO') then
+        begin
+          erros.Add('Somente é possivel reprovar ordens de serviço com situação ''ORÇAMENTO''!');
+        end;
+
+        ordemConsultado.Destroy;
+      end;
+    end;
+
+    if (erros.Text <> '') then
+    begin
+      for i := 0 to erros.Count - 1 do
+      begin
+        arrayResposta.Add(UFuncao.JsonErro('ORDEMSERVICO026',  erros[i]));
+      end;
+
+      resposta.AddPair(TJSONPair.Create('Erros', arrayResposta));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+    end
+    else
+    begin
+      FreeAndNil(arrayResposta);
+      ordemConsultado := ordemServico.mudarSituacaoOrdem;
+
+      if (Assigned(ordemConsultado)) then
+      begin
+        resposta.AddPair('tipo', 'Mudança de situação Ordem de Serviço');
+        resposta.AddPair('registrosAfetados', TJSONNumber.Create(ordemServico.registrosAfetados));
+        montarOrdemServico(ordemConsultado, resposta);
+        Res.Send<TJSONAncestor>(resposta.Clone).Status(200);
+
+        ordemConsultado.Destroy;
+      end
+      else
+      begin
+        mensagem := 'Erro ao reprovar uma ordem de serviço contate o suporte!';
+        resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('ORDEMSERVICO027', mensagem))));
+        Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
+      end;
+    end;
+
+    FreeAndNil(erros);
+  except
+    on E: Exception do
+    begin
+      mensagem := 'Erro não tratado ao reprovar a ordem de serviço!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('ORDEMSERVICO027', mensagem))));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
+    end;
+  end;
+
+  ordemServico.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
+  limparVariaveis;
+  FreeAndNil(resposta);
+end;
+
+procedure mudarSituacaoExecutando(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+var
+  erros: TStringList;
+  resposta: TJSONObject;
+  arrayResposta: TJSONArray;
+  ordemConsultado: TOrdemServico;
+  i: integer;
+  resultado: Boolean;
+  mensagem: string;
+  codigoLog: integer;
+begin
+  continuar := True;
+  resposta := TJSONObject.Create;
+  codigoLog := gerarLogOrdemServico(Req, Res, 'mudarSituacaoExecutando', resposta);
+
+  if (continuar) then
+  try
+    token := Req.Headers['token'];
+    ordemServico.id := strToIntZero(Req.Params['id']);
+    ordemServico.situacao := 'EXECUTANDO';
+  except
+    on E: Exception do
+    begin
+      mensagem := 'Erro ao recuperar dados da requisição: ' + e.Message + '!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(JsonErro('ORDEMSERVICO028', mensagem))));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+      continuar := False;
+    end;
+  end;
+
+  if (continuar) and (verificarToken(res, resposta)) then
+  try
+    erros := TStringList.Create;
+    arrayResposta := TJSONArray.Create;
+
+    if not (ordemServico.id > 0) then
+    begin
+      erros.Add('O Codigo da ordem deve ser informado, ou deve ser um numero inteiro valido!');
+    end;
+
+    if (erros.Text = '') then
+    begin
+      ordemConsultado := ordemServico.consultarChave();
+
+      if not (Assigned(ordemConsultado)) then
+      begin
+        erros.Add('Nenhum ordem de serviço encontrado com o codigo [' + IntToStrSenaoZero(ordemServico.id) + ']!');
+      end
+      else
+      begin
+        if (ordemConsultado.situacao <> 'APROVADO') then
+        begin
+          erros.Add('Somente é possivel executar ordens de serviço com situação ''APROVADO''!');
+        end;
+
+        ordemConsultado.Destroy;
+      end;
+    end;
+
+    if (erros.Text <> '') then
+    begin
+      for i := 0 to erros.Count - 1 do
+      begin
+        arrayResposta.Add(UFuncao.JsonErro('ORDEMSERVICO029',  erros[i]));
+      end;
+
+      resposta.AddPair(TJSONPair.Create('Erros', arrayResposta));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+    end
+    else
+    begin
+      FreeAndNil(arrayResposta);
+      ordemConsultado := ordemServico.mudarSituacaoOrdem;
+
+      if (Assigned(ordemConsultado)) then
+      begin
+        resposta.AddPair('tipo', 'Mudança de situação Ordem de Serviço');
+        resposta.AddPair('registrosAfetados', TJSONNumber.Create(ordemServico.registrosAfetados));
+        montarOrdemServico(ordemConsultado, resposta);
+        Res.Send<TJSONAncestor>(resposta.Clone).Status(200);
+
+        ordemConsultado.Destroy;
+      end
+      else
+      begin
+        mensagem := 'Erro ao executar uma ordem de serviço contate o suporte!';
+        resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('ORDEMSERVICO030', mensagem))));
+        Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
+      end;
+    end;
+
+    FreeAndNil(erros);
+  except
+    on E: Exception do
+    begin
+      mensagem := 'Erro não tratado ao executar a ordem de serviço!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('ORDEMSERVICO030', mensagem))));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
+    end;
+  end;
+
+  ordemServico.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
+  limparVariaveis;
+  FreeAndNil(resposta);
+end;
+
+procedure mudarSituacaoConcluido(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+var
+  erros: TStringList;
+  resposta: TJSONObject;
+  arrayResposta: TJSONArray;
+  ordemConsultado: TOrdemServico;
+  i: integer;
+  resultado: Boolean;
+  mensagem: string;
+  codigoLog: integer;
+begin
+  continuar := True;
+  resposta := TJSONObject.Create;
+  codigoLog := gerarLogOrdemServico(Req, Res, 'mudarSituacaoConcluido', resposta);
+
+  if (continuar) then
+  try
+    token := Req.Headers['token'];
+    ordemServico.id := strToIntZero(Req.Params['id']);
+    ordemServico.situacao := 'CONCLUIDO';
+  except
+    on E: Exception do
+    begin
+      mensagem := 'Erro ao recuperar dados da requisição: ' + e.Message + '!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(JsonErro('ORDEMSERVICO031', mensagem))));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+      continuar := False;
+    end;
+  end;
+
+  if (continuar) and (verificarToken(res, resposta)) then
+  try
+    erros := TStringList.Create;
+    arrayResposta := TJSONArray.Create;
+
+    if not (ordemServico.id > 0) then
+    begin
+      erros.Add('O Codigo da ordem deve ser informado, ou deve ser um numero inteiro valido!');
+    end;
+
+    if (erros.Text = '') then
+    begin
+      ordemConsultado := ordemServico.consultarChave();
+
+      if not (Assigned(ordemConsultado)) then
+      begin
+        erros.Add('Nenhum ordem de serviço encontrado com o codigo [' + IntToStrSenaoZero(ordemServico.id) + ']!');
+      end
+      else
+      begin
+        if (ordemConsultado.situacao <> 'EXECUTANDO') then
+        begin
+          erros.Add('Somente é possivel concluir ordens de serviço com situação ''EXECUTANDO''!');
+        end;
+
+        ordemConsultado.Destroy;
+      end;
+    end;
+
+    if (erros.Text <> '') then
+    begin
+      for i := 0 to erros.Count - 1 do
+      begin
+        arrayResposta.Add(UFuncao.JsonErro('ORDEMSERVICO032',  erros[i]));
+      end;
+
+      resposta.AddPair(TJSONPair.Create('Erros', arrayResposta));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+    end
+    else
+    begin
+      FreeAndNil(arrayResposta);
+      ordemConsultado := ordemServico.mudarSituacaoOrdem;
+
+      if (Assigned(ordemConsultado)) then
+      begin
+        resposta.AddPair('tipo', 'Mudança de situação Ordem de Serviço');
+        resposta.AddPair('registrosAfetados', TJSONNumber.Create(ordemServico.registrosAfetados));
+        montarOrdemServico(ordemConsultado, resposta);
+        Res.Send<TJSONAncestor>(resposta.Clone).Status(200);
+
+        ordemConsultado.Destroy;
+      end
+      else
+      begin
+        mensagem := 'Erro ao concluir uma ordem de serviço contate o suporte!';
+        resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('ORDEMSERVICO033', mensagem))));
+        Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
+      end;
+    end;
+
+    FreeAndNil(erros);
+  except
+    on E: Exception do
+    begin
+      mensagem := 'Erro não tratado ao concluir a ordem de serviço!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('ORDEMSERVICO033', mensagem))));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
+    end;
+  end;
+
+  ordemServico.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
+  limparVariaveis;
+  FreeAndNil(resposta);
+end;
+
+procedure mudarSituacaoFaturado(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+var
+  erros: TStringList;
+  resposta: TJSONObject;
+  arrayResposta: TJSONArray;
+  ordemConsultado: TOrdemServico;
+  i: integer;
+  resultado: Boolean;
+  mensagem: string;
+  codigoLog: integer;
+begin
+  continuar := True;
+  resposta := TJSONObject.Create;
+  codigoLog := gerarLogOrdemServico(Req, Res, 'mudarSituacaoFaturado', resposta);
+
+  if (continuar) then
+  try
+    token := Req.Headers['token'];
+    ordemServico.id := strToIntZero(Req.Params['id']);
+    ordemServico.situacao := 'FATURADO';
+  except
+    on E: Exception do
+    begin
+      mensagem := 'Erro ao recuperar dados da requisição: ' + e.Message + '!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(JsonErro('ORDEMSERVICO034', mensagem))));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+      continuar := False;
+    end;
+  end;
+
+  if (continuar) and (verificarToken(res, resposta)) then
+  try
+    erros := TStringList.Create;
+    arrayResposta := TJSONArray.Create;
+
+    if not (ordemServico.id > 0) then
+    begin
+      erros.Add('O Codigo da ordem deve ser informado, ou deve ser um numero inteiro valido!');
+    end;
+
+    if (erros.Text = '') then
+    begin
+      ordemConsultado := ordemServico.consultarChave();
+
+      if not (Assigned(ordemConsultado)) then
+      begin
+        erros.Add('Nenhum ordem de serviço encontrado com o codigo [' + IntToStrSenaoZero(ordemServico.id) + ']!');
+      end
+      else
+      begin
+        if (ordemConsultado.situacao <> 'CONCLUIDO') then
+        begin
+          erros.Add('Somente é possivel faturar ordens de serviço com situação ''CONCLUIDO''!');
+        end;
+
+        ordemConsultado.Destroy;
+      end;
+    end;
+
+    if (erros.Text <> '') then
+    begin
+      for i := 0 to erros.Count - 1 do
+      begin
+        arrayResposta.Add(UFuncao.JsonErro('ORDEMSERVICO035',  erros[i]));
+      end;
+
+      resposta.AddPair(TJSONPair.Create('Erros', arrayResposta));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+    end
+    else
+    begin
+      FreeAndNil(arrayResposta);
+      ordemConsultado := ordemServico.mudarSituacaoOrdem;
+
+      if (Assigned(ordemConsultado)) then
+      begin
+        resposta.AddPair('tipo', 'Mudança de situação Ordem de Serviço');
+        resposta.AddPair('registrosAfetados', TJSONNumber.Create(ordemServico.registrosAfetados));
+        montarOrdemServico(ordemConsultado, resposta);
+        Res.Send<TJSONAncestor>(resposta.Clone).Status(200);
+
+        ordemConsultado.Destroy;
+      end
+      else
+      begin
+        mensagem := 'Erro ao faturar uma ordem de serviço contate o suporte!';
+        resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('ORDEMSERVICO036', mensagem))));
+        Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
+      end;
+    end;
+
+    FreeAndNil(erros);
+  except
+    on E: Exception do
+    begin
+      mensagem := 'Erro não tratado ao faturar a ordem de serviço!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('ORDEMSERVICO036', mensagem))));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
+    end;
+  end;
+
+  ordemServico.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
+  limparVariaveis;
+  FreeAndNil(resposta);
+end;
+
+procedure mudarSituacaoModelo(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+var
+  erros: TStringList;
+  resposta: TJSONObject;
+  arrayResposta: TJSONArray;
+  ordemConsultado: TOrdemServico;
+  i: integer;
+  resultado: Boolean;
+  mensagem: string;
+  codigoLog: integer;
+begin
+  continuar := True;
+  resposta := TJSONObject.Create;
+  codigoLog := gerarLogOrdemServico(Req, Res, 'mudarSituacaoModelo', resposta);
+
+  if (continuar) then
+  try
+    token := Req.Headers['token'];
+    ordemServico.id := strToIntZero(Req.Params['id']);
+    ordemServico.situacao := 'MODELO';
+  except
+    on E: Exception do
+    begin
+      mensagem := 'Erro ao recuperar dados da requisição: ' + e.Message + '!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(JsonErro('ORDEMSERVICO037', mensagem))));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+      continuar := False;
+    end;
+  end;
+
+  if (continuar) and (verificarToken(res, resposta)) then
+  try
+    erros := TStringList.Create;
+    arrayResposta := TJSONArray.Create;
+
+    if not (ordemServico.id > 0) then
+    begin
+      erros.Add('O Codigo da ordem deve ser informado, ou deve ser um numero inteiro valido!');
+    end;
+
+    if (erros.Text = '') then
+    begin
+      ordemConsultado := ordemServico.consultarChave();
+
+      if not (Assigned(ordemConsultado)) then
+      begin
+        erros.Add('Nenhum ordem de serviço encontrado com o codigo [' + IntToStrSenaoZero(ordemServico.id) + ']!');
+      end
+      else
+      begin
+        if (ordemConsultado.situacao <> 'ORÇAMENTO') then
+        begin
+          erros.Add('Somente é possivel definir como modelo ordens de serviço com situação ''ORÇAMENTO''!');
+        end;
+
+        ordemConsultado.Destroy;
+      end;
+    end;
+
+    if (erros.Text <> '') then
+    begin
+      for i := 0 to erros.Count - 1 do
+      begin
+        arrayResposta.Add(UFuncao.JsonErro('ORDEMSERVICO038',  erros[i]));
+      end;
+
+      resposta.AddPair(TJSONPair.Create('Erros', arrayResposta));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+    end
+    else
+    begin
+      FreeAndNil(arrayResposta);
+      ordemConsultado := ordemServico.mudarSituacaoOrdem;
+
+      if (Assigned(ordemConsultado)) then
+      begin
+        resposta.AddPair('tipo', 'Mudança de situação Ordem de Serviço');
+        resposta.AddPair('registrosAfetados', TJSONNumber.Create(ordemServico.registrosAfetados));
+        montarOrdemServico(ordemConsultado, resposta);
+        Res.Send<TJSONAncestor>(resposta.Clone).Status(200);
+
+        ordemConsultado.Destroy;
+      end
+      else
+      begin
+        mensagem := 'Erro ao definir como modelo uma ordem de serviço contate o suporte!';
+        resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('ORDEMSERVICO039', mensagem))));
+        Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
+      end;
+    end;
+
+    FreeAndNil(erros);
+  except
+    on E: Exception do
+    begin
+      mensagem := 'Erro não tratado ao definir como modelo a ordem de serviço!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('ORDEMSERVICO040', mensagem))));
       Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
     end;
   end;
@@ -806,6 +1561,13 @@ begin
   THorse.Post('/ordemServico', cadastrarOrdemServico);
   THorse.Put('/ordemServico/:id', alterarOrdemServico);
   THorse.Delete('/ordemServicoExcluir/:id', excluirOrdem);
+  THorse.Put('/ordemExcluir/:id', mudarSituacaoExcluido);
+  THorse.Put('/aprovarOrdemServico/:id', mudarSituacaoAprovado);
+  THorse.Put('/reprovarOrdemServico/:id', mudarSituacaoReprovado);
+  THorse.Put('/iniciarOrdemServico/:id', mudarSituacaoExecutando);
+  THorse.Put('/concluirOrdemServico/:id', mudarSituacaoConcluido);
+  THorse.Put('/faturarOrdemServico/:id', mudarSituacaoFaturado);
+  THorse.Put('/modeloOrdemServico/:id', mudarSituacaoModelo);
 end;
 
 end.

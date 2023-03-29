@@ -317,6 +317,14 @@ begin
         begin
           erros.Add('Nenhuma ordem com o codigo [' + IntToStrSenaoZero(funcionario.ordemServico.id) + ']!');
         end
+        else if (funcionarioConsultado.ordemServico.situacao = 'EXCLUIDO') or
+                (funcionarioConsultado.ordemServico.situacao = 'CONCLUIDO') or
+                (funcionarioConsultado.ordemServico.situacao = 'FATURADO') or
+                (funcionarioConsultado.ordemServico.situacao = 'REPROVADO') then
+        begin
+          erros.Add('A situação ' + funcionarioConsultado.ordemServico.situacao + ' não permite que seja cadastrada!');
+          funcionarioConsultado.Destroy;
+        end
         else
         begin
           funcionarioConsultado.funcao.Destroy;
@@ -483,6 +491,14 @@ begin
           begin
             erros.Add('Nenhuma ordem com o codigo [' + IntToStrSenaoZero(funcionario.ordemServico.id) + ']!');
           end
+          else if (funcionarioConsultado.ordemServico.situacao = 'EXCLUIDO') or
+                  (funcionarioConsultado.ordemServico.situacao = 'CONCLUIDO') or
+                  (funcionarioConsultado.ordemServico.situacao = 'FATURADO') or
+                  (funcionarioConsultado.ordemServico.situacao = 'REPROVADO') then
+          begin
+            erros.Add('A situação ' + funcionarioConsultado.ordemServico.situacao + ' não permite que seja alterada!');
+            funcionarioConsultado.Destroy;
+          end
           else
           begin
             funcionarioConsultado.funcao.Destroy;
@@ -611,7 +627,25 @@ begin
       end
       else
       begin
-        funcionarioConsultado.Destroy;
+        funcionarioConsultado.ordemServico.Destroy;
+        funcionarioConsultado.ordemServico := funcionario.ordemServico.consultarChave();
+
+        if not (Assigned(funcionarioConsultado.ordemServico)) then
+        begin
+          erros.Add('Nenhuma ordem com o codigo [' + IntToStrSenaoZero(funcionario.ordemServico.id) + ']!');
+        end
+        else if (funcionarioConsultado.ordemServico.situacao = 'EXCLUIDO') or
+                (funcionarioConsultado.ordemServico.situacao = 'CONCLUIDO') or
+                (funcionarioConsultado.ordemServico.situacao = 'FATURADO') or
+                (funcionarioConsultado.ordemServico.situacao = 'REPROVADO') then
+        begin
+          erros.Add('A situação ' + funcionarioConsultado.ordemServico.situacao + ' não permite que seja inativado!');
+          funcionarioConsultado.Destroy;
+        end
+        else
+        begin
+          funcionarioConsultado.Destroy;
+        end;
       end;
     end;
 

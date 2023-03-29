@@ -208,6 +208,13 @@ type
     function excluirOrdem: Boolean;
     procedure replicarOrdem;
     procedure carregarAbaResumo;
+    function excluirOrdemServico: Boolean;
+    function aprovarOrdemServico: Boolean;
+    function reprovarOrdemServico: Boolean;
+    function IniciarOrdemServico: Boolean;
+    function ConcluirOrdemServico: Boolean;
+    function FaturarOrdemServico: Boolean;
+    function modeloOrdemServico: Boolean;
   end;
 
 var
@@ -729,6 +736,22 @@ begin
 
     if (Assigned(master)) and (master.Count > 0) then
     begin
+      json := TJSONObject.Create;
+      json.AddPair('descricao', '');
+      json.AddPair('subDescricao', '');
+      json.AddPair('quantidade', TJSONNumber.Create(0));
+      json.AddPair('valorTotal', TJSONNumber.Create(0));
+
+      master.Add(json);
+
+      json := TJSONObject.Create;
+      json.AddPair('descricao', 'Lucro/Prejuizo R$');
+      json.AddPair('subDescricao', '');
+      json.AddPair('quantidade', TJSONNumber.Create(TOrdemServicovalorLucroPercentual.Value));
+      json.AddPair('valorTotal', TJSONNumber.Create(TOrdemServicovalorLucro.Value));
+
+      master.Add(json);
+
       converterArrayJsonQuery(converterJsonArrayRestResponse(master), QCustoTotal);
     end
     else
@@ -1781,6 +1804,258 @@ begin
   else
   begin
     Result := True;
+  end;
+
+  Conexao.Destroy;
+end;
+
+function TFDMOrdemServico.excluirOrdemServico: Boolean;
+var
+  Conexao: TConexao;
+  json: TJSONValue;
+begin
+  Conexao := TConexao.Create;
+
+  Conexao.metodo := rmPUT;
+  Conexao.url := 'ordemExcluir/' + IntToStrSenaoZero(TOrdemServicocodigo.Value);
+  Conexao.Enviar;
+
+  if not (Conexao.status in[200..202]) then
+  begin
+    informar(Conexao.erro);
+    Result := False;
+  end
+  else
+  begin
+    json := converterJsonTextoJsonValue(Conexao.resposta);
+
+    if (Assigned(json)) then
+    begin
+      TOrdemServico.Edit;
+      TOrdemServicosituacao.Value := json.GetValue<string>('situacao', '');
+      TOrdemServico.Post;
+      Result := True;
+    end
+    else
+    begin
+      Result := False;
+    end;
+  end;
+
+  Conexao.Destroy;
+end;
+
+function TFDMOrdemServico.aprovarOrdemServico: Boolean;
+var
+  Conexao: TConexao;
+  json: TJSONValue;
+begin
+  Conexao := TConexao.Create;
+
+  Conexao.metodo := rmPUT;
+  Conexao.url := 'aprovarOrdemServico/' + IntToStrSenaoZero(TOrdemServicocodigo.Value);
+  Conexao.Enviar;
+
+  if not (Conexao.status in[200..202]) then
+  begin
+    informar(Conexao.erro);
+    Result := False;
+  end
+  else
+  begin
+    json := converterJsonTextoJsonValue(Conexao.resposta);
+
+    if (Assigned(json)) then
+    begin
+      TOrdemServico.Edit;
+      TOrdemServicosituacao.Value := json.GetValue<string>('situacao', '');
+      TOrdemServico.Post;
+      Result := True;
+    end
+    else
+    begin
+      Result := False;
+    end;
+  end;
+
+  Conexao.Destroy;
+end;
+
+function TFDMOrdemServico.modeloOrdemServico: Boolean;
+var
+  Conexao: TConexao;
+  json: TJSONValue;
+begin
+  Conexao := TConexao.Create;
+
+  Conexao.metodo := rmPUT;
+  Conexao.url := 'modeloOrdemServico/' + IntToStrSenaoZero(TOrdemServicocodigo.Value);
+  Conexao.Enviar;
+
+  if not (Conexao.status in[200..202]) then
+  begin
+    informar(Conexao.erro);
+    Result := False;
+  end
+  else
+  begin
+    json := converterJsonTextoJsonValue(Conexao.resposta);
+
+    if (Assigned(json)) then
+    begin
+      TOrdemServico.Edit;
+      TOrdemServicosituacao.Value := json.GetValue<string>('situacao', '');
+      TOrdemServico.Post;
+      Result := True;
+    end
+    else
+    begin
+      Result := False;
+    end;
+  end;
+
+  Conexao.Destroy;
+end;
+
+function TFDMOrdemServico.IniciarOrdemServico: Boolean;
+var
+  Conexao: TConexao;
+  json: TJSONValue;
+begin
+  Conexao := TConexao.Create;
+
+  Conexao.metodo := rmPUT;
+  Conexao.url := 'iniciarOrdemServico/' + IntToStrSenaoZero(TOrdemServicocodigo.Value);
+  Conexao.Enviar;
+
+  if not (Conexao.status in[200..202]) then
+  begin
+    informar(Conexao.erro);
+    Result := False;
+  end
+  else
+  begin
+    json := converterJsonTextoJsonValue(Conexao.resposta);
+
+    if (Assigned(json)) then
+    begin
+      TOrdemServico.Edit;
+      TOrdemServicosituacao.Value := json.GetValue<string>('situacao', '');
+      TOrdemServico.Post;
+      Result := True;
+    end
+    else
+    begin
+      Result := False;
+    end;
+  end;
+
+  Conexao.Destroy;
+end;
+
+function TFDMOrdemServico.FaturarOrdemServico: Boolean;
+var
+  Conexao: TConexao;
+  json: TJSONValue;
+begin
+  Conexao := TConexao.Create;
+
+  Conexao.metodo := rmPUT;
+  Conexao.url := 'faturarOrdemServico/' + IntToStrSenaoZero(TOrdemServicocodigo.Value);
+  Conexao.Enviar;
+
+  if not (Conexao.status in[200..202]) then
+  begin
+    informar(Conexao.erro);
+    Result := False;
+  end
+  else
+  begin
+    json := converterJsonTextoJsonValue(Conexao.resposta);
+
+    if (Assigned(json)) then
+    begin
+      TOrdemServico.Edit;
+      TOrdemServicosituacao.Value := json.GetValue<string>('situacao', '');
+      TOrdemServico.Post;
+      Result := True;
+    end
+    else
+    begin
+      Result := False;
+    end;
+  end;
+
+  Conexao.Destroy;
+end;
+
+function TFDMOrdemServico.ConcluirOrdemServico: Boolean;
+var
+  Conexao: TConexao;
+  json: TJSONValue;
+begin
+  Conexao := TConexao.Create;
+
+  Conexao.metodo := rmPUT;
+  Conexao.url := 'concluirOrdemServico/' + IntToStrSenaoZero(TOrdemServicocodigo.Value);
+  Conexao.Enviar;
+
+  if not (Conexao.status in[200..202]) then
+  begin
+    informar(Conexao.erro);
+    Result := False;
+  end
+  else
+  begin
+    json := converterJsonTextoJsonValue(Conexao.resposta);
+
+    if (Assigned(json)) then
+    begin
+      TOrdemServico.Edit;
+      TOrdemServicosituacao.Value := json.GetValue<string>('situacao', '');
+      TOrdemServico.Post;
+      Result := True;
+    end
+    else
+    begin
+      Result := False;
+    end;
+  end;
+
+  Conexao.Destroy;
+end;
+
+function TFDMOrdemServico.reprovarOrdemServico: Boolean;
+var
+  Conexao: TConexao;
+  json: TJSONValue;
+begin
+  Conexao := TConexao.Create;
+
+  Conexao.metodo := rmPUT;
+  Conexao.url := 'reprovarOrdemServico/' + IntToStrSenaoZero(TOrdemServicocodigo.Value);
+  Conexao.Enviar;
+
+  if not (Conexao.status in[200..202]) then
+  begin
+    informar(Conexao.erro);
+    Result := False;
+  end
+  else
+  begin
+    json := converterJsonTextoJsonValue(Conexao.resposta);
+
+    if (Assigned(json)) then
+    begin
+      TOrdemServico.Edit;
+      TOrdemServicosituacao.Value := json.GetValue<string>('situacao', '');
+      TOrdemServico.Post;
+      Result := True;
+    end
+    else
+    begin
+      Result := False;
+    end;
   end;
 
   Conexao.Destroy;

@@ -39,23 +39,21 @@ object FOrdemServico: TFOrdemServico
         BevelOuter = bvNone
         TabOrder = 0
         object BFechar: TSpeedButton
-          Left = 723
+          Left = 630
           Top = 0
-          Width = 96
+          Width = 90
           Height = 29
           Align = alLeft
           Caption = 'Fechar'
           ImageIndex = 6
           Images = FMenuPrincipal.ImageList1
           OnClick = BFecharClick
-          ExplicitLeft = 640
-          ExplicitTop = -4
-          ExplicitHeight = 39
+          ExplicitLeft = 1237
         end
         object BConfirmar: TSpeedButton
-          Left = 627
+          Left = 450
           Top = 0
-          Width = 96
+          Width = 90
           Height = 29
           Align = alLeft
           Caption = 'Confirmar'
@@ -63,14 +61,12 @@ object FOrdemServico: TFOrdemServico
           Images = FMenuPrincipal.ImageList1
           Enabled = False
           OnClick = BConfirmarClick
-          ExplicitLeft = 615
-          ExplicitTop = -4
-          ExplicitHeight = 39
+          ExplicitLeft = 517
         end
         object BCancelar: TSpeedButton
-          Left = 531
+          Left = 360
           Top = 0
-          Width = 96
+          Width = 90
           Height = 29
           Align = alLeft
           Caption = 'Cancelar'
@@ -78,67 +74,60 @@ object FOrdemServico: TFOrdemServico
           Images = FMenuPrincipal.ImageList1
           Enabled = False
           OnClick = BCancelarClick
-          ExplicitLeft = 429
-        end
-        object BInativar: TSpeedButton
-          Left = 339
-          Top = 0
-          Width = 96
-          Height = 29
-          Align = alLeft
-          Caption = 'Inativar'
-          ImageIndex = 2
-          Images = FMenuPrincipal.ImageList1
-          OnClick = BInativarClick
-          ExplicitLeft = 327
-          ExplicitTop = -4
-          ExplicitHeight = 39
+          ExplicitLeft = 418
         end
         object BAlterar: TSpeedButton
-          Left = 243
+          Left = 180
           Top = 0
-          Width = 96
+          Width = 90
           Height = 29
           Align = alLeft
           Caption = 'Alterar'
           ImageIndex = 1
           Images = FMenuPrincipal.ImageList1
           OnClick = BAlterarClick
-          ExplicitLeft = 135
-          ExplicitTop = -4
-          ExplicitHeight = 39
+          ExplicitLeft = 147
         end
         object BCadastrar: TSpeedButton
-          Left = 147
+          Left = 90
           Top = 0
-          Width = 96
+          Width = 90
           Height = 29
           Align = alLeft
           Caption = 'Cadastrar'
           ImageIndex = 0
           Images = FMenuPrincipal.ImageList1
           OnClick = BCadastrarClick
-          ExplicitLeft = 1
-          ExplicitTop = -1
-          ExplicitHeight = 39
+          ExplicitLeft = 79
+          ExplicitTop = -6
         end
-        object BReplicar: TSpeedButton
-          Left = 435
+        object BImprimir: TSpeedButton
+          Left = 540
           Top = 0
-          Width = 96
+          Width = 90
           Height = 29
           Align = alLeft
-          Caption = 'Replicar'
-          ImageIndex = 8
+          Caption = 'Imprimir'
+          ImageIndex = 12
           Images = FMenuPrincipal.ImageList1
-          OnClick = BReplicarClick
-          ExplicitLeft = 451
-          ExplicitTop = -6
+          ExplicitLeft = 1117
+        end
+        object BInativar: TSpeedButton
+          Left = 270
+          Top = 0
+          Width = 90
+          Height = 29
+          Align = alLeft
+          Caption = 'Excluir'
+          ImageIndex = 2
+          Images = FMenuPrincipal.ImageList1
+          OnClick = BInativarClick
+          ExplicitLeft = 277
         end
         object DBNavigator1: TDBNavigator
           Left = 0
           Top = 0
-          Width = 147
+          Width = 90
           Height = 29
           DataSource = FDMOrdemServico.DOrdemServico
           VisibleButtons = [nbFirst, nbPrior, nbNext, nbLast]
@@ -234,9 +223,9 @@ object FOrdemServico: TFOrdemServico
       end
       object PCDados: TPageControl
         Left = 0
-        Top = 249
+        Top = 283
         Width = 1355
-        Height = 286
+        Height = 252
         ActivePage = TabResumo
         Align = alClient
         TabOrder = 2
@@ -284,7 +273,7 @@ object FOrdemServico: TFOrdemServico
             Left = 0
             Top = 29
             Width = 1347
-            Height = 209
+            Height = 175
             Align = alClient
             DataSource = FDMOrdemServico.DItem
             Enabled = False
@@ -407,7 +396,7 @@ object FOrdemServico: TFOrdemServico
           end
           object CBMostrarInativoItem: TCheckBox
             Left = 0
-            Top = 238
+            Top = 204
             Width = 1347
             Height = 17
             Align = alBottom
@@ -460,7 +449,7 @@ object FOrdemServico: TFOrdemServico
           end
           object CBInativoProduto: TCheckBox
             Left = 0
-            Top = 238
+            Top = 204
             Width = 1347
             Height = 17
             Align = alBottom
@@ -473,7 +462,7 @@ object FOrdemServico: TFOrdemServico
             Left = 0
             Top = 29
             Width = 1347
-            Height = 209
+            Height = 175
             Align = alClient
             DataSource = FDMOrdemServico.DProduto
             Enabled = False
@@ -648,7 +637,7 @@ object FOrdemServico: TFOrdemServico
             Left = 0
             Top = 29
             Width = 1347
-            Height = 209
+            Height = 175
             Align = alClient
             DataSource = FDMOrdemServico.DCusto
             Enabled = False
@@ -755,7 +744,7 @@ object FOrdemServico: TFOrdemServico
           end
           object CBInativoCusto: TCheckBox
             Left = 0
-            Top = 238
+            Top = 204
             Width = 1347
             Height = 17
             Align = alBottom
@@ -810,7 +799,7 @@ object FOrdemServico: TFOrdemServico
             Left = 0
             Top = 29
             Width = 1347
-            Height = 209
+            Height = 175
             Align = alClient
             DataSource = FDMOrdemServico.DFuncionario
             Enabled = False
@@ -997,7 +986,7 @@ object FOrdemServico: TFOrdemServico
           end
           object CBInativoFuncionario: TCheckBox
             Left = 0
-            Top = 238
+            Top = 204
             Width = 1347
             Height = 17
             Align = alBottom
@@ -1015,16 +1004,15 @@ object FOrdemServico: TFOrdemServico
             Left = 0
             Top = 0
             Width = 1347
-            Height = 255
+            Height = 221
             Align = alClient
             BevelOuter = bvNone
             TabOrder = 0
-            ExplicitWidth = 490
             object GValoresCusto: TDBGrid
               Left = 0
               Top = 118
               Width = 1347
-              Height = 137
+              Height = 103
               Align = alClient
               DataSource = FDMOrdemServico.DCustoTotal
               ReadOnly = True
@@ -1128,196 +1116,169 @@ object FOrdemServico: TFOrdemServico
               Align = alTop
               BevelOuter = bvNone
               TabOrder = 2
-              ExplicitWidth = 923
             end
           end
         end
       end
       object PDados: TPanel
         Left = 0
-        Top = 29
+        Top = 58
         Width = 1355
-        Height = 220
+        Height = 225
         Align = alTop
         BevelOuter = bvNone
         Enabled = False
         TabOrder = 1
         object Label1: TLabel
           Left = 9
-          Top = 1
+          Top = 9
           Width = 39
           Height = 16
           Caption = 'Codigo'
         end
         object Label2: TLabel
           Left = 90
-          Top = 1
+          Top = 9
           Width = 50
           Height = 16
           Caption = 'Empresa'
         end
         object Label13: TLabel
           Left = 594
-          Top = 1
+          Top = 9
           Width = 79
           Height = 16
           Caption = 'Detalhamento'
         end
         object Label3: TLabel
           Left = 9
-          Top = 42
+          Top = 50
           Width = 39
           Height = 16
           Caption = 'Cliente'
         end
         object Label8: TLabel
           Left = 594
-          Top = 129
+          Top = 137
           Width = 67
           Height = 16
           Caption = 'Observa'#231#227'o'
         end
         object Label9: TLabel
           Left = 277
-          Top = 42
+          Top = 50
           Width = 53
           Height = 16
           Caption = 'Endere'#231'o'
         end
         object Label10: TLabel
           Left = 359
-          Top = 42
+          Top = 50
           Width = 55
           Height = 16
           Caption = 'Descri'#231#227'o'
         end
         object Label11: TLabel
           Left = 451
-          Top = 42
+          Top = 50
           Width = 22
           Height = 16
           Caption = 'CEP'
         end
         object Label12: TLabel
           Left = 9
-          Top = 87
+          Top = 95
           Width = 72
           Height = 16
           Caption = 'Longradouro'
         end
         object Label14: TLabel
           Left = 208
-          Top = 87
+          Top = 95
           Width = 45
           Height = 16
           Caption = 'Numero'
         end
         object Label15: TLabel
           Left = 290
-          Top = 87
+          Top = 95
           Width = 34
           Height = 16
           Caption = 'Bairro'
         end
         object Label16: TLabel
           Left = 382
-          Top = 87
+          Top = 95
           Width = 79
           Height = 16
           Caption = 'Complemento'
         end
         object Label18: TLabel
           Left = 9
-          Top = 129
+          Top = 137
           Width = 39
           Height = 16
           Caption = 'Cidade'
         end
         object Label19: TLabel
           Left = 208
-          Top = 129
+          Top = 137
           Width = 38
           Height = 16
           Caption = 'Estado'
         end
         object Label20: TLabel
           Left = 320
-          Top = 129
+          Top = 137
           Width = 23
           Height = 16
           Caption = 'Pais'
         end
         object Label21: TLabel
           Left = 450
-          Top = 129
+          Top = 137
           Width = 58
           Height = 16
           Caption = 'Finalidade'
         end
         object Label22: TLabel
           Left = 9
-          Top = 171
+          Top = 179
           Width = 89
           Height = 16
           Caption = 'Transportadora'
         end
         object Label23: TLabel
           Left = 276
-          Top = 171
+          Top = 179
           Width = 59
           Height = 16
           Caption = 'Tipo Frete'
         end
         object Label24: TLabel
           Left = 388
-          Top = 0
+          Top = 8
           Width = 49
           Height = 16
           Caption = 'Situa'#231#227'o'
         end
         object Label25: TLabel
           Left = 476
-          Top = 170
+          Top = 178
           Width = 80
           Height = 16
           Caption = 'Prazo Entrega'
         end
         object Label26: TLabel
           Left = 271
-          Top = 0
+          Top = 8
           Width = 47
           Height = 16
           Caption = 'Data OS'
         end
-        object LLucroPercentual: TLabel
-          Left = 1026
-          Top = 17
-          Width = 114
-          Height = 16
-          Caption = 'Lucro/Prejuizo %'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clGreen
-          Font.Height = -13
-          Font.Name = 'Tahoma'
-          Font.Style = [fsBold]
-          ParentFont = False
-        end
-        object LLucro: TLabel
-          Left = 1036
-          Top = 72
-          Width = 117
-          Height = 16
-          Caption = 'Lucro/Prejuizo R$'
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clGreen
-          Font.Height = -13
-          Font.Name = 'Tahoma'
-          Font.Style = [fsBold]
-          ParentFont = False
-        end
         object ECodigo: TDBEdit
           Left = 9
-          Top = 17
+          Top = 25
           Width = 76
           Height = 24
           TabStop = False
@@ -1329,7 +1290,7 @@ object FOrdemServico: TFOrdemServico
         end
         object DBLEmpresa: TDBLookupComboBox
           Left = 91
-          Top = 17
+          Top = 25
           Width = 174
           Height = 24
           DataField = 'empresaCodigo'
@@ -1341,7 +1302,7 @@ object FOrdemServico: TFOrdemServico
         end
         object DBMemo1: TDBMemo
           Left = 594
-          Top = 17
+          Top = 25
           Width = 373
           Height = 110
           DataField = 'detalhamento'
@@ -1351,7 +1312,7 @@ object FOrdemServico: TFOrdemServico
         end
         object DBEdit1: TDBEdit
           Left = 91
-          Top = 59
+          Top = 67
           Width = 180
           Height = 24
           TabStop = False
@@ -1362,7 +1323,7 @@ object FOrdemServico: TFOrdemServico
         end
         object DBCliente: TDBEdit
           Left = 9
-          Top = 59
+          Top = 67
           Width = 76
           Height = 24
           DataField = 'clienteCodigo'
@@ -1373,7 +1334,7 @@ object FOrdemServico: TFOrdemServico
         end
         object DBMemo2: TDBMemo
           Left = 594
-          Top = 145
+          Top = 153
           Width = 373
           Height = 66
           DataField = 'observacao'
@@ -1383,7 +1344,7 @@ object FOrdemServico: TFOrdemServico
         end
         object DBEdit2: TDBEdit
           Left = 359
-          Top = 59
+          Top = 67
           Width = 86
           Height = 24
           TabStop = False
@@ -1394,7 +1355,7 @@ object FOrdemServico: TFOrdemServico
         end
         object DBEndereco: TDBEdit
           Left = 277
-          Top = 59
+          Top = 67
           Width = 76
           Height = 24
           DataField = 'enderecoCodigo'
@@ -1405,7 +1366,7 @@ object FOrdemServico: TFOrdemServico
         end
         object DBEdit4: TDBEdit
           Left = 451
-          Top = 59
+          Top = 67
           Width = 136
           Height = 24
           TabStop = False
@@ -1416,7 +1377,7 @@ object FOrdemServico: TFOrdemServico
         end
         object DBEdit5: TDBEdit
           Left = 9
-          Top = 103
+          Top = 111
           Width = 193
           Height = 24
           TabStop = False
@@ -1427,7 +1388,7 @@ object FOrdemServico: TFOrdemServico
         end
         object DBEdit6: TDBEdit
           Left = 208
-          Top = 103
+          Top = 111
           Width = 76
           Height = 24
           TabStop = False
@@ -1438,7 +1399,7 @@ object FOrdemServico: TFOrdemServico
         end
         object DBEdit7: TDBEdit
           Left = 290
-          Top = 103
+          Top = 111
           Width = 86
           Height = 24
           TabStop = False
@@ -1449,7 +1410,7 @@ object FOrdemServico: TFOrdemServico
         end
         object DBEdit8: TDBEdit
           Left = 382
-          Top = 103
+          Top = 111
           Width = 205
           Height = 24
           TabStop = False
@@ -1460,7 +1421,7 @@ object FOrdemServico: TFOrdemServico
         end
         object DBEdit9: TDBEdit
           Left = 9
-          Top = 145
+          Top = 153
           Width = 193
           Height = 24
           TabStop = False
@@ -1471,7 +1432,7 @@ object FOrdemServico: TFOrdemServico
         end
         object DBEdit10: TDBEdit
           Left = 208
-          Top = 145
+          Top = 153
           Width = 106
           Height = 24
           TabStop = False
@@ -1482,7 +1443,7 @@ object FOrdemServico: TFOrdemServico
         end
         object DBEdit11: TDBEdit
           Left = 320
-          Top = 145
+          Top = 153
           Width = 125
           Height = 24
           TabStop = False
@@ -1493,7 +1454,7 @@ object FOrdemServico: TFOrdemServico
         end
         object DBLookupComboBox1: TDBLookupComboBox
           Left = 451
-          Top = 145
+          Top = 153
           Width = 136
           Height = 24
           DataField = 'finalidade'
@@ -1505,7 +1466,7 @@ object FOrdemServico: TFOrdemServico
         end
         object DBEdit12: TDBEdit
           Left = 91
-          Top = 187
+          Top = 195
           Width = 178
           Height = 24
           TabStop = False
@@ -1516,7 +1477,7 @@ object FOrdemServico: TFOrdemServico
         end
         object DBTransportadora: TDBEdit
           Left = 9
-          Top = 187
+          Top = 195
           Width = 76
           Height = 24
           DataField = 'transportadoraCodigo'
@@ -1527,7 +1488,7 @@ object FOrdemServico: TFOrdemServico
         end
         object DBLookupComboBox2: TDBLookupComboBox
           Left = 276
-          Top = 187
+          Top = 195
           Width = 194
           Height = 24
           DataField = 'tipoFrete'
@@ -1539,7 +1500,7 @@ object FOrdemServico: TFOrdemServico
         end
         object DBEdit14: TDBEdit
           Left = 388
-          Top = 17
+          Top = 25
           Width = 199
           Height = 24
           TabStop = False
@@ -1550,7 +1511,7 @@ object FOrdemServico: TFOrdemServico
         end
         object DBPrazoEntrega: TDateTimePicker
           Left = 476
-          Top = 187
+          Top = 195
           Width = 111
           Height = 24
           Date = 44975.000000000000000000
@@ -1560,7 +1521,7 @@ object FOrdemServico: TFOrdemServico
         end
         object DBDataOrdem: TDateTimePicker
           Left = 271
-          Top = 17
+          Top = 25
           Width = 111
           Height = 24
           Date = 44975.000000000000000000
@@ -1568,41 +1529,101 @@ object FOrdemServico: TFOrdemServico
           TabOrder = 2
           OnChange = DBDataOrdemChange
         end
-        object DBLucroPercentual: TDBEdit
-          Left = 1019
-          Top = 39
-          Width = 271
-          Height = 24
-          TabStop = False
-          Color = clBtnFace
-          DataField = 'valorLucroPercentual'
-          DataSource = FDMOrdemServico.DOrdemServico
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clGreen
-          Font.Height = -13
-          Font.Name = 'Tahoma'
-          Font.Style = [fsBold]
-          ParentFont = False
-          ReadOnly = True
-          TabOrder = 23
+      end
+      object Panel6: TPanel
+        Left = 0
+        Top = 29
+        Width = 1355
+        Height = 29
+        Align = alTop
+        BevelOuter = bvNone
+        TabOrder = 4
+        object BReplicar: TSpeedButton
+          Left = 0
+          Top = 0
+          Width = 90
+          Height = 29
+          Align = alLeft
+          Caption = 'Replicar'
+          ImageIndex = 8
+          Images = FMenuPrincipal.ImageList1
+          OnClick = BReplicarClick
+          ExplicitLeft = 8
         end
-        object DBLucro: TDBEdit
-          Left = 1029
-          Top = 94
-          Width = 246
-          Height = 24
-          TabStop = False
-          Color = clBtnFace
-          DataField = 'valorLucro'
-          DataSource = FDMOrdemServico.DOrdemServico
-          Font.Charset = DEFAULT_CHARSET
-          Font.Color = clGreen
-          Font.Height = -13
-          Font.Name = 'Tahoma'
-          Font.Style = [fsBold]
-          ParentFont = False
-          ReadOnly = True
-          TabOrder = 24
+        object BAprovar: TSpeedButton
+          Left = 90
+          Top = 0
+          Width = 90
+          Height = 29
+          Align = alLeft
+          Caption = 'Aprovar'
+          ImageIndex = 9
+          Images = FMenuPrincipal.ImageList1
+          OnClick = BAprovarClick
+          ExplicitLeft = 175
+        end
+        object BFaturar: TSpeedButton
+          Left = 450
+          Top = 0
+          Width = 90
+          Height = 29
+          Align = alLeft
+          Caption = 'Faturar'
+          ImageIndex = 11
+          Images = FMenuPrincipal.ImageList1
+          OnClick = BFaturarClick
+          ExplicitLeft = 444
+          ExplicitTop = -6
+        end
+        object BReprovar: TSpeedButton
+          Left = 180
+          Top = 0
+          Width = 90
+          Height = 29
+          Align = alLeft
+          Caption = 'Reprovar'
+          ImageIndex = 10
+          Images = FMenuPrincipal.ImageList1
+          OnClick = BReprovarClick
+          ExplicitLeft = 163
+          ExplicitTop = -6
+        end
+        object BConcluir: TSpeedButton
+          Left = 360
+          Top = 0
+          Width = 90
+          Height = 29
+          Align = alLeft
+          Caption = 'Concluir'
+          ImageIndex = 14
+          Images = FMenuPrincipal.ImageList1
+          OnClick = BConcluirClick
+          ExplicitLeft = 541
+        end
+        object BExecutar: TSpeedButton
+          Left = 270
+          Top = 0
+          Width = 90
+          Height = 29
+          Align = alLeft
+          Caption = 'Executar'
+          ImageIndex = 13
+          Images = FMenuPrincipal.ImageList1
+          OnClick = BExecutarClick
+          ExplicitLeft = 253
+          ExplicitTop = 2
+        end
+        object BModelo: TSpeedButton
+          Left = 540
+          Top = 0
+          Width = 90
+          Height = 29
+          Align = alLeft
+          Caption = 'Modelo'
+          ImageIndex = 8
+          Images = FMenuPrincipal.ImageList1
+          OnClick = BModeloClick
+          ExplicitLeft = 458
         end
       end
     end

@@ -21,7 +21,6 @@ type
     BFechar: TSpeedButton;
     BConfirmar: TSpeedButton;
     BCancelar: TSpeedButton;
-    BInativar: TSpeedButton;
     BAlterar: TSpeedButton;
     BCadastrar: TSpeedButton;
     DBNavigator1: TDBNavigator;
@@ -108,15 +107,20 @@ type
     BFuncionarioExcluir: TSpeedButton;
     GFuncionario: TDBGrid;
     CBInativoFuncionario: TCheckBox;
-    BReplicar: TSpeedButton;
     Panel7: TPanel;
     GValoresCusto: TDBGrid;
     GValoresOrdem: TDBGrid;
     Panel8: TPanel;
-    LLucroPercentual: TLabel;
-    LLucro: TLabel;
-    DBLucroPercentual: TDBEdit;
-    DBLucro: TDBEdit;
+    BImprimir: TSpeedButton;
+    BInativar: TSpeedButton;
+    Panel6: TPanel;
+    BReplicar: TSpeedButton;
+    BAprovar: TSpeedButton;
+    BFaturar: TSpeedButton;
+    BReprovar: TSpeedButton;
+    BConcluir: TSpeedButton;
+    BExecutar: TSpeedButton;
+    BModelo: TSpeedButton;
     procedure BFecharClick(Sender: TObject);
     procedure BCadastrarClick(Sender: TObject);
     procedure BAlterarClick(Sender: TObject);
@@ -163,6 +167,12 @@ type
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
     procedure GValoresCustoDrawColumnCell(Sender: TObject; const Rect: TRect;
       DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure BAprovarClick(Sender: TObject);
+    procedure BReprovarClick(Sender: TObject);
+    procedure BExecutarClick(Sender: TObject);
+    procedure BConcluirClick(Sender: TObject);
+    procedure BFaturarClick(Sender: TObject);
+    procedure BModeloClick(Sender: TObject);
   private
     { Private declarations }
     function validarCampos: boolean;
@@ -185,7 +195,14 @@ uses UFuncao, DMOrdemServico, DMPessoa, SelecaoEnderecoCliente,
 
 procedure TFOrdemServico.BAlterarClick(Sender: TObject);
 begin
-  if not (FDMOrdemServico.TOrdemServico.RecordCount > 0) then
+  if (FDMOrdemServico.TOrdemServicosituacao.Value = 'EXCLUIDO') or
+     (FDMOrdemServico.TOrdemServicosituacao.Value = 'CONCLUIDO') or
+     (FDMOrdemServico.TOrdemServicosituacao.Value = 'FATURADO') or
+     (FDMOrdemServico.TOrdemServicosituacao.Value = 'REPROVADO') then
+  begin
+    informar('A situação ' + FDMOrdemServico.TOrdemServicosituacao.Value + ' não permite que seja alterada a ordem de serviço!');
+  end
+  else if not (FDMOrdemServico.TOrdemServico.RecordCount > 0) then
   begin
     informar('Nenhum registro selecionado!');
   end
@@ -194,6 +211,22 @@ begin
     UFuncao.desativaBotoes(self);
     BCancelar.Enabled := False;
     FDMOrdemServico.TOrdemServico.Edit;
+  end;
+end;
+
+procedure TFOrdemServico.BAprovarClick(Sender: TObject);
+begin
+  if not (FDMOrdemServico.TOrdemServico.RecordCount > 0) then
+  begin
+    informar('Nenhum registro selecionado!');
+  end
+  else if (FDMOrdemServico.TOrdemServicosituacao.Value <> 'ORÇAMENTO') then
+  begin
+    informar('Somente é possivel aprovar ordens de serviço com situação ''ORÇAMENTO''!');
+  end
+  else if (FDMOrdemServico.aprovarOrdemServico) then
+  begin
+    informar('Orçamento aprovado com sucesso!');
   end;
 end;
 
@@ -301,6 +334,23 @@ begin
   UFuncao.desativaBotoes(self);
 end;
 
+procedure TFOrdemServico.BConcluirClick(Sender: TObject);
+begin
+  if not (FDMOrdemServico.TOrdemServico.RecordCount > 0) then
+  begin
+    informar('Nenhum registro selecionado!');
+  end
+  else if (FDMOrdemServico.TOrdemServicosituacao.Value <> 'EXECUTANDO') then
+  begin
+    informar('Somente é possivel concluir ordens de serviço com situação ''EXECUTANDO''!');
+  end
+  else if (confirmar('Realmente deseja concluir essa ordem de serviço?')) and
+          (FDMOrdemServico.ConcluirOrdemServico) then
+  begin
+    informar('Ordem de serviço concluida com sucesso!');
+  end;
+end;
+
 procedure TFOrdemServico.BConfirmarClick(Sender: TObject);
 begin
   confirmarCadastro(True);
@@ -363,6 +413,40 @@ begin
   end;
 end;
 
+procedure TFOrdemServico.BExecutarClick(Sender: TObject);
+begin
+  if not (FDMOrdemServico.TOrdemServico.RecordCount > 0) then
+  begin
+    informar('Nenhum registro selecionado!');
+  end
+  else if (FDMOrdemServico.TOrdemServicosituacao.Value <> 'APROVADO') then
+  begin
+    informar('Somente é possivel executar ordens de serviço com situação ''APROVADO''!');
+  end
+  else if (confirmar('Realmente deseja iniciar essa ordem de serviço?')) and
+          (FDMOrdemServico.IniciarOrdemServico) then
+  begin
+    informar('Ordem de serviço iniciada com sucesso!');
+  end;
+end;
+
+procedure TFOrdemServico.BFaturarClick(Sender: TObject);
+begin
+  if not (FDMOrdemServico.TOrdemServico.RecordCount > 0) then
+  begin
+    informar('Nenhum registro selecionado!');
+  end
+  else if (FDMOrdemServico.TOrdemServicosituacao.Value <> 'CONCLUIDO') then
+  begin
+    informar('Somente é possivel faturar ordens de serviço com situação ''CONCLUIDO''!');
+  end
+  else if (confirmar('Realmente deseja faturar essa ordem de serviço?')) and
+          (FDMOrdemServico.FaturarOrdemServico) then
+  begin
+    informar('Ordem de serviço faturada com sucesso!');
+  end;
+end;
+
 procedure TFOrdemServico.BFecharClick(Sender: TObject);
 begin
   close;
@@ -415,7 +499,36 @@ end;
 
 procedure TFOrdemServico.BInativarClick(Sender: TObject);
 begin
-//  vai ser o excluir ordem de servico
+  if not (FDMOrdemServico.TOrdemServico.RecordCount > 0) then
+  begin
+    informar('Nenhum registro selecionado!');
+  end
+  else if (FDMOrdemServico.TOrdemServicosituacao.Value <> 'ORÇAMENTO') then
+  begin
+    informar('Somente é possivel excluir ordens de serviço com situação ''ORÇAMENTO''!');
+  end
+  else if (confirmar('Realmente deseja excluir essa ordem de serviço?')) and
+          (FDMOrdemServico.excluirOrdemServico) then
+  begin
+    informar('Orçamento excluido com sucesso!');
+  end;
+end;
+
+procedure TFOrdemServico.BModeloClick(Sender: TObject);
+begin
+  if not (FDMOrdemServico.TOrdemServico.RecordCount > 0) then
+  begin
+    informar('Nenhum registro selecionado!');
+  end
+  else if (FDMOrdemServico.TOrdemServicosituacao.Value <> 'ORÇAMENTO') then
+  begin
+    informar('Somente é possivel definir como modelo ordens de serviço com situação ''ORÇAMENTO''!');
+  end
+  else if (confirmar('Realmente deseja definir como modelo essa ordem de serviço?')) and
+          (FDMOrdemServico.modeloOrdemServico) then
+  begin
+    informar('Ordem de serviço definida como modelo com sucesso!');
+  end;
 end;
 
 procedure TFOrdemServico.BRemoverItemClick(Sender: TObject);
@@ -443,7 +556,36 @@ end;
 
 procedure TFOrdemServico.BReplicarClick(Sender: TObject);
 begin
-  FDMOrdemServico.replicarOrdem;
+  if not (FDMOrdemServico.TOrdemServico.RecordCount > 0) then
+  begin
+    informar('Nenhum registro selecionado!');
+  end
+  else if (FDMOrdemServico.TOrdemServicosituacao.Value = 'REPROVADO') or
+          (FDMOrdemServico.TOrdemServicosituacao.Value = 'EXCLUIDO') then
+  begin
+    informar('Não é possivel replicar ordens de serviço com situação ''REPROVADO'' ou ''EXCLUIDO''!');
+  end
+  else if (confirmar('Realmente deseja replicar essa ordem de serviço?')) then
+  begin
+    FDMOrdemServico.replicarOrdem;
+  end;
+end;
+
+procedure TFOrdemServico.BReprovarClick(Sender: TObject);
+begin
+  if not (FDMOrdemServico.TOrdemServico.RecordCount > 0) then
+  begin
+    informar('Nenhum registro selecionado!');
+  end
+  else if (FDMOrdemServico.TOrdemServicosituacao.Value <> 'ORÇAMENTO') then
+  begin
+    informar('Somente é possivel reprovar ordens de serviço com situação ''ORÇAMENTO''!');
+  end
+  else if (confirmar('Realmente deseja reprovar essa ordem de serviço?')) and
+          (FDMOrdemServico.reprovarOrdemServico) then
+  begin
+    informar('Orçamento reprovado com sucesso!');
+  end;
 end;
 
 procedure TFOrdemServico.CBInativoCustoClick(Sender: TObject);
@@ -742,7 +884,39 @@ end;
 procedure TFOrdemServico.GValoresCustoDrawColumnCell(Sender: TObject;
   const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
 begin
-  if (GValoresCusto.DataSource.DataSet.RecNo mod 2) = 0 then
+  if (FDMOrdemServico.QCustoTotaldescricao.Value = 'Total Custo Geral') or
+     (FDMOrdemServico.QCustoTotaldescricao.Value = 'Total Custo Funcionario') or
+     (FDMOrdemServico.QCustoTotaldescricao.Value = 'Total Custos') or
+     (FDMOrdemServico.QCustoTotaldescricao.Value = 'Lucro/Prejuizo R$') then
+  begin
+    GValoresCusto.Canvas.Font.Style := GValoresCusto.Canvas.Font.Style + [fsbold];
+    GValoresCusto.Canvas.Font.Size := GValoresCusto.Canvas.Font.Size + 1;
+    GValoresCusto.Canvas.Brush.Color := clWhite;
+
+    if (FDMOrdemServico.QCustoTotaldescricao.Value = 'Lucro/Prejuizo R$') and
+       ((Column.FieldName = 'valorTotal') or
+        (Column.FieldName = 'quantidade')) then
+    begin
+      if (FDMOrdemServico.QCustoTotalvalorTotal.Value > 0) then
+      begin
+        GValoresCusto.Canvas.Font.Color := clGreen;
+      end
+      else
+      begin
+        GValoresCusto.Canvas.Font.Color := clRed;
+      end;
+    end
+    else
+    begin
+      GValoresCusto.Canvas.Font.Color := clBlack;
+    end;
+  end
+  else if (FDMOrdemServico.QCustoTotaldescricao.Value = '') then
+  begin
+    GValoresCusto.Canvas.Brush.Color := clWhite;
+    GValoresCusto.Canvas.Font.Color := clWhite;
+  end
+  else if (GValoresCusto.DataSource.DataSet.RecNo mod 2) = 0 then
   begin
     GValoresCusto.Canvas.Brush.Color := clActiveCaption;
     GValoresCusto.Canvas.Font.Color := clBlack;
@@ -753,26 +927,20 @@ begin
     GValoresCusto.Canvas.Font.Color := clBlack;
   end;
 
-  if (FDMOrdemServico.QCustoTotaldescricao.Value = 'Total Custo Geral') or
-     (FDMOrdemServico.QCustoTotaldescricao.Value = 'Total Custo Funcionario') or
-     (FDMOrdemServico.QCustoTotaldescricao.Value = 'Total Custos') then
-  begin
-    GValoresCusto.Canvas.Font.Style := GValoresCusto.Canvas.Font.Style + [fsbold];
-    GValoresCusto.Canvas.Font.Size := GValoresCusto.Canvas.Font.Size + 1;
-  end
-  else if (FDMOrdemServico.QCustoTotaldescricao.Value = '') then
-  begin
-    GValoresCusto.Canvas.Brush.Color := clWhite;
-    GValoresCusto.Canvas.Font.Color := clWhite;
-  end;
-
   GValoresCusto.DefaultDrawColumnCell(Rect, DataCol, Column, State);
 end;
 
 procedure TFOrdemServico.GValoresOrdemDrawColumnCell(Sender: TObject;
   const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
 begin
-  if (GValoresOrdem.DataSource.DataSet.RecNo mod 2) = 0 then
+  if (FDMOrdemServico.QValorTotaldescricao.Value = 'Total') then
+  begin
+    GValoresOrdem.Canvas.Font.Style := GValoresOrdem.Canvas.Font.Style + [fsbold];
+    GValoresOrdem.Canvas.Font.Size := GValoresOrdem.Canvas.Font.Size + 1;
+    GValoresOrdem.Canvas.Brush.Color := clWhite;
+    GValoresOrdem.Canvas.Font.Color := clBlack;
+  end
+  else if (GValoresOrdem.DataSource.DataSet.RecNo mod 2) = 0 then
   begin
     GValoresOrdem.Canvas.Brush.Color := clActiveCaption;
     GValoresOrdem.Canvas.Font.Color := clBlack;
@@ -781,12 +949,6 @@ begin
   begin
     GValoresOrdem.Canvas.Brush.Color := clWhite;
     GValoresOrdem.Canvas.Font.Color := clBlack;
-  end;
-
-  if (FDMOrdemServico.QValorTotaldescricao.Value = 'Total') then
-  begin
-    GValoresOrdem.Canvas.Font.Style := GValoresOrdem.Canvas.Font.Style + [fsbold];
-    GValoresOrdem.Canvas.Font.Size := GValoresOrdem.Canvas.Font.Size + 1;
   end;
 
   GValoresOrdem.DefaultDrawColumnCell(Rect, DataCol, Column, State);
@@ -880,21 +1042,6 @@ begin
 
       TOrdemServicovalorLucroPercentual.Value := (TOrdemServicovalorLucro.Value /
                                                   TOrdemServicovalorFinal.Value) * 100;
-    end;
-
-    if (TOrdemServicovalorLucro.Value <= 0) then
-    begin
-      LLucroPercentual.Font.Color := clRed;
-      LLucro.Font.Color := clRed;
-      DBLucroPercentual.Font.Color := clRed;
-      DBLucro.Font.Color := clRed;
-    end
-    else
-    begin
-      LLucroPercentual.Font.Color := clGreen;
-      LLucro.Font.Color := clGreen;
-      DBLucroPercentual.Font.Color := clGreen;
-      DBLucro.Font.Color := clGreen;
     end;
 
     carregarAbaResumo;

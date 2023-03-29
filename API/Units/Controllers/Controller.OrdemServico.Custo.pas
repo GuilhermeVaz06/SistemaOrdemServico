@@ -436,6 +436,14 @@ begin
         begin
           erros.Add('Nenhuma ordem com o codigo [' + IntToStrSenaoZero(custo.ordemServico.id) + ']!');
         end
+        else if (custoConsultado.ordemServico.situacao = 'EXCLUIDO') or
+                (custoConsultado.ordemServico.situacao = 'CONCLUIDO') or
+                (custoConsultado.ordemServico.situacao = 'FATURADO') or
+                (custoConsultado.ordemServico.situacao = 'REPROVADO') then
+        begin
+          erros.Add('A situação ' + custoConsultado.ordemServico.situacao + ' não permite que seja cadastrada!');
+          custoConsultado.Destroy;
+        end
         else
         begin
           custoConsultado.grupo.Destroy;
@@ -602,6 +610,14 @@ begin
       begin
         erros.Add('Nenhuma ordem encontrada com o codigo [' + IntToStrSenaoZero(custoConsultado.ordemServico.id) + ']!');
       end
+      else if (custoConsultado.ordemServico.situacao = 'EXCLUIDO') or
+              (custoConsultado.ordemServico.situacao = 'CONCLUIDO') or
+              (custoConsultado.ordemServico.situacao = 'FATURADO') or
+              (custoConsultado.ordemServico.situacao = 'REPROVADO') then
+      begin
+        erros.Add('A situação ' + custoConsultado.ordemServico.situacao + ' não permite que seja alterada!');
+        custoConsultado.Destroy;
+      end
       else
       begin
         custoConsultado.grupo.Destroy;
@@ -717,7 +733,25 @@ begin
       end
       else
       begin
-        custoConsultado.Destroy;
+        custoConsultado.ordemServico.Destroy;
+        custoConsultado.ordemServico := custo.ordemServico.consultarChave();
+
+        if not (Assigned(custoConsultado.ordemServico)) then
+        begin
+          erros.Add('Nenhuma ordem com o codigo [' + IntToStrSenaoZero(custo.ordemServico.id) + ']!');
+        end
+        else if (custoConsultado.ordemServico.situacao = 'EXCLUIDO') or
+                (custoConsultado.ordemServico.situacao = 'CONCLUIDO') or
+                (custoConsultado.ordemServico.situacao = 'FATURADO') or
+                (custoConsultado.ordemServico.situacao = 'REPROVADO') then
+        begin
+          erros.Add('A situação ' + custoConsultado.ordemServico.situacao + ' não permite que seja inativado!');
+          custoConsultado.Destroy;
+        end
+        else
+        begin
+          custoConsultado.Destroy;
+        end;
       end;
     end;
 

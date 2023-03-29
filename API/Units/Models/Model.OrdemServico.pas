@@ -99,10 +99,10 @@ type TOrdemServico = class
     function consultarChave: TOrdemServico;
     function cadastrarOrdemServico: TOrdemServico;
     function alterarOrdemServico: TOrdemServico;
-    function inativarOrdemServico: TOrdemServico;
     function verificarToken(token: string): Boolean;
     function GerarLog(classe, procedimento, requisicao: string): integer;
     function excluirCadastro: Boolean;
+    function mudarSituacaoOrdem: TOrdemServico;
 end;
 
 implementation
@@ -824,13 +824,13 @@ begin
   Result := FConexao.GerarLog(classe, procedimento, requisicao);
 end;
 
-function TOrdemServico.inativarOrdemServico: TOrdemServico;
+function TOrdemServico.mudarSituacaoOrdem: TOrdemServico;
 var
   sql: TStringList;
 begin
   sql := TStringList.Create;
   sql.Add('UPDATE `ordem_servico`');
-  sql.Add('   SET `STATUS` = ''I'' ');
+  sql.Add('   SET `SITUACAO` = ' + QuotedStr(FSituacao));
   sql.Add('     , CODIGO_SESSAO_ALTERACAO = ' + IntToStrSenaoZero(FConexao.codigoSessao));
   sql.Add(' WHERE CODIGO_OS = ' + IntToStrSenaoZero(FCodigo));
 

@@ -237,12 +237,14 @@ object FPessoa: TFPessoa
       end
       object PCDados: TPageControl
         Left = 0
-        Top = 201
+        Top = 199
         Width = 1355
-        Height = 312
+        Height = 314
         ActivePage = TBOutrosDocumentos
         Align = alClient
         TabOrder = 2
+        ExplicitTop = 201
+        ExplicitHeight = 312
         object TBOutrosDocumentos: TTabSheet
           Caption = 'Outros Documentos'
           object Panel2: TPanel
@@ -287,7 +289,7 @@ object FPessoa: TFPessoa
             Left = 0
             Top = 29
             Width = 1347
-            Height = 235
+            Height = 237
             Align = alClient
             DataSource = FDMPessoa.DOutroDocumento
             Enabled = False
@@ -394,7 +396,7 @@ object FPessoa: TFPessoa
           end
           object CBInativoOutroDocumento: TCheckBox
             Left = 0
-            Top = 264
+            Top = 266
             Width = 1347
             Height = 17
             Align = alBottom
@@ -402,6 +404,7 @@ object FPessoa: TFPessoa
             Enabled = False
             TabOrder = 2
             OnClick = CBInativoOutroDocumentoClick
+            ExplicitTop = 264
           end
         end
         object TBEndereco: TTabSheet
@@ -449,7 +452,7 @@ object FPessoa: TFPessoa
             Left = 0
             Top = 29
             Width = 1347
-            Height = 235
+            Height = 237
             Align = alClient
             DataSource = FDMPessoa.DEndereco
             Enabled = False
@@ -596,7 +599,7 @@ object FPessoa: TFPessoa
           end
           object CBInativoEndereco: TCheckBox
             Left = 0
-            Top = 264
+            Top = 266
             Width = 1347
             Height = 17
             Align = alBottom
@@ -604,6 +607,7 @@ object FPessoa: TFPessoa
             Enabled = False
             TabOrder = 2
             OnClick = CBInativoEnderecoClick
+            ExplicitTop = 264
           end
         end
         object TBContato: TTabSheet
@@ -651,7 +655,7 @@ object FPessoa: TFPessoa
             Left = 0
             Top = 29
             Width = 1347
-            Height = 235
+            Height = 237
             Align = alClient
             DataSource = FDMPessoa.DContato
             Enabled = False
@@ -781,7 +785,7 @@ object FPessoa: TFPessoa
           end
           object CBInativoContato: TCheckBox
             Left = 0
-            Top = 264
+            Top = 266
             Width = 1347
             Height = 17
             Align = alBottom
@@ -789,6 +793,7 @@ object FPessoa: TFPessoa
             Enabled = False
             TabOrder = 2
             OnClick = CBInativoContatoClick
+            ExplicitTop = 264
           end
         end
       end
@@ -796,70 +801,71 @@ object FPessoa: TFPessoa
         Left = 0
         Top = 29
         Width = 1355
-        Height = 172
+        Height = 170
         Align = alTop
+        AutoSize = True
         BevelOuter = bvNone
         Enabled = False
         TabOrder = 1
         object Label1: TLabel
           Left = 9
-          Top = 1
+          Top = 0
           Width = 39
           Height = 16
           Caption = 'Codigo'
         end
         object Label2: TLabel
           Left = 90
-          Top = 1
+          Top = 0
           Width = 64
           Height = 16
           Caption = 'Documento'
         end
         object Label3: TLabel
           Left = 199
-          Top = 1
+          Top = 0
           Width = 82
           Height = 16
           Caption = 'N'#186' Documento'
         end
         object LRazaoSocial: TLabel
           Left = 9
-          Top = 43
+          Top = 42
           Width = 73
           Height = 16
           Caption = 'Raz'#227'o Social'
         end
         object LNomeFantasia: TLabel
           Left = 199
-          Top = 43
+          Top = 42
           Width = 85
           Height = 16
           Caption = 'Nome Fantasia'
         end
         object Label11: TLabel
           Left = 9
-          Top = 85
+          Top = 84
           Width = 50
           Height = 16
           Caption = 'Telefone'
         end
         object Label12: TLabel
           Left = 199
-          Top = 85
+          Top = 84
           Width = 35
           Height = 16
           Caption = 'E-Mail'
         end
         object Label13: TLabel
           Left = 388
-          Top = 1
+          Top = 0
           Width = 67
           Height = 16
           Caption = 'Observa'#231#227'o'
         end
         object ECodigo: TDBEdit
           Left = 9
-          Top = 17
+          Top = 16
           Width = 76
           Height = 24
           TabStop = False
@@ -871,7 +877,7 @@ object FPessoa: TFPessoa
         end
         object DBDocumento: TDBEdit
           Left = 198
-          Top = 17
+          Top = 16
           Width = 183
           Height = 24
           DataField = 'documento'
@@ -881,7 +887,7 @@ object FPessoa: TFPessoa
         end
         object DBLDocumento: TDBLookupComboBox
           Left = 91
-          Top = 17
+          Top = 16
           Width = 102
           Height = 24
           DataField = 'codigoTipoDocumento'
@@ -894,7 +900,7 @@ object FPessoa: TFPessoa
         end
         object DBRazaoSocial: TDBEdit
           Left = 9
-          Top = 59
+          Top = 58
           Width = 184
           Height = 24
           DataField = 'razaoSocial'
@@ -903,7 +909,7 @@ object FPessoa: TFPessoa
         end
         object DBNomeFantasia: TDBEdit
           Left = 199
-          Top = 59
+          Top = 58
           Width = 184
           Height = 24
           DataField = 'nomeFantasia'
@@ -912,7 +918,7 @@ object FPessoa: TFPessoa
         end
         object DBEdit3: TDBEdit
           Left = 9
-          Top = 101
+          Top = 100
           Width = 184
           Height = 24
           DataField = 'telefone'
@@ -921,7 +927,7 @@ object FPessoa: TFPessoa
         end
         object DBEdit4: TDBEdit
           Left = 199
-          Top = 101
+          Top = 100
           Width = 184
           Height = 24
           DataField = 'email'
@@ -930,7 +936,7 @@ object FPessoa: TFPessoa
         end
         object DBMemo1: TDBMemo
           Left = 389
-          Top = 17
+          Top = 16
           Width = 373
           Height = 108
           DataField = 'observacao'
@@ -940,7 +946,7 @@ object FPessoa: TFPessoa
         end
         object PFuncao: TPanel
           Left = 0
-          Top = 125
+          Top = 124
           Width = 383
           Height = 46
           BevelOuter = bvNone

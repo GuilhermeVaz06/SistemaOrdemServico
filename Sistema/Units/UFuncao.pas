@@ -143,7 +143,6 @@ begin
     FPessoa.Caption := 'Cadastro de Cliente';
     FPessoa.consulta := consulta;
     FDMPessoa.tipoCadastro := 'cliente';
-    FPessoa.PDados.Height := 128;
     FPessoa.PFuncao.Visible := False;
     FPessoa.ShowModal;
   finally
@@ -158,7 +157,6 @@ begin
     FPessoa.Caption := 'Cadastro de Empresa Faturamento';
     FPessoa.consulta := consulta;
     FDMPessoa.tipoCadastro := 'empresa';
-    FPessoa.PDados.Height := 128;
     FPessoa.PFuncao.Visible := False;
     FPessoa.ShowModal;
   finally
@@ -173,7 +171,6 @@ begin
     FPessoa.Caption := 'Cadastro de Fornecedor';
     FPessoa.consulta := consulta;
     FDMPessoa.tipoCadastro := 'fornecedor';
-    FPessoa.PDados.Height := 128;
     FPessoa.PFuncao.Visible := False;
     FPessoa.ShowModal;
   finally
@@ -187,7 +184,6 @@ begin
     Application.CreateForm(TFPessoa, FPessoa);
     FPessoa.Caption := 'Cadastro de Funcionario';
     FPessoa.consulta := consulta;
-    FPessoa.PDados.Height := 171;
     FPessoa.PFuncao.Visible := True;
     FPessoa.DBLDocumento.Enabled := False;
     FPessoa.LRazaoSocial.Caption := 'Nome';
@@ -214,7 +210,6 @@ begin
     Application.CreateForm(TFPessoa, FPessoa);
     FPessoa.Caption := 'Cadastro de Usuario';
     FPessoa.consulta := consulta;
-    FPessoa.PDados.Height := 128;
     FPessoa.PFuncao.Visible := False;
     FPessoa.DBLDocumento.Enabled := False;
     FPessoa.LRazaoSocial.Caption := 'Nome';
