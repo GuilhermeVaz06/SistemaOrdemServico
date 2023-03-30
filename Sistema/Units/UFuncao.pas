@@ -6,7 +6,7 @@ uses Vcl.Forms, Vcl.Grids, Winapi.Windows, FireDAC.Comp.Client, REST.Client,
      System.SysUtils, Vcl.Dialogs, System.DateUtils, Vcl.DBCtrls, Vcl.ExtCtrls,
      Vcl.Buttons, System.UITypes, System.JSON, DataSet.Serialize, Vcl.DBGrids,
      Vcl.Graphics, System.IniFiles, REST.Response.Adapter, Data.DBJson,
-     Vcl.StdCtrls, Vcl.ComCtrls, System.MaskUtils;
+     Vcl.StdCtrls, Vcl.ComCtrls, System.MaskUtils, IdHashMessageDigest;
 
 function soNumeros(Valor: string): string;
 function strToDoubleZero(valor: string): Double;
@@ -32,6 +32,7 @@ function converterJsonValueJsonArray(json: TJSONValue; nome: string): TJSONArray
 function VirgulaPonto(valor: double): string; overload;
 function VirgulaPonto(valor: string): string; overload;
 function PontoVirgula(valor: string): Double;
+function criarToken(token: string): string;
 procedure desativaBotoes(form: TForm);
 procedure abreTelaCliente(consulta: Boolean);
 procedure abreTelaEmpresa(consulta: Boolean);
@@ -47,7 +48,6 @@ procedure colorirGrid(Sender: TObject; const Rect: TRect;
   DataCol: Integer; Column: TColumn; State: TGridDrawState);
 
 var
-  SessaoLogado: Integer;
   NomeUsuarioSessaoLogado: string;
   UsuarioAdmnistrador: Boolean;
   SessaoLogadoToken: string;
@@ -618,6 +618,18 @@ begin
     begin
       TFDMemTable(grid.DataSource.DataSet).IndexFieldNames := indiceanterior + Coluna.FieldName + ':D ';
     end;
+  end;
+end;
+
+function criarToken(token: string): string;
+var
+  md5: TIdHashMessageDigest5;
+begin
+  md5 := TIdHashMessageDigest5.Create;
+  try
+    Result := md5.HashStringAsHex(token);
+  finally
+    md5.Free;
   end;
 end;
 

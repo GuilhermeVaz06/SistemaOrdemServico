@@ -549,6 +549,157 @@ begin
   FreeAndNil(resposta);
 end;
 
+procedure login(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+var
+  erros: TStringList;
+  resposta: TJSONObject;
+  body: TJSONValue;
+  arrayResposta: TJSONArray;
+  pessoaConsultado: TPessoa;
+  i: integer;
+  mensagem: string;
+  codigoLog: integer;
+begin
+  continuar := True;
+  resposta := TJSONObject.Create;
+  codigoLog := gerarLogPessoa(Req, Res, 'login', 'Usuario', resposta);
+
+  if (continuar) then
+  try
+    body := TJSONObject.ParseJSONValue(TEncoding.UTF8.GetBytes(req.Body), 0) as TJSONValue;
+
+    pessoa.tipoPessoa.id := tpUsuario;
+    pessoa.razaoSocial := body.GetValue<string>('usuario', '');
+    pessoa.senha := body.GetValue<string>('senha', '');
+    pessoa.limite := 1;
+  except
+    on E: Exception do
+    begin
+      mensagem := 'Erro ao recuperar dados da requisição: ' + e.Message + '!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('USUARIO020', mensagem))));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+      continuar := False;
+    end;
+  end;
+
+  FreeAndNil(body);
+
+  if (continuar) then
+  try
+    erros := TStringList.Create;
+    arrayResposta := TJSONArray.Create;
+
+    if (pessoa.razaoSocial = '') then
+    begin
+      erros.Add('O usuario deve ser informado!');
+    end;
+
+    if (pessoa.senha = '') then
+    begin
+      erros.Add('A senha deve ser informada!');
+    end;
+
+    if (erros.Text = '') then
+    begin
+      pessoaConsultado := pessoa.consultarLogin();
+
+      if not (Assigned(pessoaConsultado)) then
+      begin
+        erros.Add('Nenhuma Usuario encontrado com o nome [' + pessoa.razaoSocial + ']!');
+      end
+      else if (pessoa.senha <> pessoaConsultado.senha) then
+      begin
+        erros.Add('A senha informada esta incorreta!');
+        pessoaConsultado.Destroy;
+      end;
+    end;
+
+    if (erros.Text <> '') then
+    begin
+      for i := 0 to erros.Count - 1 do
+      begin
+        arrayResposta.Add(UFuncao.JsonErro('USUARIO021',  erros[i]));
+      end;
+
+      resposta.AddPair(TJSONPair.Create('Erros', arrayResposta));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+    end
+    else
+    begin
+      token := pessoaConsultado.logar;
+
+      FreeAndNil(arrayResposta);
+
+      resposta.AddPair('tipo', 'Login');
+      resposta.AddPair('nomeUsuario', pessoaConsultado.razaoSocial);
+      resposta.AddPair('administrador', TJSONBool.Create(True));
+      resposta.AddPair('token', token);
+      pessoaConsultado.Destroy;
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(200);
+    end;
+
+    FreeAndNil(erros);
+  except
+    on E: Exception do
+    begin
+      mensagem := 'Erro não tratado ao fazer login!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('USUARIO023', mensagem))));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
+    end;
+  end;
+
+  pessoa.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
+  limparVariaveis;
+  FreeAndNil(resposta);
+end;
+
+procedure logout(Req: THorseRequest; Res: THorseResponse; Next: TProc);
+var
+  resposta: TJSONObject;
+  body: TJSONValue;
+  mensagem: string;
+  codigoLog: integer;
+begin
+  continuar := True;
+  resposta := TJSONObject.Create;
+  codigoLog := gerarLogPessoa(Req, Res, 'logout', 'Usuario', resposta);
+
+  if (continuar) then
+  try
+    body := TJSONObject.ParseJSONValue(TEncoding.UTF8.GetBytes(req.Body), 0) as TJSONValue;
+    pessoa.token := body.GetValue<string>('token', '');
+  except
+    on E: Exception do
+    begin
+      mensagem := 'Erro ao recuperar dados da requisição: ' + e.Message + '!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('USUARIO031', mensagem))));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(401);
+      continuar := False;
+    end;
+  end;
+
+  FreeAndNil(body);
+
+  if (continuar) then
+  try
+    pessoa.logout;
+    resposta.AddPair('tipo', 'logout');
+    resposta.AddPair('administrador', TJSONBool.Create(True));
+    Res.Send<TJSONAncestor>(resposta.Clone).Status(200);
+  except
+    on E: Exception do
+    begin
+      mensagem := 'Erro não tratado ao fazer logout!';
+      resposta.AddPair(TJSONPair.Create('Erros', TJSONArray.Create(UFuncao.JsonErro('USUARIO030', mensagem))));
+      Res.Send<TJSONAncestor>(resposta.Clone).Status(500);
+    end;
+  end;
+
+  pessoa.atualizarLog(codigoLog, Res.Status, imprimirResposta(Res.Status, resposta));
+  limparVariaveis;
+  FreeAndNil(resposta);
+end;
+
 procedure alterarPessoa(Req: THorseRequest; Res: THorseResponse; Next: TProc; procedimento, classe: string; tipoPessoa: integer);
 var
   erros: TStringList;
@@ -1167,6 +1318,8 @@ begin
 
   THorse.Get('/usuario', buscarUsuario);
   THorse.Post('/usuario', cadastrarUsuario);
+  THorse.Post('/login', login);
+  THorse.Post('/logout', logout);
   THorse.Put('/usuario/:id', alterarUsuario);
   THorse.Delete('/usuario/:id', inativarUsuario);
   THorse.Delete('/usuarioExcluir/:id', excluirUsuario);

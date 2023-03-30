@@ -30,7 +30,8 @@ uses
   OrdemServicoItem in '..\Tela\OrdemServicoItem.pas' {FOrdemServicoItem},
   OrdemServicoProduto in '..\Tela\OrdemServicoProduto.pas' {FOrdemServicoProduto},
   OrdemServicoCusto in '..\Tela\OrdemServicoCusto.pas' {FOrdemServicoCusto},
-  OrdemServicoFuncionario in '..\Tela\OrdemServicoFuncionario.pas' {FOrdemServicoFuncionario};
+  OrdemServicoFuncionario in '..\Tela\OrdemServicoFuncionario.pas' {FOrdemServicoFuncionario},
+  Senha in '..\Tela\Senha.pas' {FSenha};
 
 {$R *.res}
 

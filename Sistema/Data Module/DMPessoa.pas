@@ -139,7 +139,9 @@ type
     function cadastrarContato: Boolean;
     function alterarContato: Boolean;
     function inativarContato: Boolean;
+    function logout: Boolean;
     function excluirPessoa: Boolean;
+    function logar(usuario, senha: string): Boolean;
   end;
 
 var
@@ -367,6 +369,66 @@ begin
     begin
       Result := False;
     end;
+  end;
+
+  Conexao.Destroy;
+end;
+
+function TFDMPessoa.logar(usuario, senha: string): Boolean;
+var
+  Conexao: TConexao;
+  json: TJSONValue;
+begin
+  Conexao := TConexao.Create;
+
+  Conexao.metodo := rmPOST;
+  Conexao.url := 'login';
+  Conexao.AtribuirBody('usuario', usuario);
+  Conexao.AtribuirBody('senha', senha);
+  Conexao.Enviar;
+
+  if not (Conexao.status in[200..202]) then
+  begin
+    informar(Conexao.erro);
+    Result := False;
+  end
+  else
+  begin
+    json := converterJsonTextoJsonValue(Conexao.resposta);
+
+    if (Assigned(json)) then
+    begin
+      UFuncao.NomeUsuarioSessaoLogado := json.GetValue<string>('nomeUsuario', '');
+      UFuncao.UsuarioAdmnistrador := json.GetValue<Boolean>('administrador', False);
+      UFuncao.SessaoLogadoToken := json.GetValue<string>('token', '');
+
+      Result := True;
+    end
+    else
+    begin
+      Result := False;
+    end;
+  end;
+
+  Conexao.Destroy;
+end;
+
+function TFDMPessoa.logout: Boolean;
+var
+  Conexao: TConexao;
+  json: TJSONValue;
+begin
+  Conexao := TConexao.Create;
+
+  Conexao.metodo := rmPOST;
+  Conexao.url := 'logout';
+  Conexao.AtribuirBody('token', UFuncao.SessaoLogadoToken);
+  Conexao.Enviar;
+
+  if not (Conexao.status in[200..202]) then
+  begin
+    informar(Conexao.erro);
+    Result := False;
   end;
 
   Conexao.Destroy;

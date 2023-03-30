@@ -29,7 +29,6 @@ type
     procedure sair1Click(Sender: TObject);
     procedure FormClose(Sender: TObject; var Action: TCloseAction);
     procedure pais1Click(Sender: TObject);
-    procedure FormShow(Sender: TObject);
     procedure estado1Click(Sender: TObject);
     procedure cidade1Click(Sender: TObject);
     procedure tipoDocumento1Click(Sender: TObject);
@@ -42,6 +41,7 @@ type
     procedure EmpresaFaturamento1Click(Sender: TObject);
     procedure Grupo1Click(Sender: TObject);
     procedure OrdemdeServio1Click(Sender: TObject);
+    procedure FormShow(Sender: TObject);
   private
     { Private declarations }
   public
@@ -54,7 +54,7 @@ var
 implementation
 
 uses UFuncao, Pais, Estado, Cidade, TipoDocumento, TipoEndereco, Funcao, Grupo,
-     OrdemServico;
+     OrdemServico, Senha, DMPessoa;
 
 {$R *.dfm}
 
@@ -95,10 +95,16 @@ end;
 
 procedure TFMenuPrincipal.FormShow(Sender: TObject);
 begin
-  SessaoLogado := 2;
-  NomeUsuarioSessaoLogado := 'Guilherme';
-  UsuarioAdmnistrador := True;
-  SessaoLogadoToken := '96FC542F00DC204B1408A6314962E10A';
+  try
+    Application.CreateForm(TFSenha, FSenha);
+
+    if (FSenha.ShowModal <> mrok) then
+    begin
+      ExitProcess(0);
+    end;
+  finally
+    FreeAndNil(FSenha);
+  end;
 end;
 
 procedure TFMenuPrincipal.fornecedor1Click(Sender: TObject);
@@ -155,6 +161,7 @@ procedure TFMenuPrincipal.sair1Click(Sender: TObject);
 begin
   if confirmar('Realmente deseja sair do sistema?') then
   begin
+    FDMPessoa.logout;
     ExitProcess(0);
   end
   else

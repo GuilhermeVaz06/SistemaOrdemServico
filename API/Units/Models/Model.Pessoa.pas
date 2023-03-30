@@ -24,6 +24,7 @@ type TPessoa = class
     FDataCadastro: TDateTime;
     FUltimaAlteracao: TDateTime;
     FStatus: string;
+    FToken: string;
     FLimite: integer;
     FOffset: Integer;
     FRegistrosAfetados: Integer;
@@ -53,6 +54,7 @@ type TPessoa = class
     property dataCadastro: TDateTime read FDataCadastro write FDataCadastro;
     property ultimaAlteracao: TDateTime read FUltimaAlteracao write FUltimaAlteracao;
     property status: string read FStatus write FStatus;
+    property token: string read FToken write FToken;
     property maisRegistro: Boolean read FMaisRegistro;
     property offset: Integer read FOffset write FOffset;
     property limite: Integer read FLimite write FLimite;
@@ -69,6 +71,9 @@ type TPessoa = class
     function cadastrarPessoa: TPessoa;
     function alterarPessoa: TPessoa;
     function inativarPessoa: TPessoa;
+    function logar: string;
+    function logout: Boolean;
+    function consultarLogin: TPessoa;
     function verificarToken(token: string): Boolean;
     function GerarLog(classe, procedimento, requisicao: string): integer;
 end;
@@ -104,6 +109,48 @@ begin
   Result := consultarCodigo(FCodigo);
 end;
 
+function TPessoa.logar: string;
+var
+  sql: TStringList;
+begin
+  sql := TStringList.Create;
+  sql.Add('UPDATE sessao');
+  sql.Add('   SET sessao.`STATUS` = ''I'' ');
+  sql.Add(' WHERE sessao.CODIGO_PESSOA = ' + IntToStrSenaoZero(FCodigo));
+  sql.Add('   AND sessao.`STATUS` = ''A'' ');
+
+  FConexao.executarComandoDML(sql.Text);
+
+  FToken := FConexao.criarToken(IntToStrSenaoZero(FCodigo) + DateTimeToStr(Now));
+
+  sql.Clear;
+  sql.Add('INSERT INTO `sessao` (`CODIGO_SESSAO`, `CODIGO_PESSOA`, `TOKEN`) VALUES ( ');
+  sql.Add(' ' + IntToStrSenaoZero(FCadastradoPor.id));
+  sql.Add(',' + IntToStrSenaoZero(FCodigo));
+  sql.Add(',' + QuotedStr(FToken));
+  sql.Add(')');
+
+  FConexao.executarComandoDML(sql.Text);
+  FreeAndNil(sql);
+
+  Result := FToken;
+end;
+
+function TPessoa.logout: Boolean;
+var
+  sql: TStringList;
+begin
+  sql := TStringList.Create;
+  sql.Add('UPDATE sessao');
+  sql.Add('   SET sessao.`STATUS` = ''I'' ');
+  sql.Add(' WHERE sessao.TOKEN = ' + QuotedStr(FToken));
+  sql.Add('   AND sessao.`STATUS` = ''A'' ');
+
+  FConexao.executarComandoDML(sql.Text);
+  Result := True;
+  FreeAndNil(sql);
+end;
+
 procedure TPessoa.atualizarLog(codigo, status: Integer; resposta: string);
 begin
   FConexao.atualizarLog(codigo, status, resposta);
@@ -115,6 +162,8 @@ var
   codigo: Integer;
 begin
   codigo := FConexao.ultimoRegistro('pessoa', 'CODIGO_PESSOA');
+
+  FSenha := FConexao.criarToken(FSenha);
 
   sql := TStringList.Create;
   sql.Add('INSERT INTO `pessoa` (CODIGO_PESSOA, CODIGO_TIPO_PESSOA, CODIGO_TIPO_DOCUMENTO');
@@ -349,6 +398,44 @@ begin
 
     pessoaConsultado.FCodigo := query.FieldByName('CODIGO_PESSOA').Value;
     pessoaConsultado.FNomeFantasia := query.FieldByName('NOME_FANTASIA').Value;
+  end;
+
+  Result := pessoaConsultado;
+
+  FreeAndNil(sql);
+end;
+
+function TPessoa.consultarLogin: TPessoa;
+var
+  query: TZQuery;
+  pessoaConsultado: TPessoa;
+  sql: TStringList;
+begin
+  pessoaConsultado := TPessoa.Create;
+  sql := TStringList.Create;
+  sql.Add('SELECT CODIGO_PESSOA, RAZAO_SOCIAL, SENHA');
+  sql.Add('  FROM pessoa');
+  sql.Add(' WHERE RAZAO_SOCIAL = ' + QuotedStr(FRazaoSocial));
+  sql.Add('   AND CODIGO_TIPO_PESSOA = ' + IntToStrSenaoZero(FTipoCadastro.id));
+  sql.Add(' LIMIT 1');
+
+  query := FConexao.executarComandoDQL(sql.Text);
+
+  if not Assigned(query)
+  or (query = nil)
+  or (query.RecordCount = 0) then
+  begin
+    pessoaConsultado.Destroy;
+    pessoaConsultado := nil;
+  end
+  else
+  begin
+    query.First;
+    FRegistrosAfetados := FConexao.registrosAfetados;
+
+    pessoaConsultado.FCodigo := query.FieldByName('CODIGO_PESSOA').Value;
+    pessoaConsultado.FRazaoSocial := query.FieldByName('RAZAO_SOCIAL').Value;
+    pessoaConsultado.FSenha := query.FieldByName('SENHA').Value;
   end;
 
   Result := pessoaConsultado;
