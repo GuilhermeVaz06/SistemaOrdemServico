@@ -104,7 +104,7 @@ object FMenuPrincipal: TFMenuPrincipal
         OnClick = Funcao1Click
       end
       object Grupo1: TMenuItem
-        Caption = 'Grupo'
+        Caption = 'Custo'
         OnClick = Grupo1Click
       end
     end

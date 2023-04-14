@@ -103,10 +103,6 @@
             <FormType>dfm</FormType>
         </DCCReference>
         <DCCReference Include="..\Units\UFuncao.pas"/>
-        <DCCReference Include="..\Tela\Pais.pas">
-            <Form>FPais</Form>
-            <FormType>dfm</FormType>
-        </DCCReference>
         <DCCReference Include="..\Units\UConexao.pas"/>
         <DCCReference Include="..\Data Module\DMEstado.pas">
             <Form>FDMEstado</Form>
@@ -163,11 +159,6 @@
             <Form>FContato</Form>
             <FormType>dfm</FormType>
         </DCCReference>
-        <DCCReference Include="..\Data Module\DMPais.pas">
-            <Form>FDMPais</Form>
-            <FormType>dfm</FormType>
-            <DesignClass>TDataModule</DesignClass>
-        </DCCReference>
         <DCCReference Include="..\Data Module\DMFuncao.pas">
             <Form>FDMFuncao</Form>
             <FormType>dfm</FormType>
@@ -217,6 +208,15 @@
         </DCCReference>
         <DCCReference Include="..\Tela\Senha.pas">
             <Form>FSenha</Form>
+            <FormType>dfm</FormType>
+        </DCCReference>
+        <DCCReference Include="..\Data Module\DMPais.pas">
+            <Form>FDMPais</Form>
+            <FormType>dfm</FormType>
+            <DesignClass>TDataModule</DesignClass>
+        </DCCReference>
+        <DCCReference Include="..\Tela\Pais.pas">
+            <Form>FPais</Form>
             <FormType>dfm</FormType>
         </DCCReference>
         <BuildConfiguration Include="Release">

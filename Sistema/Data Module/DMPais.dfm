@@ -49,11 +49,5 @@ object FDMPais: TFDMPais
       FieldName = 'status'
       Size = 1
     end
-    object TPaiscodigoUsuarioCadastro: TIntegerField
-      FieldName = 'codigoUsuarioCadastro'
-    end
-    object TPaiscodigoUsuarioAlteracao: TIntegerField
-      FieldName = 'codigoUsuarioAlteracao'
-    end
   end
 end

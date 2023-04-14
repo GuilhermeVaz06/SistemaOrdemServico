@@ -28,7 +28,6 @@ type
     CBMostrarInativo: TCheckBox;
     Panel3: TPanel;
     BConsultar: TSpeedButton;
-    GDados: TDBGrid;
     CBAtivo: TDBCheckBox;
     Panel4: TPanel;
     Label4: TLabel;
@@ -43,6 +42,7 @@ type
     Label9: TLabel;
     ELocalizarNome: TEdit;
     Label10: TLabel;
+    GDados: TDBGrid;
     procedure BFecharClick(Sender: TObject);
     procedure BCadastrarClick(Sender: TObject);
     procedure BAlterarClick(Sender: TObject);
@@ -136,6 +136,17 @@ begin
   finally
     BConsultar.Enabled := True;
   end;
+
+  GDados.DataSource := FDMPais.DPais;
+  ECodigo.DataSource := FDMPais.DPais;
+  EPais.DataSource := FDMPais.DPais;
+  ECodigoIbge.DataSource := FDMPais.DPais;
+  ECadastradoPor.DataSource := FDMPais.DPais;
+  EAlteradoPor.DataSource := FDMPais.DPais;
+  EDataCadastro.DataSource := FDMPais.DPais;
+  EDataAlteracao.DataSource := FDMPais.DPais;
+  CBAtivo.DataSource := FDMPais.DPais;
+  DBNavigator1.DataSource := FDMPais.DPais;
 end;
 
 procedure TFPais.BFecharClick(Sender: TObject);

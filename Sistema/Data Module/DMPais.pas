@@ -19,8 +19,6 @@ type
     TPaisdataCadastro: TStringField;
     TPaisdataAlteracao: TStringField;
     TPaisstatus: TStringField;
-    TPaiscodigoUsuarioCadastro: TIntegerField;
-    TPaiscodigoUsuarioAlteracao: TIntegerField;
   private
 
   public
@@ -197,7 +195,6 @@ begin
     TPais.Close;
     TPais.Open;
   end;
-
   Conexao.Destroy;
 end;
 

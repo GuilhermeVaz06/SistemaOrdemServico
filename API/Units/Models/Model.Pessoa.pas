@@ -112,6 +112,7 @@ end;
 function TPessoa.logar: string;
 var
   sql: TStringList;
+  dataHora: TDateTime;
 begin
   sql := TStringList.Create;
   sql.Add('UPDATE sessao');
@@ -119,15 +120,17 @@ begin
   sql.Add(' WHERE sessao.CODIGO_PESSOA = ' + IntToStrSenaoZero(FCodigo));
   sql.Add('   AND sessao.`STATUS` = ''A'' ');
 
+  dataHora := Now;
   FConexao.executarComandoDML(sql.Text);
 
-  FToken := FConexao.criarToken(IntToStrSenaoZero(FCodigo) + DateTimeToStr(Now));
+  FToken := FConexao.criarToken(IntToStrSenaoZero(FCodigo) + DateTimeToStr(dataHora));
 
   sql.Clear;
-  sql.Add('INSERT INTO `sessao` (`CODIGO_SESSAO`, `CODIGO_PESSOA`, `TOKEN`) VALUES ( ');
+  sql.Add('INSERT INTO `sessao` (`CODIGO_SESSAO`, `CODIGO_PESSOA`, `TOKEN`, `DATA_CADASTRO`) VALUES ( ');
   sql.Add(' ' + IntToStrSenaoZero(FCadastradoPor.id));
   sql.Add(',' + IntToStrSenaoZero(FCodigo));
   sql.Add(',' + QuotedStr(FToken));
+  sql.Add(',' + QuotedStr(FormatDateTime('yyyy/mm/dd hh:nn:ss', dataHora)));
   sql.Add(')');
 
   FConexao.executarComandoDML(sql.Text);

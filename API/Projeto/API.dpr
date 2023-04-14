@@ -45,7 +45,7 @@ uses
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  ReportMemoryLeaksOnShutdown := True;
+  ReportMemoryLeaksOnShutdown := False;
   Application.CreateForm(TFPrincipal, FPrincipal);
   Application.Run;
 end.

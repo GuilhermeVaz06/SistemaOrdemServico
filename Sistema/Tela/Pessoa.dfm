@@ -240,11 +240,9 @@ object FPessoa: TFPessoa
         Top = 199
         Width = 1355
         Height = 314
-        ActivePage = TBOutrosDocumentos
+        ActivePage = TBContato
         Align = alClient
         TabOrder = 2
-        ExplicitTop = 201
-        ExplicitHeight = 312
         object TBOutrosDocumentos: TTabSheet
           Caption = 'Outros Documentos'
           object Panel2: TPanel
@@ -404,7 +402,6 @@ object FPessoa: TFPessoa
             Enabled = False
             TabOrder = 2
             OnClick = CBInativoOutroDocumentoClick
-            ExplicitTop = 264
           end
         end
         object TBEndereco: TTabSheet
@@ -607,11 +604,10 @@ object FPessoa: TFPessoa
             Enabled = False
             TabOrder = 2
             OnClick = CBInativoEnderecoClick
-            ExplicitTop = 264
           end
         end
         object TBContato: TTabSheet
-          Caption = 'Outros Contatos'
+          Caption = 'Contatos'
           ImageIndex = 2
           object Panel4: TPanel
             Left = 0
@@ -793,7 +789,6 @@ object FPessoa: TFPessoa
             Enabled = False
             TabOrder = 2
             OnClick = CBInativoContatoClick
-            ExplicitTop = 264
           end
         end
       end

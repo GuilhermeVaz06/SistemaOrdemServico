@@ -724,7 +724,6 @@ object FDMOrdemServico: TFDMOrdemServico
     end
     object QValorTotaldesconto: TFloatField
       FieldName = 'desconto'
-      DisplayFormat = '###,###,###,##0.00 %'
       currency = True
     end
     object QValorTotalvalorFinal: TFloatField

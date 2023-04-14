@@ -570,8 +570,20 @@ begin
       begin
         GDados.Columns.Items[i].Visible := False;
       end
-      else if (GDados.Columns.Items[i].FieldName = 'nome') or
-              (GDados.Columns.Items[i].FieldName = 'funcao') then
+      else if (GDados.Columns.Items[i].FieldName = 'nome') and
+              (FDMPessoa.tipoCadastro = 'usuario') then
+      begin
+        GDados.Columns.Items[i].Visible := True;
+        GDados.Columns.Items[i].Width := 117;
+      end
+      else if (GDados.Columns.Items[i].FieldName = 'funcao') and
+              (FDMPessoa.tipoCadastro = 'usuario') then
+      begin
+        GDados.Columns.Items[i].Visible := False;
+      end
+      else if ((GDados.Columns.Items[i].FieldName = 'nome') or
+               (GDados.Columns.Items[i].FieldName = 'funcao')) and
+              (FDMPessoa.tipoCadastro = 'funcionario') then
       begin
         GDados.Columns.Items[i].Visible := True;
         GDados.Columns.Items[i].Width := 117;
@@ -581,7 +593,20 @@ begin
   else
   begin
     PCDados.ActivePage := TBOutrosDocumentos;
+
+    for i := 0 to GDados.Columns.Count - 1 do
+    begin
+      if (GDados.Columns.Items[i].FieldName = 'nome') or
+         (GDados.Columns.Items[i].FieldName = 'funcao') then
+      begin
+        GDados.Columns.Items[i].Visible := False;
+      end;
+    end;
   end;
+
+  FDMPessoa.TOutroDocumento.Close;
+  FDMPessoa.TEndereco.Close;
+  FDMPessoa.TContato.Close;
 
   FDMFuncao.consultarDados(0);
   FDMPessoa.consultarTipoDocumento;
@@ -659,7 +684,10 @@ procedure TFPessoa.TBCadastroShow(Sender: TObject);
 begin
   with FDMPessoa do
   begin
-    if (dadosPessoaConsultados <> TPessoacodigo.Value) then
+    if (dadosPessoaConsultados <> TPessoacodigo.Value) or
+       (TOutroDocumento.Active = False) or
+       (TEndereco.Active = False) or
+       (TContato.Active = False) then
     begin
       consultarDadosOutroDocumento(0, False);
       consultarDadosEndereco(0, False);

@@ -4,7 +4,6 @@ uses
   Vcl.Forms,
   MenuPrincipal in '..\Tela\MenuPrincipal.pas' {FMenuPrincipal},
   UFuncao in '..\Units\UFuncao.pas',
-  Pais in '..\Tela\Pais.pas' {FPais},
   UConexao in '..\Units\UConexao.pas',
   DMEstado in '..\Data Module\DMEstado.pas' {FDMEstado: TDataModule},
   Estado in '..\Tela\Estado.pas' {FEstado},
@@ -19,7 +18,6 @@ uses
   Pessoa in '..\Tela\Pessoa.pas' {FPessoa},
   Endereco in '..\Tela\Endereco.pas' {FEndereco},
   Contato in '..\Tela\Contato.pas' {FContato},
-  DMPais in '..\Data Module\DMPais.pas' {FDMPais: TDataModule},
   DMFuncao in '..\Data Module\DMFuncao.pas' {FDMFuncao: TDataModule},
   Funcao in '..\Tela\Funcao.pas' {FFuncao},
   DMGrupo in '..\Data Module\DMGrupo.pas' {FDMGrupo: TDataModule},
@@ -31,17 +29,18 @@ uses
   OrdemServicoProduto in '..\Tela\OrdemServicoProduto.pas' {FOrdemServicoProduto},
   OrdemServicoCusto in '..\Tela\OrdemServicoCusto.pas' {FOrdemServicoCusto},
   OrdemServicoFuncionario in '..\Tela\OrdemServicoFuncionario.pas' {FOrdemServicoFuncionario},
-  Senha in '..\Tela\Senha.pas' {FSenha};
+  Senha in '..\Tela\Senha.pas' {FSenha},
+  DMPais in '..\Data Module\DMPais.pas' {FDMPais: TDataModule},
+  Pais in '..\Tela\Pais.pas' {FPais};
 
 {$R *.res}
 
 begin
   Application.Initialize;
   Application.MainFormOnTaskbar := True;
-  ReportMemoryLeaksOnShutdown := True;
+  ReportMemoryLeaksOnShutdown := False;
   Application.CreateForm(TFMenuPrincipal, FMenuPrincipal);
   Application.CreateForm(TFDMEstado, FDMEstado);
-  Application.CreateForm(TFDMPais, FDMPais);
   Application.CreateForm(TFDMCidade, FDMCidade);
   Application.CreateForm(TFDMTipoDocumento, FDMTipoDocumento);
   Application.CreateForm(TFDMTipoEndereco, FDMTipoEndereco);
@@ -51,5 +50,6 @@ begin
   Application.CreateForm(TFDMFuncao, FDMFuncao);
   Application.CreateForm(TFDMGrupo, FDMGrupo);
   Application.CreateForm(TFDMOrdemServico, FDMOrdemServico);
+  Application.CreateForm(TFDMPais, FDMPais);
   Application.Run;
 end.

@@ -245,8 +245,8 @@ object FPais: TFPais
         TabOrder = 0
       end
       object EAlteradoPor: TDBEdit
-        Left = 145
-        Top = 20
+        Left = 146
+        Top = 17
         Width = 130
         Height = 24
         TabStop = False
@@ -295,7 +295,7 @@ object FPais: TFPais
       Width = 1078
       Height = 30
       Align = alBottom
-      TabOrder = 2
+      TabOrder = 1
       object CBMostrarInativo: TCheckBox
         Left = 9
         Top = 6
@@ -361,7 +361,7 @@ object FPais: TFPais
       DataSource = FDMPais.DPais
       Options = [dgTitles, dgIndicator, dgColumnResize, dgColLines, dgRowLines, dgTabs, dgRowSelect, dgConfirmDelete, dgCancelOnExit, dgTitleClick, dgTitleHotTrack]
       ReadOnly = True
-      TabOrder = 1
+      TabOrder = 2
       TitleFont.Charset = DEFAULT_CHARSET
       TitleFont.Color = clWindowText
       TitleFont.Height = -13

@@ -9,6 +9,9 @@ type TTipoPessoa = class
   private
     FCodigo: integer;
     FDescricao: string;
+    FDataCadastro: TDateTime;
+    FUltimaAlteracao: TDateTime;
+    FStatus: string;
 
   public
     constructor Create;

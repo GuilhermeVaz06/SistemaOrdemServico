@@ -331,7 +331,7 @@ begin
     begin
       erros.Add('O numero deve ser informado!');
     end
-    else if (Length(Trim(endereco.longradouro)) > 10) then
+    else if (Length(Trim(endereco.numero)) > 10) then
     begin
       erros.Add('O numero deve conter no maximo 10 caracteres validos!');
     end;
